@@ -610,34 +610,27 @@ def create_top_navbar():
                 </svg>
             </button>
             <div class="dropdown-menu" id="userDropdown">
-                <a class="dropdown-item" onclick="navigateToPage('saved')">📍 Saved Locations</a>
-                <a class="dropdown-item" onclick="navigateToPage('settings')">⚙️ Settings</a>
-                <a class="dropdown-item" onclick="navigateToPage('signout')">🚪 Sign Out</a>
+                <a class="dropdown-item" href="?nav=saved" target="_parent">📍 Saved Locations</a>
+                <a class="dropdown-item" href="?nav=settings" target="_parent">⚙️ Settings</a>
+                <a class="dropdown-item" href="?nav=signout" target="_parent">🚪 Sign Out</a>
             </div>
         </div>
         '''
     else:
-        navbar_html += '<button class="nav-button nav-button-primary" onclick="navigateToPage(\'signin\')">SIGN IN</button>'
+        navbar_html += '<a href="?nav=signin" target="_parent" style="text-decoration: none;"><button class="nav-button nav-button-primary">SIGN IN</button></a>'
 
     # CROWD button
-    navbar_html += '<button class="nav-button" onclick="navigateToPage(\'crowd\')">CROWD</button>'
+    navbar_html += '<a href="?nav=crowd" target="_parent" style="text-decoration: none;"><button class="nav-button">CROWD</button></a>'
 
     # EVENTS button
-    navbar_html += '<button class="nav-button" onclick="navigateToPage(\'events\')">EVENTS</button>'
+    navbar_html += '<a href="?nav=events" target="_parent" style="text-decoration: none;"><button class="nav-button">EVENTS</button></a>'
 
     navbar_html += '</div>'  # Close navbar-right
     navbar_html += '</div>'  # Close top-navbar
 
-    # Add JavaScript for navigation and dropdown
+    # Add JavaScript for dropdown
     navbar_html += '''
     <script>
-        function navigateToPage(page) {
-            // Navigate parent window (not iframe) by setting query parameter
-            var url = new URL(window.parent.location.href);
-            url.searchParams.set('nav', page);
-            window.parent.location.href = url.toString();
-        }
-
         function toggleDropdown() {
             var dropdown = document.getElementById("userDropdown");
             if (dropdown) {
