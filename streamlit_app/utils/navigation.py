@@ -194,29 +194,25 @@ def create_top_navbar():
             z-index: 50;
         }}
 
-        /* Hide HTML placeholder buttons (Streamlit buttons will overlay) */
-        .navbar-right .nav-button,
-        .navbar-right .dropdown {{
-            opacity: 0 !important;
-            pointer-events: none !important;
-        }}
-
-        /* Pull Streamlit button row into navbar */
-        .main .block-container > div:first-child {{
-            margin-top: -80px !important;
-            padding-top: 20px !important;
-            padding-right: 2.5rem !important;
-            position: relative !important;
+        /* Pull Streamlit button row into navbar-right position */
+        .main > .block-container > div:first-of-type {{
+            position: absolute !important;
+            top: 20px !important;
+            right: 2.5rem !important;
+            margin: 0 !important;
+            padding: 0 !important;
             z-index: 100 !important;
-            pointer-events: none !important;
+            background: transparent !important;
+            width: auto !important;
         }}
 
-        .main .block-container > div:first-child [data-testid="column"] {{
-            pointer-events: auto !important;
+        .main > .block-container > div:first-of-type [data-testid="column"] {{
+            background: transparent !important;
+            padding: 0 !important;
         }}
 
-        /* Add spacing after navbar for content */
-        .main .block-container > div:first-child ~ * {{
+        /* Ensure content below navbar has proper spacing */
+        .main > .block-container > div:nth-of-type(2) {{
             margin-top: 2rem !important;
         }}
 
@@ -583,41 +579,8 @@ def create_top_navbar():
         '''
     navbar_html += '</div>'  # Close navbar-center
 
-    # Right side - Navigation buttons
-    navbar_html += '<div class="navbar-right">'
-
-    # Check if user is logged in for username display
-    if 'user' in st.session_state and st.session_state.user:
-        user_name = st.session_state.user.get('full_name', 'User').split()[0]
-        navbar_html += f'''
-        <div class="dropdown">
-            <button class="nav-button dropdown-toggle" onclick="toggleDropdown()">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="12" cy="7" r="4"></circle>
-                </svg>
-                {user_name.upper()}
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-            </button>
-            <div class="dropdown-menu" id="userDropdown">
-                <a class="dropdown-item" onclick="navigateToPage('saved')">📍 Saved Locations</a>
-                <a class="dropdown-item" onclick="navigateToPage('settings')">⚙️ Settings</a>
-                <a class="dropdown-item" onclick="navigateToPage('signout')">🚪 Sign Out</a>
-            </div>
-        </div>
-        '''
-    else:
-        navbar_html += '<button class="nav-button nav-button-primary" onclick="navigateToPage(\'signin\')">SIGN IN</button>'
-
-    # CROWD button
-    navbar_html += '<button class="nav-button" onclick="navigateToPage(\'crowd\')">CROWD</button>'
-
-    # EVENTS button
-    navbar_html += '<button class="nav-button" onclick="navigateToPage(\'events\')">EVENTS</button>'
-
-    navbar_html += '</div>'  # Close navbar-right
+    # Right side - Navigation buttons (Streamlit widgets will be positioned here)
+    navbar_html += '<div class="navbar-right" id="navbar-buttons-container"></div>'
     navbar_html += '</div>'  # Close top-navbar
 
     st.markdown(navbar_html, unsafe_allow_html=True)
