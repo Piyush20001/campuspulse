@@ -20,41 +20,28 @@ except ImportError:
 def create_top_navbar():
     """Create a horizontal navigation bar at the top"""
 
-    # Initialize theme if not set
-    if 'theme' not in st.session_state:
-        st.session_state.theme = 'light'
-
-    # Apply theme-specific CSS
-    theme = st.session_state.theme
-
-    if theme == 'dark':
-        bg_gradient = 'linear-gradient(90deg, #0a1929 0%, #1a2332 50%, #0a1929 100%)'
-        bg_color = '#0a1929'
-        text_color = '#FFFFFF'
-        secondary_bg = '#1a2332'
-        card_bg = '#162130'
-        navbar_bg = '#030712'  # gray-950
-        navbar_border = '#1f2937'  # gray-800
-        button_text = '#e5e7eb'  # gray-200
-        button_hover_bg = '#1f2937'  # gray-800
-    else:
-        bg_gradient = 'linear-gradient(90deg, #0021A5 0%, #FA4616 100%)'
-        bg_color = '#FFFFFF'
-        text_color = '#262730'
-        secondary_bg = '#F0F2F6'
-        card_bg = '#FAFAFA'
-        navbar_bg = '#030712'  # gray-950 (dark navbar in light mode too)
-        navbar_border = '#1f2937'  # gray-800
-        button_text = '#e5e7eb'  # gray-200
-        button_hover_bg = '#1f2937'  # gray-800
+    # Dark mode only - matching src/components/Header.tsx design
+    bg_color = '#030712'  # gray-950 - main background
+    text_color = '#e5e7eb'  # gray-200 - text color
+    secondary_bg = '#1f2937'  # gray-800 - secondary elements
+    card_bg = '#111827'  # gray-900 - cards and containers
+    navbar_bg = '#030712'  # gray-950 - navbar background
+    navbar_border = '#1f2937'  # gray-800 - borders
+    button_text = '#e5e7eb'  # gray-200 - button text
+    button_hover_bg = '#1f2937'  # gray-800 - button hover
 
     # Custom CSS for top navbar - MODERN 2025 AESTHETIC
     st.markdown(f"""
     <style>
-        /* Import modern fonts from Google Fonts */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
+        /* Import Inter font - matching src design */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-        /* FORCE THEME COLORS - Override all Streamlit defaults */
+        /* Set base font for entire app */
+        html, body, .stApp, [data-testid="stAppViewContainer"] {{
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+        }}
+
+        /* FORCE DARK MODE COLORS - Override all Streamlit defaults */
         .stApp {{
             background-color: {bg_color} !important;
         }}
@@ -70,6 +57,7 @@ def create_top_navbar():
         .main {{
             background-color: {bg_color} !important;
             color: {text_color} !important;
+            font-family: 'Inter', sans-serif !important;
         }}
 
         .main .block-container {{
@@ -79,9 +67,10 @@ def create_top_navbar():
             color: {text_color} !important;
         }}
 
-        /* Force all text elements to use theme colors */
+        /* Force all text elements to use dark mode colors and Inter font */
         .main * {{
             color: {text_color} !important;
+            font-family: 'Inter', sans-serif !important;
         }}
 
         /* Override Streamlit's default white backgrounds */
@@ -109,29 +98,43 @@ def create_top_navbar():
         p {{
             color: {text_color} !important;
             line-height: 1.6;
+            font-family: 'Inter', sans-serif !important;
         }}
 
-        /* Headings with modern font */
+        /* Headings - Inter font matching src design */
         h1, h2, h3, h4, h5, h6 {{
             color: {text_color} !important;
-            font-family: 'Outfit', 'Inter', sans-serif !important;
-            font-weight: 700 !important;
+            font-family: 'Inter', sans-serif !important;
+            font-weight: 600 !important;
             line-height: 1.4 !important;
             margin-top: 1rem !important;
             margin-bottom: 0.75rem !important;
         }}
 
-        h1 {{ font-size: 2.5rem !important; color: {text_color} !important; }}
-        h2 {{ font-size: 2rem !important; color: {text_color} !important; }}
-        h3 {{ font-size: 1.5rem !important; color: {text_color} !important; }}
-        h4 {{ color: {text_color} !important; }}
-        h5 {{ color: {text_color} !important; }}
-        h6 {{ color: {text_color} !important; }}
+        h1 {{
+            font-size: 2.5rem !important;
+            color: {text_color} !important;
+            font-weight: 700 !important;
+        }}
+        h2 {{
+            font-size: 2rem !important;
+            color: {text_color} !important;
+            font-weight: 600 !important;
+        }}
+        h3 {{
+            font-size: 1.5rem !important;
+            color: {text_color} !important;
+            font-weight: 600 !important;
+        }}
+        h4, h5, h6 {{
+            color: {text_color} !important;
+            font-weight: 500 !important;
+        }}
 
         /* Metrics and stats */
         [data-testid="stMetricValue"] {{
             color: {text_color} !important;
-            font-family: 'Outfit', sans-serif !important;
+            font-family: 'Inter', sans-serif !important;
             font-weight: 700 !important;
         }}
 
@@ -144,9 +147,9 @@ def create_top_navbar():
             letter-spacing: 0.05em;
         }}
 
-        /* Modern cards and containers */
+        /* Modern cards and containers - dark mode */
         [data-testid="stVerticalBlock"], [data-testid="stHorizontalBlock"] {{
-            background-color: {secondary_bg} !important;
+            background-color: {bg_color} !important;
         }}
 
         /* Hide default sidebar */
