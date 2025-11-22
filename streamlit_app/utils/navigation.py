@@ -38,22 +38,51 @@ def create_top_navbar():
         text_color = '#262730'
         secondary_bg = '#F0F2F6'
 
-    # Custom CSS for top navbar
+    # Custom CSS for top navbar - COMPREHENSIVE THEME SUPPORT
     st.markdown(f"""
     <style>
+        /* FORCE THEME COLORS - Override all Streamlit defaults */
+        .stApp {{
+            background-color: {bg_color} !important;
+        }}
+
+        [data-testid="stAppViewContainer"] {{
+            background-color: {bg_color} !important;
+        }}
+
+        [data-testid="stHeader"] {{
+            background-color: {bg_color} !important;
+        }}
+
+        .main {{
+            background-color: {bg_color} !important;
+            color: {text_color} !important;
+        }}
+
+        .main .block-container {{
+            padding-top: 1rem;
+            max-width: 100%;
+            background-color: {bg_color} !important;
+        }}
+
+        /* All text elements */
+        .stMarkdown, .stText, p, h1, h2, h3, h4, h5, h6, span, div {{
+            color: {text_color} !important;
+        }}
+
+        /* Metrics and stats */
+        [data-testid="stMetricValue"], [data-testid="stMetricLabel"] {{
+            color: {text_color} !important;
+        }}
+
+        /* Cards and containers */
+        [data-testid="stVerticalBlock"], [data-testid="stHorizontalBlock"] {{
+            background-color: {secondary_bg} !important;
+        }}
+
         /* Hide default sidebar */
         [data-testid="stSidebar"] {{
             display: none;
-        }}
-
-        /* Apply theme to body */
-        .main {{
-            background-color: {bg_color};
-            color: {text_color};
-        }}
-
-        .stMarkdown, .stText {{
-            color: {text_color};
         }}
 
         /* Top navbar styles */
@@ -65,72 +94,23 @@ def create_top_navbar():
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-            min-height: 70px;
+            min-height: 80px;
         }}
 
         .navbar-left {{
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 1.5rem;
         }}
 
         .navbar-logo {{
-            height: 50px;
+            height: 70px;
             width: auto;
         }}
 
-        .navbar-brand {{
-            color: white;
-            font-size: 1.3rem;
-            font-weight: bold;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }}
-
-        .pulse-logo {{
-            font-size: 2rem;
-        }}
-
-        .navbar-right {{
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            color: white;
-        }}
-
-        .user-info {{
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            background: rgba(255,255,255,0.15);
-            border-radius: 25px;
-            font-weight: 500;
-        }}
-
-        .theme-toggle {{
-            cursor: pointer;
-            padding: 0.5rem;
-            background: rgba(255,255,255,0.15);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
-        }}
-
-        .theme-toggle:hover {{
-            background: rgba(255,255,255,0.25);
-            transform: scale(1.1);
-        }}
-
-        /* Adjust main content area */
-        .main .block-container {{
-            padding-top: 1rem;
-            max-width: 100%;
-            background-color: {bg_color};
+        .campus-pulse-logo {{
+            height: 65px !important;
+            width: auto !important;
         }}
 
         /* Mobile responsive */
@@ -144,7 +124,10 @@ def create_top_navbar():
                 flex-direction: column;
             }}
             .navbar-logo {{
-                height: 35px;
+                height: 45px;
+            }}
+            .campus-pulse-logo {{
+                height: 40px !important;
             }}
         }}
     </style>
@@ -156,42 +139,19 @@ def create_top_navbar():
     except:
         current_page = 'Home'
 
-    # Create navbar HTML with logos and branding
+    # Create navbar HTML with logos only (no text)
     navbar_html = '<div class="top-navbar">'
 
-    # Left side - Logos and branding
+    # Left side - Logos only (enlarged for readability)
     navbar_html += '<div class="navbar-left">'
 
     # UF Logo (loads from assets/images/uf_logo.png or falls back to external URL)
     navbar_html += get_uf_logo_html(css_class="navbar-logo", style="")
 
-    # Campus Pulse logo (loads from assets/images/ or uses SVG fallback)
-    campus_logo = get_campus_pulse_logo_html(css_class="navbar-logo", style="height: 45px; width: 45px; margin: 0 0.5rem;")
+    # Campus Pulse logo (larger, no text) - using external image
+    navbar_html += '<img src="https://i.imgur.com/QzDXZvZ.png" class="campus-pulse-logo" alt="Campus Pulse" />'
 
-    if campus_logo:
-        navbar_html += campus_logo
-    else:
-        # SVG fallback if no custom logo
-        navbar_html += '''
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60" class="navbar-logo" style="height: 45px; width: 45px; margin: 0 0.5rem;">
-          <defs>
-            <radialGradient id="heatGradient">
-              <stop offset="0%" style="stop-color:#FA4616;stop-opacity:1" />
-              <stop offset="50%" style="stop-color:#FFA500;stop-opacity:0.7" />
-              <stop offset="100%" style="stop-color:#0021A5;stop-opacity:0.3" />
-            </radialGradient>
-          </defs>
-          <circle cx="30" cy="30" r="25" fill="url(#heatGradient)"/>
-          <circle cx="30" cy="30" r="18" fill="none" stroke="white" stroke-width="2" opacity="0.6"/>
-          <circle cx="30" cy="30" r="8" fill="white"/>
-        </svg>
-        '''
-
-    navbar_html += '<div class="navbar-brand">'
-    navbar_html += '<span>Campus Pulse</span>'
     navbar_html += '</div>'
-    navbar_html += '</div>'
-
     navbar_html += '</div>'
     st.markdown(navbar_html, unsafe_allow_html=True)
 

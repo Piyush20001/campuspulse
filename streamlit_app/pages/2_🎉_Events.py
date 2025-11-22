@@ -178,7 +178,7 @@ with tab1:
                         'Academic': '#0021A5',
                         'Social': '#FA4616',
                         'Sports': '#28a745',
-                        'Cultural': '#9C27B0'
+                        'Cultural': '#008080'
                     }
                     color = category_colors.get(event['category'], '#6c757d')
 
@@ -391,7 +391,7 @@ with tab3:
                             'Academic': '#0021A5',
                             'Social': '#FA4616',
                             'Sports': '#28a745',
-                            'Cultural': '#9C27B0'
+                            'Cultural': '#008080'
                         }
                         color = category_colors.get(result['category'], '#6c757d')
 
