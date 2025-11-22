@@ -304,7 +304,7 @@ def create_top_navbar():
         }}
 
         .campus-pulse-logo {{
-            height: 72px !important;
+            height: 100px !important;
             width: auto !important;
             object-fit: contain !important;
         }}
@@ -575,7 +575,7 @@ def create_top_navbar():
     else:
         # SVG fallback if no custom logo
         navbar_html += '''
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" class="campus-pulse-logo" style="height: 72px; width: 72px;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" class="campus-pulse-logo" style="height: 100px; width: 100px;">
           <defs>
             <radialGradient id="heatGradient">
               <stop offset="0%" style="stop-color:#FA4616;stop-opacity:1" />
@@ -708,7 +708,7 @@ def create_top_navbar():
                 object-fit: contain;
             }}
             .campus-pulse-logo {{
-                height: 72px !important;
+                height: 100px !important;
                 width: auto !important;
                 object-fit: contain !important;
             }}
