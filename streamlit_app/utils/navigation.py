@@ -148,8 +148,28 @@ def create_top_navbar():
     # UF Logo (loads from assets/images/uf_logo.png or falls back to external URL)
     navbar_html += get_uf_logo_html(css_class="navbar-logo", style="")
 
-    # Campus Pulse logo (larger, no text) - using external image
-    navbar_html += '<img src="https://i.imgur.com/QzDXZvZ.png" class="campus-pulse-logo" alt="Campus Pulse" />'
+    # Campus Pulse logo (loads from assets/images/campus_pulse_logo.png or uses SVG fallback)
+    campus_logo = get_campus_pulse_logo_html(css_class="campus-pulse-logo", style="")
+
+    if campus_logo:
+        navbar_html += campus_logo
+    else:
+        # SVG fallback if no custom logo - larger thermal heatmap
+        navbar_html += '''
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" class="campus-pulse-logo" style="height: 65px; width: 65px;">
+          <defs>
+            <radialGradient id="heatGradient">
+              <stop offset="0%" style="stop-color:#FA4616;stop-opacity:1" />
+              <stop offset="50%" style="stop-color:#FFA500;stop-opacity:0.7" />
+              <stop offset="100%" style="stop-color:#0021A5;stop-opacity:0.3" />
+            </radialGradient>
+          </defs>
+          <circle cx="50" cy="50" r="45" fill="url(#heatGradient)"/>
+          <circle cx="50" cy="50" r="32" fill="none" stroke="white" stroke-width="3" opacity="0.6"/>
+          <circle cx="50" cy="50" r="20" fill="none" stroke="white" stroke-width="2" opacity="0.4"/>
+          <circle cx="50" cy="50" r="12" fill="white"/>
+        </svg>
+        '''
 
     navbar_html += '</div>'
     navbar_html += '</div>'
