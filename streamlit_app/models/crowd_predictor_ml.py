@@ -49,14 +49,17 @@ class MLCrowdPredictor:
         # Create a copy to avoid modifying original
         data = df.copy()
 
+        # Handle both old and new column names
+        location_col = 'category' if 'category' in data.columns else 'location_type'
+
         # Encode categorical variables
         if fit_encoders:
-            data['location_type_encoded'] = self.location_encoder.fit_transform(data['location_type'])
+            data['location_type_encoded'] = self.location_encoder.fit_transform(data[location_col])
             data['weather_encoded'] = self.weather_encoder.fit_transform(data['weather_condition'])
         else:
             # Handle unknown categories
             location_types = set(self.location_encoder.classes_)
-            data['location_type'] = data['location_type'].apply(
+            data[location_col] = data[location_col].apply(
                 lambda x: x if x in location_types else self.location_encoder.classes_[0]
             )
             weather_conditions = set(self.weather_encoder.classes_)
@@ -64,7 +67,7 @@ class MLCrowdPredictor:
                 lambda x: x if x in weather_conditions else self.weather_encoder.classes_[0]
             )
 
-            data['location_type_encoded'] = self.location_encoder.transform(data['location_type'])
+            data['location_type_encoded'] = self.location_encoder.transform(data[location_col])
             data['weather_encoded'] = self.weather_encoder.transform(data['weather_condition'])
 
         # Time-based features
@@ -87,6 +90,21 @@ class MLCrowdPredictor:
         # Weather-time interaction
         data['bad_weather'] = (data['weather_condition'] == 'rain').astype(int)
 
+        # Handle location_id (create if missing)
+        if 'location_id' not in data.columns:
+            # Create numeric location_id from zone_id or facility
+            if 'zone_id' in data.columns:
+                # Create a mapping for zone_id to numeric id
+                if fit_encoders:
+                    unique_zones = data['zone_id'].unique()
+                    self.zone_id_map = {zone: idx for idx, zone in enumerate(unique_zones)}
+                data['location_id'] = data['zone_id'].map(
+                    self.zone_id_map if hasattr(self, 'zone_id_map') else
+                    {z: i for i, z in enumerate(data['zone_id'].unique())}
+                )
+            else:
+                data['location_id'] = 0  # Default if no zone info
+
         # Select features for model
         feature_cols = [
             'location_id', 'location_type_encoded', 'capacity',
@@ -100,9 +118,11 @@ class MLCrowdPredictor:
         X = data[feature_cols]
         self.feature_names = feature_cols
 
-        # Target variable
+        # Target variable (handle multiple column names)
         if 'crowd_count' in data.columns:
             y = data['crowd_count']
+        elif 'count_in_area' in data.columns:
+            y = data['count_in_area']
         elif 'occupancy_rate' in data.columns:
             y = data['occupancy_rate']
         else:
@@ -304,7 +324,8 @@ class MLCrowdPredictor:
             'weather_encoder': self.weather_encoder,
             'feature_names': self.feature_names,
             'model_type': self.model_type,
-            'training_history': self.training_history
+            'training_history': self.training_history,
+            'zone_id_map': getattr(self, 'zone_id_map', {})
         }
 
         with open(filepath, 'wb') as f:
@@ -324,6 +345,7 @@ class MLCrowdPredictor:
         self.feature_names = model_data['feature_names']
         self.model_type = model_data['model_type']
         self.training_history = model_data.get('training_history', {})
+        self.zone_id_map = model_data.get('zone_id_map', {})
         self.is_trained = True
 
         print(f"Model loaded from {filepath}")
