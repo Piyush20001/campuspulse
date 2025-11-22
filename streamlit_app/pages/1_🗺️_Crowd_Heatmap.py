@@ -19,11 +19,18 @@ from models.anomaly_detector import AnomalyDetector
 from utils.map_utils import create_base_map, add_heatmap_layer, add_location_markers, get_crowd_color, get_crowd_label
 from utils.chart_utils import create_sparkline, create_forecast_chart, create_comparison_bar_chart
 from utils.config import UF_CENTER
+from utils.navigation import create_top_navbar
 
 st.set_page_config(page_title="Crowd Heatmap - Campus Pulse", page_icon="🗺️", layout="wide")
 
+# Set current page
+st.session_state.current_page = 'Crowd Map'
+
+# Top navigation
+create_top_navbar()
+
 # Initialize session state
-if 'simulator' not in st.session_state:
+if 'simulator' not in st.session_state or st.session_state.simulator is None:
     st.session_state.simulator = CrowdDataSimulator()
 if 'forecaster' not in st.session_state:
     st.session_state.forecaster = CrowdForecaster()
@@ -32,6 +39,8 @@ if 'anomaly_detector' not in st.session_state:
 if 'event_generator' not in st.session_state:
     st.session_state.event_generator = UFEventGenerator()
     st.session_state.events = st.session_state.event_generator.generate_semester_events(50)
+if 'last_refresh' not in st.session_state:
+    st.session_state.last_refresh = datetime.now()
 
 # Page header
 st.title("🗺️ Live Crowd Heatmap")
@@ -39,7 +48,6 @@ st.markdown("Real-time crowd density across UF campus with AI-powered forecasts"
 
 # Filters
 st.markdown("### 🔍 Filters")
-filter_cols = st.columns(6)
 
 categories = ["ALL", "GYMS", "LIBRARIES", "DINING", "ACADEMIC", "HOUSING", "STUDY SPOTS", "OUTDOORS"]
 
@@ -57,6 +65,9 @@ for i, category in enumerate(categories):
         ):
             st.session_state.selected_filter = category
             selected_filter = category
+            # Clear cache when filter changes
+            if 'cached_crowd_data' in st.session_state:
+                del st.session_state['cached_crowd_data']
 
 st.markdown("---")
 
@@ -66,46 +77,66 @@ if selected_filter == "ALL":
 else:
     filtered_locations = get_locations_by_category(selected_filter)
 
-# Get current crowd data for filtered locations
-crowd_data = []
-for location in filtered_locations:
-    crowd = st.session_state.simulator.get_current_crowd(location)
-    crowd['lat'] = location['lat']
-    crowd['lon'] = location['lon']
-    crowd_data.append(crowd)
+# Cache key that includes the filter
+cache_key = f'crowd_data_{selected_filter}'
 
-# Generate forecasts
-forecasts = []
-for location in filtered_locations:
-    # Generate historical data
-    hist_data = st.session_state.simulator.generate_historical_data(location, days=1, interval_minutes=10)
+# Get or generate crowd data (only regenerate on explicit refresh or new filter)
+if cache_key not in st.session_state or 'force_refresh' in st.session_state:
+    crowd_data = []
+    for location in filtered_locations:
+        crowd = st.session_state.simulator.get_current_crowd(location)
+        crowd['lat'] = location['lat']
+        crowd['lon'] = location['lon']
+        crowd_data.append(crowd)
+    st.session_state[cache_key] = crowd_data
+    st.session_state['cached_crowd_data'] = crowd_data
+    if 'force_refresh' in st.session_state:
+        del st.session_state['force_refresh']
+else:
+    crowd_data = st.session_state[cache_key]
 
-    # Get forecast
-    recent_levels = hist_data['crowd_level'].values[-12:]  # Last 2 hours
-    predictions = st.session_state.forecaster.predict(recent_levels)
-    label, emoji = st.session_state.forecaster.get_forecast_label(predictions)
+# Generate forecasts (cached similarly)
+forecast_cache_key = f'forecasts_{selected_filter}'
+if forecast_cache_key not in st.session_state or 'force_refresh' in st.session_state:
+    forecasts = []
+    for location in filtered_locations:
+        # Generate historical data
+        hist_data = st.session_state.simulator.generate_historical_data(location, days=1, interval_minutes=10)
 
-    forecasts.append({
-        'location_id': location['id'],
-        'predictions': predictions,
-        'label': label,
-        'emoji': emoji
-    })
+        # Get forecast
+        recent_levels = hist_data['crowd_level'].values[-12:]  # Last 2 hours
+        predictions = st.session_state.forecaster.predict(recent_levels)
+        label, emoji = st.session_state.forecaster.get_forecast_label(predictions)
 
-# Check for anomalies
-anomalies = []
-for location in filtered_locations:
-    hist_data = st.session_state.simulator.generate_historical_data(location, days=1, interval_minutes=10)
-    recent_levels = hist_data['crowd_level'].values[-12:]
-
-    anomaly_result = st.session_state.anomaly_detector.detect(recent_levels)
-
-    if anomaly_result['is_anomaly']:
-        anomalies.append({
-            'location_name': location['name'],
-            'severity': anomaly_result['severity'],
-            'explanation': st.session_state.anomaly_detector.get_anomaly_explanation(recent_levels, location['name'])
+        forecasts.append({
+            'location_id': location['id'],
+            'predictions': predictions,
+            'label': label,
+            'emoji': emoji
         })
+    st.session_state[forecast_cache_key] = forecasts
+else:
+    forecasts = st.session_state[forecast_cache_key]
+
+# Check for anomalies (cached)
+anomaly_cache_key = f'anomalies_{selected_filter}'
+if anomaly_cache_key not in st.session_state or 'force_refresh' in st.session_state:
+    anomalies = []
+    for location in filtered_locations:
+        hist_data = st.session_state.simulator.generate_historical_data(location, days=1, interval_minutes=10)
+        recent_levels = hist_data['crowd_level'].values[-12:]
+
+        anomaly_result = st.session_state.anomaly_detector.detect(recent_levels)
+
+        if anomaly_result['is_anomaly']:
+            anomalies.append({
+                'location_name': location['name'],
+                'severity': anomaly_result['severity'],
+                'explanation': st.session_state.anomaly_detector.get_anomaly_explanation(recent_levels, location['name'])
+            })
+    st.session_state[anomaly_cache_key] = anomalies
+else:
+    anomalies = st.session_state[anomaly_cache_key]
 
 # Show anomaly alerts if any
 if anomalies:
@@ -127,21 +158,38 @@ map_col, table_col = st.columns([2, 1])
 with map_col:
     st.markdown("### 🌍 Interactive Map")
 
-    # Group events by location
-    events_by_location = {}
-    for event in st.session_state.events:
-        if event['start_time'] > datetime.now():
-            if event['location_id'] not in events_by_location:
-                events_by_location[event['location_id']] = []
-            events_by_location[event['location_id']].append(event)
+    # Group events by location (cached)
+    events_cache_key = f'events_by_location_{selected_filter}'
+    if events_cache_key not in st.session_state:
+        events_by_location = {}
+        for event in st.session_state.events:
+            if event['start_time'] > datetime.now():
+                if event['location_id'] not in events_by_location:
+                    events_by_location[event['location_id']] = []
+                events_by_location[event['location_id']].append(event)
+        st.session_state[events_cache_key] = events_by_location
+    else:
+        events_by_location = st.session_state[events_cache_key]
 
-    # Create map
-    m = create_base_map(UF_CENTER, zoom_start=15)
-    m = add_heatmap_layer(m, crowd_data)
-    m = add_location_markers(m, crowd_data, forecasts, events_by_location)
+    # Create map (only when data changes)
+    map_cache_key = f'map_object_{selected_filter}'
+    if map_cache_key not in st.session_state or 'force_refresh' in st.session_state:
+        m = create_base_map(UF_CENTER, zoom_start=15)
+        m = add_heatmap_layer(m, crowd_data)
+        m = add_location_markers(m, crowd_data, forecasts, events_by_location)
+        st.session_state[map_cache_key] = m
+    else:
+        m = st.session_state[map_cache_key]
 
-    # Display map (key prevents constant refreshing)
-    map_data = st_folium(m, width=None, height=500, key="crowd_heatmap_static")
+    # Display map with minimal re-rendering
+    # Don't capture returned data to prevent updates
+    st_folium(
+        m,
+        width=None,
+        height=500,
+        key=f"folium_map_{selected_filter}",
+        returned_objects=[]  # Critical: prevents constant re-rendering!
+    )
 
 with table_col:
     st.markdown("### 📊 Current Levels")
@@ -174,7 +222,8 @@ st.markdown("### 📈 Detailed Location View")
 
 selected_location_name = st.selectbox(
     "Select a location for detailed analysis:",
-    [loc['name'] for loc in filtered_locations]
+    [loc['name'] for loc in filtered_locations],
+    key="location_detail_select"
 )
 
 # Find selected location
@@ -238,17 +287,23 @@ if selected_location:
                 st.write(f"**Time**: {event['start_time'].strftime('%B %d, %Y at %I:%M %p')} - {event['end_time'].strftime('%I:%M %p')}")
                 st.write(f"**Organizer**: {event['organizer']}")
 
-# Footer with refresh
+# Footer with manual refresh only
 st.markdown("---")
 col1, col2, col3 = st.columns([1, 1, 1])
 
 with col2:
-    if st.button("🔄 Refresh Data", use_container_width=True, type="primary"):
+    if st.button("🔄 Refresh Data", use_container_width=True, type="primary", key="manual_refresh_btn"):
+        st.session_state.force_refresh = True
         st.session_state.simulator = CrowdDataSimulator()
+        st.session_state.last_refresh = datetime.now()
+        # Clear all caches
+        keys_to_delete = [k for k in list(st.session_state.keys()) if any(x in k for x in ['crowd_data_', 'forecasts_', 'anomalies_', 'map_object_', 'events_by_location_'])]
+        for key in keys_to_delete:
+            del st.session_state[key]
         st.rerun()
 
 st.markdown("""
 <div style="text-align: center; color: #666; padding: 1rem 0;">
-    <p style="font-size: 0.9rem;">Last updated: {} | Auto-refresh every 30 seconds</p>
+    <p style="font-size: 0.9rem;">Last updated: {} | Click "Refresh Data" to update</p>
 </div>
-""".format(datetime.now().strftime('%I:%M:%S %p')), unsafe_allow_html=True)
+""".format(st.session_state.last_refresh.strftime('%I:%M:%S %p')), unsafe_allow_html=True)
