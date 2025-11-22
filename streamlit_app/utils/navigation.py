@@ -40,7 +40,7 @@ def create_top_navbar():
         text_color = '#262730'
         secondary_bg = '#F0F2F6'
         card_bg = '#FAFAFA'
-        navbar_bg = '#FFFFFF'
+        navbar_bg = 'linear-gradient(90deg, #0021A5 0%, #FA4616 100%)'
 
     # Custom CSS for top navbar - MODERN 2025 AESTHETIC
     st.markdown(f"""
@@ -130,10 +130,10 @@ def create_top_navbar():
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
             min-height: 95px;
             height: auto;
-            border-bottom: 1px solid rgba(0,0,0,0.08);
+            border-bottom: 1px solid rgba(255,255,255,0.15);
             animation: slideDown 0.5s ease-out;
             position: relative;
             z-index: 1000;
@@ -188,14 +188,14 @@ def create_top_navbar():
             width: auto;
             max-width: none;
             object-fit: contain;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.4));
             transition: all 0.3s ease;
             animation: fadeIn 0.5s ease-out;
         }}
 
         .navbar-logo:hover {{
             transform: scale(1.05);
-            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5));
         }}
 
         .campus-pulse-logo {{
@@ -203,14 +203,14 @@ def create_top_navbar():
             width: auto !important;
             max-width: none !important;
             object-fit: contain !important;
-            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.3));
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
             transition: all 0.3s ease;
             animation: scaleIn 0.5s ease-out 0.1s both;
         }}
 
         .campus-pulse-logo:hover {{
             transform: scale(1.05);
-            filter: drop-shadow(0 6px 12px rgba(0,0,0,0.4));
+            filter: drop-shadow(0 6px 12px rgba(0,0,0,0.5));
         }}
 
         /* Modern button styling with animations */
