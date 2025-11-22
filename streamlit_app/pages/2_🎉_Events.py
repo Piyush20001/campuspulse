@@ -164,17 +164,20 @@ with tab1:
                     # Add border highlight for user-created events
                     border_style = f"border: 2px solid {color};" if is_user_created else ""
 
-                    st.markdown(f"""
-                    <div style="background: white; padding: 1rem; border-radius: 10px; border-left: 5px solid {color}; {border_style} margin-bottom: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                        <h3 style="margin: 0; color: #333;">{event['title']}</h3>
-                        <p style="margin: 0.5rem 0; color: #666;">{event['description']}</p>
-                        <div style="margin-top: 0.5rem;">
-                            {user_badge}
-                            <span style="background: {color}; color: white; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.85rem; margin-right: 0.5rem;">{event['category']}</span>
-                            {' '.join([f'<span style="background: #f0f0f0; color: #333; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.85rem; margin-right: 0.5rem;">{tag}</span>' for tag in event.get('tags', [])[:3]])}
-                        </div>
-                    </div>
-                    """, unsafe_allow_html=True)
+                    # Build tags HTML
+                    tags_html = ' '.join([f'<span style="background: #f0f0f0; color: #333; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.85rem; margin-right: 0.5rem;">{tag}</span>' for tag in event.get('tags', [])[:3]])
+
+                    # Build event card HTML (no leading whitespace to avoid markdown code block interpretation)
+                    event_html = f"""<div style="background: white; padding: 1rem; border-radius: 10px; border-left: 5px solid {color}; {border_style} margin-bottom: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+<h3 style="margin: 0; color: #333;">{event['title']}</h3>
+<p style="margin: 0.5rem 0; color: #666;">{event['description']}</p>
+<div style="margin-top: 0.5rem;">
+{user_badge}<span style="background: {color}; color: white; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.85rem; margin-right: 0.5rem;">{event['category']}</span>
+{tags_html}
+</div>
+</div>"""
+
+                    st.markdown(event_html, unsafe_allow_html=True)
 
                 with col2:
                     location = get_location_by_id(event['location_id'])
