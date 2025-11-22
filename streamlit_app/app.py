@@ -10,10 +10,10 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from data.simulator import CrowdDataSimulator
-from data.events_data import EventGenerator
+from data.uf_events_real import UFEventGenerator
 from data.locations import UF_LOCATIONS
 from models.lstm_forecaster import CrowdForecaster
-from models.event_classifier import EventCategorizer
+from models.event_classifier_improved import ImprovedEventCategorizer
 from models.anomaly_detector import AnomalyDetector
 
 # Page configuration
@@ -62,14 +62,14 @@ def init_session_state():
         st.session_state.simulator = CrowdDataSimulator()
 
     if 'event_generator' not in st.session_state:
-        st.session_state.event_generator = EventGenerator()
-        st.session_state.events = st.session_state.event_generator.generate_random_events(30)
+        st.session_state.event_generator = UFEventGenerator()
+        st.session_state.events = st.session_state.event_generator.generate_semester_events(50)
 
     if 'forecaster' not in st.session_state:
         st.session_state.forecaster = CrowdForecaster()
 
     if 'event_classifier' not in st.session_state:
-        st.session_state.event_classifier = EventCategorizer()
+        st.session_state.event_classifier = ImprovedEventCategorizer()
 
     if 'anomaly_detector' not in st.session_state:
         st.session_state.anomaly_detector = AnomalyDetector()

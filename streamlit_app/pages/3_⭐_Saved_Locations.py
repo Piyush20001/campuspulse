@@ -12,7 +12,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from data.simulator import CrowdDataSimulator
 from data.locations import UF_LOCATIONS, get_location_by_id
-from data.events_data import EventGenerator
+from data.uf_events_real import UFEventGenerator
 from models.lstm_forecaster import CrowdForecaster
 from models.anomaly_detector import AnomalyDetector
 from utils.map_utils import get_crowd_color, get_crowd_label
@@ -28,8 +28,8 @@ if 'forecaster' not in st.session_state:
 if 'anomaly_detector' not in st.session_state:
     st.session_state.anomaly_detector = AnomalyDetector()
 if 'event_generator' not in st.session_state:
-    st.session_state.event_generator = EventGenerator()
-    st.session_state.events = st.session_state.event_generator.generate_random_events(30)
+    st.session_state.event_generator = UFEventGenerator()
+    st.session_state.events = st.session_state.event_generator.generate_semester_events(50)
 if 'saved_locations' not in st.session_state:
     st.session_state.saved_locations = []
 

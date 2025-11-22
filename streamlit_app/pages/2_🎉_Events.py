@@ -11,9 +11,9 @@ from datetime import datetime, timedelta
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from data.simulator import CrowdDataSimulator
-from data.events_data import EventGenerator, TRAINING_EVENTS
+from data.uf_events_real import UFEventGenerator, TRAINING_EVENTS
 from data.locations import UF_LOCATIONS, get_location_by_id
-from models.event_classifier import EventCategorizer
+from models.event_classifier_improved import ImprovedEventCategorizer
 from models.lstm_forecaster import CrowdForecaster
 from utils.chart_utils import create_category_distribution
 
@@ -23,10 +23,10 @@ st.set_page_config(page_title="Events - Campus Pulse", page_icon="🎉", layout=
 if 'simulator' not in st.session_state:
     st.session_state.simulator = CrowdDataSimulator()
 if 'event_generator' not in st.session_state:
-    st.session_state.event_generator = EventGenerator()
-    st.session_state.events = st.session_state.event_generator.generate_random_events(30)
+    st.session_state.event_generator = UFEventGenerator()
+    st.session_state.events = st.session_state.event_generator.generate_semester_events(50)
 if 'event_classifier' not in st.session_state:
-    st.session_state.event_classifier = EventCategorizer()
+    st.session_state.event_classifier = ImprovedEventCategorizer()
 if 'forecaster' not in st.session_state:
     st.session_state.forecaster = CrowdForecaster()
 if 'user_created_events' not in st.session_state:
@@ -290,20 +290,31 @@ with tab3:
     st.markdown("""
     #### How It Works
 
-    The Campus Pulse event classifier uses a **Transformer-based NLP model** (DistilBERT) to automatically
-    categorize events into one of four categories:
+    The Campus Pulse event classifier uses an **improved Transformer-based NLP model** (DistilBERT) with
+    advanced fine-tuning to categorize events into one of four categories:
 
     - **Academic**: Workshops, lectures, research presentations, career fairs
     - **Social**: Parties, entertainment, social gatherings, movie nights
     - **Sports**: Games, fitness activities, competitions, recreation
     - **Cultural**: Festivals, performances, international events, heritage celebrations
 
-    #### Features
+    #### Advanced Features
 
-    1. **Text Analysis**: Analyzes both event title and description
-    2. **Confidence Scores**: Provides probability distribution across all categories
-    3. **Tag Generation**: Automatically suggests relevant tags based on content
-    4. **Fast Processing**: Real-time categorization in under a second
+    1. **Fine-Tuned Architecture**: Multi-layer classification head with batch normalization
+    2. **Smart Training**: Uses validation split, learning rate scheduling, and early stopping
+    3. **Transfer Learning**: Freezes encoder initially, then fine-tunes for optimal performance
+    4. **Confidence Calibration**: Temperature scaling for better confidence estimates
+    5. **Context-Aware**: Uses [SEP] token to distinguish title from description
+    6. **Tag Extraction**: Intelligent tag suggestion based on content and context
+    7. **Trained on 100+ Real UF Events**: Model learns from actual campus event patterns
+
+    #### Training Techniques
+
+    - **Two-Phase Training**: Classifier head first, then full model fine-tuning
+    - **Gradient Clipping**: Prevents exploding gradients
+    - **Learning Rate Warmup**: Gradual learning rate increase for stability
+    - **Early Stopping**: Prevents overfitting with patience-based stopping
+    - **Stratified Split**: Ensures balanced class distribution in train/val sets
     """)
 
     st.markdown("---")
@@ -367,13 +378,46 @@ with tab3:
         **Fallback**: Rule-based classifier when transformer is unavailable
         """)
 
-        if st.button("🔄 Train Classifier on Sample Data"):
-            with st.spinner("Training classifier... This may take a minute."):
+        col_train1, col_train2 = st.columns(2)
+
+        with col_train1:
+            st.metric("Training Examples", len(TRAINING_EVENTS))
+            st.metric("Categories", 4)
+
+        with col_train2:
+            st.metric("Model", "DistilBERT")
+            st.metric("Parameters", "~66M")
+
+        if st.button("🚀 Train Improved Classifier", type="primary", use_container_width=True):
+            with st.spinner("Training improved classifier with advanced techniques... This will take 2-3 minutes."):
                 try:
-                    st.session_state.event_classifier.train(TRAINING_EVENTS, epochs=5)
-                    st.success("✅ Classifier trained successfully!")
+                    progress_bar = st.progress(0)
+                    status_text = st.empty()
+
+                    status_text.text("Initializing model...")
+                    progress_bar.progress(10)
+
+                    # Train with improved method
+                    st.session_state.event_classifier.train(
+                        TRAINING_EVENTS,
+                        epochs=15,
+                        lr=2e-5,
+                        batch_size=16,
+                        validation_split=0.15
+                    )
+
+                    progress_bar.progress(100)
+                    status_text.text("Training complete!")
+
+                    st.success("✅ Improved classifier trained successfully with advanced fine-tuning!")
+
+                    # Show training results
+                    st.balloons()
+
                 except Exception as e:
-                    st.info(f"Using rule-based classifier (Transformer not available)")
+                    st.warning(f"⚠️ Transformer training unavailable: {str(e)}")
+                    st.info("💡 The app will use an enhanced rule-based classifier instead, which still works great!")
+                    st.info("To enable full transformer training, ensure PyTorch and Transformers are installed correctly.")
 
 # Footer
 st.markdown("---")
