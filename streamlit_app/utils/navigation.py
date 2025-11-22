@@ -33,14 +33,20 @@ def create_top_navbar():
         text_color = '#FFFFFF'
         secondary_bg = '#1a2332'
         card_bg = '#162130'
-        navbar_bg = '#0a1929'
+        navbar_bg = '#030712'  # gray-950
+        navbar_border = '#1f2937'  # gray-800
+        button_text = '#e5e7eb'  # gray-200
+        button_hover_bg = '#1f2937'  # gray-800
     else:
         bg_gradient = 'linear-gradient(90deg, #0021A5 0%, #FA4616 100%)'
         bg_color = '#FFFFFF'
         text_color = '#262730'
         secondary_bg = '#F0F2F6'
         card_bg = '#FAFAFA'
-        navbar_bg = 'linear-gradient(90deg, #0021A5 0%, #FA4616 100%)'
+        navbar_bg = '#030712'  # gray-950 (dark navbar in light mode too)
+        navbar_border = '#1f2937'  # gray-800
+        button_text = '#e5e7eb'  # gray-200
+        button_hover_bg = '#1f2937'  # gray-800
 
     # Custom CSS for top navbar - MODERN 2025 AESTHETIC
     st.markdown(f"""
@@ -122,153 +128,105 @@ def create_top_navbar():
             display: none;
         }}
 
-        /* Top navbar styles - Clean and compact */
+        /* Top navbar styles - Match React design */
         .top-navbar {{
             background: {navbar_bg};
-            padding: 1.2rem 2.5rem;
+            padding: 0 2.5rem;
             margin: -6rem -4rem 2rem -4rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-            min-height: 95px;
-            height: auto;
-            border-bottom: 1px solid rgba(255,255,255,0.15);
-            animation: slideDown 0.5s ease-out;
-            position: relative;
-            z-index: 1000;
-        }}
-
-        @keyframes slideDown {{
-            from {{
-                transform: translateY(-100%);
-                opacity: 0;
-            }}
-            to {{
-                transform: translateY(0);
-                opacity: 1;
-            }}
-        }}
-
-        @keyframes fadeIn {{
-            from {{ opacity: 0; transform: translateY(10px); }}
-            to {{ opacity: 1; transform: translateY(0); }}
-        }}
-
-        @keyframes scaleIn {{
-            from {{ transform: scale(0.95); opacity: 0; }}
-            to {{ transform: scale(1); opacity: 1; }}
+            height: 80px;
+            border-bottom: 1px solid {navbar_border};
+            position: sticky;
+            top: 0;
+            z-index: 50;
         }}
 
         .navbar-left {{
             display: flex;
             align-items: center;
-            gap: 2rem;
             flex-shrink: 0;
-            animation: fadeIn 0.7s ease-out 0.2s both;
         }}
 
         .navbar-center {{
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex: 1;
-            animation: scaleIn 0.6s ease-out 0.1s both;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            cursor: pointer;
         }}
 
         .navbar-right {{
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 0.5rem;
             flex-shrink: 0;
         }}
 
         .navbar-logo {{
-            height: 50px;
+            height: 80px;
             width: auto;
-            max-width: none;
             object-fit: contain;
-            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.4));
-            transition: all 0.3s ease;
-            animation: fadeIn 0.5s ease-out;
-        }}
-
-        .navbar-logo:hover {{
-            transform: scale(1.05);
-            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5));
         }}
 
         .campus-pulse-logo {{
-            height: 55px !important;
+            height: 72px !important;
             width: auto !important;
-            max-width: none !important;
             object-fit: contain !important;
-            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
-            transition: all 0.3s ease;
-            animation: scaleIn 0.5s ease-out 0.1s both;
         }}
 
-        .campus-pulse-logo:hover {{
-            transform: scale(1.05);
-            filter: drop-shadow(0 6px 12px rgba(0,0,0,0.5));
-        }}
-
-        /* Modern button styling with animations */
+        /* Button styling - Match React ghost variant */
         .stButton > button {{
             font-family: 'Inter', sans-serif !important;
-            font-weight: 600 !important;
-            border-radius: 8px !important;
-            padding: 0.6rem 1.2rem !important;
+            font-weight: 500 !important;
+            border-radius: 6px !important;
+            padding: 0.5rem 1rem !important;
             border: none !important;
-            transition: all 0.3s ease !important;
-            font-size: 0.85rem !important;
-            line-height: 1.4 !important;
-            height: 40px !important;
-            display: flex !important;
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            font-size: 0.875rem !important;
+            line-height: 1.25rem !important;
+            height: 36px !important;
+            display: inline-flex !important;
             align-items: center !important;
             justify-content: center !important;
+            gap: 0.5rem !important;
             white-space: nowrap !important;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
-            position: relative !important;
-            overflow: hidden !important;
             text-transform: uppercase !important;
-            letter-spacing: 0.5px !important;
+            letter-spacing: 0.025em !important;
+            background: transparent !important;
+            color: {button_text} !important;
+            box-shadow: none !important;
         }}
 
         .stButton > button:hover {{
-            transform: translateY(-2px) !important;
-            box-shadow: 0 6px 16px rgba(0,0,0,0.25) !important;
+            background-color: {button_hover_bg} !important;
+            color: white !important;
         }}
 
         .stButton > button:active {{
-            transform: translateY(0px) !important;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2) !important;
+            background-color: {button_hover_bg} !important;
         }}
 
-        /* Primary buttons */
+        /* Primary buttons - Sign In */
         .stButton > button[kind="primary"] {{
-            background: linear-gradient(135deg, #0021A5 0%, #FA4616 100%) !important;
+            background-color: {button_hover_bg} !important;
             color: white !important;
-            box-shadow: 0 4px 15px rgba(0,33,165,0.3) !important;
         }}
 
         .stButton > button[kind="primary"]:hover {{
-            background: linear-gradient(135deg, #001a85 0%, #e63f12 100%) !important;
-            box-shadow: 0 8px 30px rgba(0,33,165,0.4) !important;
+            background-color: #374151 !important;
         }}
 
-        /* Secondary buttons */
+        /* Secondary buttons - Ghost style */
         .stButton > button[kind="secondary"] {{
-            background-color: {card_bg} !important;
-            color: {text_color} !important;
-            border: 1.5px solid rgba(128,128,128,0.3) !important;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+            background: transparent !important;
+            color: {button_text} !important;
         }}
 
         .stButton > button[kind="secondary"]:hover {{
-            border-color: rgba(0,33,165,0.5) !important;
-            background-color: {secondary_bg} !important;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.2) !important;
+            background-color: {button_hover_bg} !important;
+            color: white !important;
         }}
 
         /* Modern input fields */
@@ -372,21 +330,29 @@ def create_top_navbar():
         /* Mobile responsive */
         @media (max-width: 768px) {{
             .top-navbar {{
-                flex-direction: column;
-                gap: 0.8rem;
-                padding: 0.8rem;
+                padding: 0 1rem;
                 height: auto;
-                min-height: auto;
+                min-height: 60px;
             }}
-            .navbar-left, .navbar-center, .navbar-right {{
-                width: 100%;
-                justify-content: center;
+            .navbar-left {{
+                position: static;
+            }}
+            .navbar-center {{
+                position: static;
+                transform: none;
+                left: auto;
+                top: auto;
             }}
             .navbar-logo {{
-                height: 40px;
+                height: 50px;
             }}
             .campus-pulse-logo {{
-                height: 45px !important;
+                height: 50px !important;
+            }}
+            .stButton > button {{
+                font-size: 0.75rem !important;
+                padding: 0.4rem 0.8rem !important;
+                height: 32px !important;
             }}
             h1 {{ font-size: 1.75rem !important; }}
             h2 {{ font-size: 1.5rem !important; }}
@@ -418,7 +384,7 @@ def create_top_navbar():
     else:
         # SVG fallback if no custom logo
         navbar_html += '''
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" class="campus-pulse-logo" style="height: 55px; width: 55px;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" class="campus-pulse-logo" style="height: 72px; width: 72px;">
           <defs>
             <radialGradient id="heatGradient">
               <stop offset="0%" style="stop-color:#FA4616;stop-opacity:1" />
