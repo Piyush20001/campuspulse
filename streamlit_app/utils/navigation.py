@@ -168,6 +168,21 @@ def create_top_navbar():
             animation: fadeIn 0.7s ease-out 0.2s both;
         }}
 
+        .navbar-center {{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            animation: scaleIn 0.6s ease-out 0.1s both;
+        }}
+
+        .navbar-right {{
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-shrink: 0;
+        }}
+
         .navbar-logo {{
             height: 75px;
             width: auto;
@@ -184,18 +199,18 @@ def create_top_navbar():
         }}
 
         .campus-pulse-logo {{
-            height: 70px !important;
+            height: 80px !important;
             width: auto !important;
             max-width: none !important;
             object-fit: contain !important;
-            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+            filter: drop-shadow(0 6px 12px rgba(0,0,0,0.4));
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             animation: scaleIn 0.6s ease-out 0.1s both;
         }}
 
         .campus-pulse-logo:hover {{
-            transform: scale(1.08) rotate(-2deg);
-            filter: drop-shadow(0 8px 16px rgba(0,0,0,0.4));
+            transform: scale(1.1) rotate(-2deg);
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));
         }}
 
         /* Modern button styling with animations */
@@ -378,15 +393,15 @@ def create_top_navbar():
                 gap: 1rem;
                 padding: 1rem;
             }}
-            .navbar-left {{
-                flex-direction: column;
-                gap: 1rem;
+            .navbar-left, .navbar-center, .navbar-right {{
+                width: 100%;
+                justify-content: center;
             }}
             .navbar-logo {{
                 height: 50px;
             }}
             .campus-pulse-logo {{
-                height: 45px !important;
+                height: 60px !important;
             }}
             h1 {{ font-size: 1.75rem !important; }}
             h2 {{ font-size: 1.5rem !important; }}
@@ -401,16 +416,16 @@ def create_top_navbar():
     except:
         current_page = 'Home'
 
-    # Create navbar HTML with logos only (no text)
+    # Create navbar HTML with centered Campus Pulse logo
     navbar_html = '<div class="top-navbar">'
 
-    # Left side - Logos only (enlarged for readability)
+    # Left side - UF Logo
     navbar_html += '<div class="navbar-left">'
-
-    # UF Logo (loads from assets/images/uf_logo.png or falls back to external URL)
     navbar_html += get_uf_logo_html(css_class="navbar-logo", style="")
+    navbar_html += '</div>'
 
-    # Campus Pulse logo (loads from assets/images/campus_pulse_logo.png or uses SVG fallback)
+    # Center - Campus Pulse logo (enlarged for readability)
+    navbar_html += '<div class="navbar-center">'
     campus_logo = get_campus_pulse_logo_html(css_class="campus-pulse-logo", style="")
 
     if campus_logo:
@@ -418,7 +433,7 @@ def create_top_navbar():
     else:
         # SVG fallback if no custom logo - larger thermal heatmap
         navbar_html += '''
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" class="campus-pulse-logo" style="height: 65px; width: 65px;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" class="campus-pulse-logo" style="height: 80px; width: 80px;">
           <defs>
             <radialGradient id="heatGradient">
               <stop offset="0%" style="stop-color:#FA4616;stop-opacity:1" />
@@ -432,8 +447,11 @@ def create_top_navbar():
           <circle cx="50" cy="50" r="12" fill="white"/>
         </svg>
         '''
-
     navbar_html += '</div>'
+
+    # Right side - Empty for now (could add user quick actions later)
+    navbar_html += '<div class="navbar-right"></div>'
+
     navbar_html += '</div>'
     st.markdown(navbar_html, unsafe_allow_html=True)
 
