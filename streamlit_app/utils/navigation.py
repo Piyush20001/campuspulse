@@ -161,32 +161,15 @@ def create_top_navbar():
         .top-navbar {{
             background: {navbar_bg};
             padding: 0 2.5rem;
-            margin: -6rem -4rem 0 -4rem;
+            margin: -6rem -4rem 2rem -4rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
             height: 80px;
             border-bottom: 1px solid {navbar_border};
-            position: relative;
+            position: sticky;
+            top: 0;
             z-index: 50;
-        }}
-
-        /* Pull Streamlit button row into navbar */
-        .main .block-container > div:first-child {{
-            margin-top: -80px !important;
-            padding-top: 20px !important;
-            padding-right: 2.5rem !important;
-            position: relative !important;
-            z-index: 100 !important;
-            pointer-events: none !important;
-        }}
-
-        .main .block-container > div:first-child [data-testid="column"] {{
-            pointer-events: auto !important;
-        }}
-
-        .main .block-container > div:first-child ~ * {{
-            margin-top: 2rem !important;
         }}
 
         .navbar-left {{
@@ -208,6 +191,87 @@ def create_top_navbar():
             align-items: center;
             gap: 0.5rem;
             flex-shrink: 0;
+        }}
+
+        /* Navigation buttons - matching React ghost variant */
+        .nav-button {{
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            font-size: 0.875rem;
+            color: {button_text};
+            background-color: transparent;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.25rem;
+            white-space: nowrap;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }}
+
+        .nav-button:hover {{
+            background-color: {button_hover_bg};
+            color: white;
+        }}
+
+        /* Dropdown container */
+        .dropdown {{
+            position: relative;
+            display: inline-block;
+        }}
+
+        .dropdown-toggle {{
+            text-transform: none !important;
+        }}
+
+        /* Dropdown menu */
+        .dropdown-menu {{
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%;
+            margin-top: 0.5rem;
+            background-color: #111827;
+            border: 1px solid {navbar_border};
+            border-radius: 8px;
+            min-width: 224px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            padding: 0.5rem 0;
+        }}
+
+        .dropdown-menu.show {{
+            display: block;
+        }}
+
+        /* Dropdown items */
+        .dropdown-item {{
+            display: block;
+            width: 100%;
+            padding: 0.5rem 1rem;
+            color: {button_text};
+            text-decoration: none;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.875rem;
+            transition: background-color 0.15s;
+            cursor: pointer;
+        }}
+
+        .dropdown-item:hover {{
+            background-color: {button_hover_bg};
+            color: white;
+        }}
+
+        /* Dropdown divider */
+        .dropdown-divider {{
+            height: 1px;
+            background-color: #374151;
+            margin: 0.5rem 0;
         }}
 
         .navbar-logo {{
@@ -471,7 +535,7 @@ def create_top_navbar():
     except:
         current_page = 'Home'
 
-    # Create navbar HTML with centered Campus Pulse logo
+    # Create navbar HTML matching React design exactly
     navbar_html = '<div class="top-navbar">'
 
     # Left side - UF Logo
@@ -479,7 +543,7 @@ def create_top_navbar():
     navbar_html += get_uf_logo_html(css_class="navbar-logo", style="")
     navbar_html += '</div>'
 
-    # Center - Campus Pulse logo (enlarged for readability)
+    # Center - Campus Pulse logo
     navbar_html += '<div class="navbar-center">'
     campus_logo = get_campus_pulse_logo_html(css_class="campus-pulse-logo", style="")
 
@@ -503,33 +567,74 @@ def create_top_navbar():
         </svg>
         '''
     navbar_html += '</div>'  # Close navbar-center
+
+    # Right side - Navigation buttons
+    navbar_html += '<div class="navbar-right">'
+
+    # Username dropdown button
+    navbar_html += '''
+    <div class="dropdown">
+        <button class="nav-button dropdown-toggle" onclick="toggleDropdown()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            USERNAME
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+        </button>
+        <div class="dropdown-menu" id="userDropdown">
+            <a class="dropdown-item" href="?page=profile">Profile</a>
+            <a class="dropdown-item" href="?page=saved">Saved Locations</a>
+            <a class="dropdown-item" href="?page=interested">My Interested Events</a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="?page=organizer">Organizer Dashboard</a>
+            <a class="dropdown-item" href="?page=create">Create Event</a>
+            <a class="dropdown-item" href="?page=manage">Manage My Events</a>
+            <a class="dropdown-item" href="?page=analytics">Event Analytics</a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="?page=settings">Settings</a>
+            <a class="dropdown-item" href="?page=help">Help / About</a>
+            <a class="dropdown-item" href="?page=feedback">Give Feedback</a>
+            <a class="dropdown-item" href="?page=signout">Sign Out</a>
+        </div>
+    </div>
+    '''
+
+    # CROWD button
+    navbar_html += '<button class="nav-button" onclick="window.location.href=\'?page=crowd\'">CROWD</button>'
+
+    # EVENTS button
+    navbar_html += '<button class="nav-button" onclick="window.location.href=\'?page=events\'">EVENTS</button>'
+
+    navbar_html += '</div>'  # Close navbar-right
     navbar_html += '</div>'  # Close top-navbar
+
+    # Add JavaScript for dropdown
+    navbar_html += '''
+    <script>
+        function toggleDropdown() {
+            var dropdown = document.getElementById("userDropdown");
+            dropdown.classList.toggle("show");
+        }
+
+        // Close dropdown when clicking outside
+        window.onclick = function(event) {
+            if (!event.target.matches('.dropdown-toggle') && !event.target.matches('.dropdown-toggle *')) {
+                var dropdowns = document.getElementsByClassName("dropdown-menu");
+                for (var i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+        }
+    </script>
+    '''
+
     st.markdown(navbar_html, unsafe_allow_html=True)
-
-    # Create row with CROWD, EVENTS buttons on right and username dropdown
-    top_row = st.columns([8, 1, 1, 0.2, 1.2])
-
-    with top_row[1]:
-        if st.button("CROWD", key="nav_crowd_top", use_container_width=True, type="secondary"):
-            st.session_state.current_page = 'Crowd Map'
-            st.switch_page("pages/1_🗺️_Crowd_Heatmap.py")
-
-    with top_row[2]:
-        if st.button("EVENTS", key="nav_events_top", use_container_width=True, type="secondary"):
-            st.session_state.current_page = 'Events'
-            st.switch_page("pages/2_🎉_Events.py")
-
-    with top_row[4]:
-        # Username or Sign In button
-        if 'user' in st.session_state and st.session_state.user:
-            user_name = st.session_state.user.get('full_name', '').split()[0]
-            if st.button(f"👤 {user_name.upper()}", key="nav_user_dropdown", use_container_width=True, type="secondary"):
-                st.session_state.current_page = 'Profile'
-                st.switch_page("pages/4_👤_Profile.py")
-        else:
-            if st.button("SIGN IN", key="nav_signin_top", use_container_width=True, type="primary"):
-                st.session_state.current_page = 'Profile'
-                st.switch_page("pages/4_👤_Profile.py")
 
     # Minimal spacing
     st.markdown("")
