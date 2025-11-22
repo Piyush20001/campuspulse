@@ -38,10 +38,17 @@ def create_top_navbar():
         text_color = '#262730'
         secondary_bg = '#F0F2F6'
 
-    # Custom CSS for top navbar - COMPREHENSIVE THEME SUPPORT
+    # Custom CSS for top navbar - MODERN 2025 AESTHETIC
     st.markdown(f"""
     <style>
+        /* Import modern fonts from Google Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
+
         /* FORCE THEME COLORS - Override all Streamlit defaults */
+        * {{
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+        }}
+
         .stApp {{
             background-color: {bg_color} !important;
         }}
@@ -65,17 +72,42 @@ def create_top_navbar():
             background-color: {bg_color} !important;
         }}
 
-        /* All text elements */
-        .stMarkdown, .stText, p, h1, h2, h3, h4, h5, h6, span, div {{
+        /* All text elements with modern typography */
+        .stMarkdown, .stText, p, span, div {{
             color: {text_color} !important;
+            font-family: 'Inter', sans-serif !important;
+            letter-spacing: -0.01em;
         }}
+
+        /* Headings with modern font */
+        h1, h2, h3, h4, h5, h6 {{
+            color: {text_color} !important;
+            font-family: 'Outfit', 'Inter', sans-serif !important;
+            font-weight: 700 !important;
+            letter-spacing: -0.02em !important;
+        }}
+
+        h1 {{ font-size: 2.5rem !important; }}
+        h2 {{ font-size: 2rem !important; }}
+        h3 {{ font-size: 1.5rem !important; }}
 
         /* Metrics and stats */
-        [data-testid="stMetricValue"], [data-testid="stMetricLabel"] {{
+        [data-testid="stMetricValue"] {{
             color: {text_color} !important;
+            font-family: 'Outfit', sans-serif !important;
+            font-weight: 700 !important;
         }}
 
-        /* Cards and containers */
+        [data-testid="stMetricLabel"] {{
+            color: {text_color} !important;
+            font-family: 'Inter', sans-serif !important;
+            font-weight: 500 !important;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+        }}
+
+        /* Modern cards and containers */
         [data-testid="stVerticalBlock"], [data-testid="stHorizontalBlock"] {{
             background-color: {secondary_bg} !important;
         }}
@@ -85,32 +117,115 @@ def create_top_navbar():
             display: none;
         }}
 
-        /* Top navbar styles */
+        /* Top navbar styles - Modern glassmorphism */
         .top-navbar {{
             background: {bg_gradient};
-            padding: 0.75rem 2rem;
+            padding: 1rem 2.5rem;
             margin: -6rem -4rem 2rem -4rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-            min-height: 80px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+            backdrop-filter: blur(10px);
+            min-height: 85px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
         }}
 
         .navbar-left {{
             display: flex;
             align-items: center;
-            gap: 1.5rem;
+            gap: 2rem;
         }}
 
         .navbar-logo {{
-            height: 70px;
+            height: 75px;
             width: auto;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+            transition: transform 0.3s ease, filter 0.3s ease;
+        }}
+
+        .navbar-logo:hover {{
+            transform: scale(1.05);
+            filter: drop-shadow(0 6px 12px rgba(0,0,0,0.3));
         }}
 
         .campus-pulse-logo {{
-            height: 65px !important;
+            height: 70px !important;
             width: auto !important;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+            transition: transform 0.3s ease, filter 0.3s ease;
+        }}
+
+        .campus-pulse-logo:hover {{
+            transform: scale(1.05);
+            filter: drop-shadow(0 6px 12px rgba(0,0,0,0.3));
+        }}
+
+        /* Modern button styling */
+        .stButton > button {{
+            font-family: 'Inter', sans-serif !important;
+            font-weight: 600 !important;
+            border-radius: 12px !important;
+            padding: 0.6rem 1.2rem !important;
+            border: none !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            font-size: 0.95rem !important;
+            letter-spacing: -0.01em !important;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+        }}
+
+        .stButton > button:hover {{
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2) !important;
+        }}
+
+        .stButton > button:active {{
+            transform: translateY(0px) !important;
+        }}
+
+        /* Primary buttons */
+        .stButton > button[kind="primary"] {{
+            background: linear-gradient(135deg, #0021A5 0%, #FA4616 100%) !important;
+            color: white !important;
+        }}
+
+        .stButton > button[kind="primary"]:hover {{
+            background: linear-gradient(135deg, #001a85 0%, #e63f12 100%) !important;
+        }}
+
+        /* Secondary buttons */
+        .stButton > button[kind="secondary"] {{
+            background-color: {secondary_bg} !important;
+            color: {text_color} !important;
+            border: 2px solid rgba(0,33,165,0.2) !important;
+        }}
+
+        .stButton > button[kind="secondary"]:hover {{
+            border-color: rgba(0,33,165,0.4) !important;
+            background-color: {secondary_bg} !important;
+        }}
+
+        /* Modern input fields */
+        .stTextInput > div > div > input,
+        .stTextArea > div > div > textarea {{
+            font-family: 'Inter', sans-serif !important;
+            border-radius: 10px !important;
+            border: 2px solid rgba(0,33,165,0.15) !important;
+            padding: 0.75rem !important;
+            font-size: 0.95rem !important;
+            transition: all 0.3s ease !important;
+        }}
+
+        .stTextInput > div > div > input:focus,
+        .stTextArea > div > div > textarea:focus {{
+            border-color: #0021A5 !important;
+            box-shadow: 0 0 0 3px rgba(0,33,165,0.1) !important;
+        }}
+
+        /* Modern selectbox */
+        .stSelectbox > div > div {{
+            font-family: 'Inter', sans-serif !important;
+            border-radius: 10px !important;
         }}
 
         /* Mobile responsive */
@@ -122,13 +237,17 @@ def create_top_navbar():
             }}
             .navbar-left {{
                 flex-direction: column;
+                gap: 1rem;
             }}
             .navbar-logo {{
-                height: 45px;
+                height: 50px;
             }}
             .campus-pulse-logo {{
-                height: 40px !important;
+                height: 45px !important;
             }}
+            h1 {{ font-size: 1.75rem !important; }}
+            h2 {{ font-size: 1.5rem !important; }}
+            h3 {{ font-size: 1.25rem !important; }}
         }}
     </style>
     """, unsafe_allow_html=True)

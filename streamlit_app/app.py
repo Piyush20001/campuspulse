@@ -29,33 +29,83 @@ st.set_page_config(
 # Set current page
 st.session_state.current_page = 'Home'
 
-# Custom CSS
+# Modern Home Page CSS - 2025 Aesthetic
 st.markdown("""
 <style>
+    /* Main header with modern gradient text */
     .main-header {
-        font-size: 3rem;
-        font-weight: bold;
-        color: #0021A5;
+        font-size: 3.5rem;
+        font-weight: 800;
+        font-family: 'Outfit', 'Inter', sans-serif !important;
         text-align: center;
-        padding: 1rem 0;
-        background: linear-gradient(90deg, #0021A5, #FA4616);
+        padding: 1.5rem 0;
+        background: linear-gradient(135deg, #0021A5 0%, #FA4616 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
+        background-clip: text;
+        letter-spacing: -0.03em;
+        line-height: 1.2;
     }
+
+    /* Sub-header with modern typography */
     .sub-header {
         text-align: center;
         color: #666;
-        font-size: 1.2rem;
-        margin-bottom: 2rem;
+        font-size: 1.25rem;
+        font-weight: 500;
+        margin-bottom: 3rem;
+        font-family: 'Inter', sans-serif !important;
+        letter-spacing: -0.01em;
     }
+
+    /* Modern metric cards with glassmorphism */
     .metric-card {
-        background: white;
-        padding: 1rem;
-        border-radius: 10px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+        padding: 2rem;
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        border: 1px solid rgba(0,33,165,0.1);
+        backdrop-filter: blur(10px);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    .stButton>button {
-        width: 100%;
+
+    .metric-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 12px 48px rgba(0,0,0,0.15);
+        border-color: rgba(0,33,165,0.2);
+    }
+
+    /* Feature cards for the welcome section */
+    .feature-card {
+        background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+        padding: 2rem;
+        border-radius: 16px;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+        border: 1px solid rgba(0,33,165,0.1);
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+        border-color: rgba(0,33,165,0.2);
+    }
+
+    /* Section headers */
+    .section-header {
+        font-family: 'Outfit', sans-serif !important;
+        font-weight: 700 !important;
+        font-size: 2rem !important;
+        margin: 2rem 0 1.5rem 0;
+        letter-spacing: -0.02em;
+    }
+
+    /* Dividers */
+    hr {
+        margin: 3rem 0;
+        border: none;
+        border-top: 1px solid rgba(0,33,165,0.1);
     }
 </style>
 """, unsafe_allow_html=True)

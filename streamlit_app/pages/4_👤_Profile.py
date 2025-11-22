@@ -20,6 +20,89 @@ st.session_state.current_page = 'Profile'
 # Top navigation
 create_top_navbar()
 
+# Modern profile page styling
+st.markdown("""
+<style>
+    /* Modern card containers */
+    .profile-card {
+        background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        border: 1px solid rgba(0,33,165,0.1);
+        backdrop-filter: blur(10px);
+        transition: all 0.3s ease;
+    }
+
+    .profile-card:hover {
+        box-shadow: 0 12px 48px rgba(0,0,0,0.15);
+        transform: translateY(-4px);
+    }
+
+    /* Student card in directory */
+    .student-card {
+        background: rgba(255,255,255,0.03);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin: 1rem 0;
+        border: 1px solid rgba(0,33,165,0.08);
+        transition: all 0.3s ease;
+    }
+
+    .student-card:hover {
+        background: rgba(255,255,255,0.06);
+        border-color: rgba(0,33,165,0.2);
+        box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    }
+
+    /* Tab styling */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 1rem;
+        background-color: transparent;
+    }
+
+    .stTabs [data-baseweb="tab"] {
+        font-family: 'Inter', sans-serif !important;
+        font-weight: 600 !important;
+        border-radius: 10px;
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+    }
+
+    /* Form styling */
+    .stForm {
+        background: rgba(255,255,255,0.02);
+        border-radius: 16px;
+        padding: 2rem;
+        border: 1px solid rgba(0,33,165,0.1);
+    }
+
+    /* Info/Success/Error boxes */
+    .stAlert {
+        border-radius: 12px !important;
+        font-family: 'Inter', sans-serif !important;
+    }
+
+    /* Radio buttons */
+    .stRadio > div {
+        gap: 1rem;
+    }
+
+    .stRadio > div > label {
+        background: rgba(255,255,255,0.03);
+        padding: 0.75rem 1.5rem;
+        border-radius: 10px;
+        border: 2px solid rgba(0,33,165,0.1);
+        transition: all 0.3s ease;
+    }
+
+    .stRadio > div > label:hover {
+        border-color: rgba(0,33,165,0.3);
+        background: rgba(255,255,255,0.06);
+    }
+</style>
+""", unsafe_allow_html=True)
+
 # Initialize auth manager and email verification
 if 'auth_manager' not in st.session_state:
     st.session_state.auth_manager = AuthManager()

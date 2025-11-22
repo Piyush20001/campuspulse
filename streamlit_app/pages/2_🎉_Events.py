@@ -26,6 +26,59 @@ st.session_state.current_page = 'Events'
 # Top navigation
 create_top_navbar()
 
+# Modern events page styling
+st.markdown("""
+<style>
+    /* Event cards */
+    .event-card {
+        background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+        border-radius: 16px;
+        padding: 1.5rem;
+        margin: 1rem 0;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+        border: 1px solid rgba(0,33,165,0.1);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .event-card:hover {
+        box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+        transform: translateY(-4px);
+        border-color: rgba(0,33,165,0.2);
+    }
+
+    /* Category badges */
+    .category-badge {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        letter-spacing: 0.02em;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    /* Metrics cards */
+    [data-testid="stMetricValue"] {
+        font-size: 2rem !important;
+    }
+
+    /* Expander styling */
+    .streamlit-expanderHeader {
+        background: rgba(255,255,255,0.03);
+        border-radius: 12px;
+        font-weight: 600;
+        padding: 1rem;
+    }
+
+    /* Data editor / table styling */
+    [data-testid="stDataFrame"] {
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    }
+</style>
+""", unsafe_allow_html=True)
+
 # Initialize session state with error handling
 try:
     if 'simulator' not in st.session_state or st.session_state.simulator is None:

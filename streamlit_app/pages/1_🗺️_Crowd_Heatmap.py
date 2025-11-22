@@ -29,6 +29,53 @@ st.session_state.current_page = 'Crowd Map'
 # Top navigation
 create_top_navbar()
 
+# Modern heatmap page styling
+st.markdown("""
+<style>
+    /* Location cards */
+    .location-card {
+        background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+        border-radius: 16px;
+        padding: 1.5rem;
+        margin: 1rem 0;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+        border: 1px solid rgba(0,33,165,0.1);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .location-card:hover {
+        box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+        transform: translateY(-4px);
+        border-color: rgba(0,33,165,0.2);
+    }
+
+    /* Map container */
+    .map-container {
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+        border: 1px solid rgba(0,33,165,0.1);
+    }
+
+    /* Filter section */
+    .filter-section {
+        background: rgba(255,255,255,0.02);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        border: 1px solid rgba(0,33,165,0.08);
+    }
+
+    /* Charts */
+    .chart-container {
+        background: rgba(255,255,255,0.02);
+        border-radius: 12px;
+        padding: 1rem;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    }
+</style>
+""", unsafe_allow_html=True)
+
 # Initialize session state
 if 'simulator' not in st.session_state or st.session_state.simulator is None:
     st.session_state.simulator = CrowdDataSimulator()
