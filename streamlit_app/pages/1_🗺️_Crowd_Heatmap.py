@@ -15,6 +15,7 @@ from data.simulator import CrowdDataSimulator
 from data.locations import UF_LOCATIONS, get_locations_by_category
 from data.uf_events_real import UFEventGenerator
 from models.lstm_forecaster import CrowdForecaster
+from models.crowd_predictor_ml import MLCrowdPredictor
 from models.anomaly_detector import AnomalyDetector
 from utils.map_utils import create_base_map, add_heatmap_layer, add_location_markers, get_crowd_color, get_crowd_label
 from utils.chart_utils import create_sparkline, create_forecast_chart, create_comparison_bar_chart
@@ -81,6 +82,14 @@ if 'simulator' not in st.session_state or st.session_state.simulator is None:
     st.session_state.simulator = CrowdDataSimulator()
 if 'forecaster' not in st.session_state:
     st.session_state.forecaster = CrowdForecaster()
+if 'ml_predictor' not in st.session_state:
+    # Load trained ML model for real predictions
+    st.session_state.ml_predictor = MLCrowdPredictor(model_type='random_forest')
+    model_path = os.path.join(os.path.dirname(__file__), '..', 'models', 'crowd_predictor_model_v2.pkl')
+    if os.path.exists(model_path):
+        st.session_state.ml_predictor.load(model_path)
+    else:
+        st.warning("ML model not found. Using fallback predictions.")
 if 'anomaly_detector' not in st.session_state:
     st.session_state.anomaly_detector = AnomalyDetector()
 if 'event_generator' not in st.session_state:
@@ -92,6 +101,13 @@ if 'last_refresh' not in st.session_state:
 # Page header
 st.title("Live Crowd Heatmap")
 st.markdown("Real-time crowd density across UF campus with AI-powered forecasts")
+
+# Show which model is being used
+if hasattr(st.session_state, 'ml_predictor') and st.session_state.ml_predictor.is_trained:
+    model_info = st.session_state.ml_predictor.training_history
+    st.info(f"🤖 Using ML Predictions (Random Forest) - Test R²: {model_info.get('test_r2', 0):.1%} accuracy")
+else:
+    st.info("🔮 Using Persistence Forecast (fallback mode)")
 
 # Filters
 st.markdown("### Filters")
@@ -142,17 +158,33 @@ if cache_key not in st.session_state or 'force_refresh' in st.session_state:
 else:
     crowd_data = st.session_state[cache_key]
 
-# Generate forecasts (cached similarly)
+# Generate forecasts using ML model (cached similarly)
 forecast_cache_key = f'forecasts_{selected_filter}'
 if forecast_cache_key not in st.session_state or 'force_refresh' in st.session_state:
     forecasts = []
     for location in filtered_locations:
-        # Generate historical data
-        hist_data = st.session_state.simulator.generate_historical_data(location, days=1, interval_minutes=10)
+        # Use ML predictor if available and trained
+        if hasattr(st.session_state, 'ml_predictor') and st.session_state.ml_predictor.is_trained:
+            # Predict future crowd levels using ML model
+            future_predictions = st.session_state.ml_predictor.predict_future(
+                location_id=location['id'],
+                location_type=location['category'],
+                capacity=location['capacity'],
+                hours_ahead=1
+            )
 
-        # Get forecast
-        recent_levels = hist_data['crowd_level'].values[-12:]  # Last 2 hours
-        predictions = st.session_state.forecaster.predict(recent_levels)
+            # Get average predicted occupancy for the next hour
+            avg_occupancy = future_predictions['predicted_occupancy'].mean() / 100.0
+
+            # Create predictions array (6 steps for compatibility)
+            predictions = [avg_occupancy] * 6
+        else:
+            # Fallback to LSTM forecaster
+            hist_data = st.session_state.simulator.generate_historical_data(location, days=1, interval_minutes=10)
+            recent_levels = hist_data['crowd_level'].values[-12:]  # Last 2 hours
+            predictions = st.session_state.forecaster.predict(recent_levels)
+
+        # Get label and emoji from forecaster
         label, emoji = st.session_state.forecaster.get_forecast_label(predictions)
 
         forecasts.append({
