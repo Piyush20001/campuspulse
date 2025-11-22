@@ -29,8 +29,9 @@ wheels/
 # ML Models
 trained_models/*.pth
 trained_models/*.pt
-*.pkl
-*.pickle
+# Allow trained models to be committed
+# *.pkl
+# *.pickle
 
 # IDE
 .vscode/
