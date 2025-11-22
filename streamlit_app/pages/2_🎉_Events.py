@@ -45,8 +45,18 @@ st.markdown("Discover upcoming events with AI-powered categorization and crowd f
 
 # Check if we should show success message for newly created event
 if 'show_event_created' in st.session_state and st.session_state.show_event_created:
-    st.success("✅ Event created successfully! Your event is now visible in the Browse Events tab below.")
+    st.success(f"✅ Event '{st.session_state.new_event_title}' created successfully! It's now visible in the Browse Events tab below.")
+    st.info("💡 **Tip**: If you don't see your event, check that filters (Category/Time/Location) are not hiding it. Set all filters to 'All' to see all events.")
     del st.session_state.show_event_created
+    if 'new_event_title' in st.session_state:
+        del st.session_state.new_event_title
+
+# Default to Browse Events tab if we just created an event
+if 'switch_to_browse' in st.session_state and st.session_state.switch_to_browse:
+    default_tab = 0  # Browse Events tab
+    del st.session_state.switch_to_browse
+else:
+    default_tab = 0
 
 # Tabs
 tab1, tab2, tab3 = st.tabs(["📅 Browse Events", "➕ Create Event", "🤖 AI Event Classifier"])
@@ -109,28 +119,38 @@ with tab1:
     filtered_events.sort(key=lambda x: x['start_time'])
 
     # Statistics
-    stat_col1, stat_col2, stat_col3, stat_col4 = st.columns(4)
+    stat_col1, stat_col2, stat_col3, stat_col4, stat_col5 = st.columns(5)
 
     with stat_col1:
-        st.metric("Total Events", len(filtered_events))
+        st.metric("Showing", len(filtered_events))
 
     with stat_col2:
+        user_events = len(st.session_state.user_created_events)
+        st.metric("⭐ Your Events", user_events, delta="Created by you" if user_events > 0 else None)
+
+    with stat_col3:
         free_events = sum(1 for e in filtered_events if e.get('is_free', True))
         st.metric("Free Events", free_events)
 
-    with stat_col3:
+    with stat_col4:
         today_events = sum(1 for e in filtered_events if e['start_time'].date() == datetime.now().date())
         st.metric("Today", today_events)
 
-    with stat_col4:
+    with stat_col5:
         this_week = sum(1 for e in filtered_events if (e['start_time'] - datetime.now()).days <= 7)
         st.metric("This Week", this_week)
 
     st.markdown("---")
 
+    # Show warning if user has created events but they're filtered out
+    if len(st.session_state.user_created_events) > 0:
+        user_events_visible = sum(1 for e in filtered_events if e in st.session_state.user_created_events)
+        if user_events_visible == 0:
+            st.warning(f"⚠️ You have {len(st.session_state.user_created_events)} created event(s) that are hidden by current filters. Try setting Category, Time, and Location filters to 'All' to see all your events.")
+
     # Event cards
     if len(filtered_events) == 0:
-        st.info("No events found matching your filters.")
+        st.info("No events found matching your filters. Try changing the filter settings above.")
     else:
         # Show category distribution
         if len(filtered_events) > 3:
@@ -283,31 +303,13 @@ with tab2:
 
                 st.session_state.user_created_events.append(new_event)
 
-                # Set flag to show success message
+                # Set flags for success message and tab switching
                 st.session_state.show_event_created = True
                 st.session_state.new_event_title = event_title
+                st.session_state.switch_to_browse = True
 
-                # Show AI results immediately
-                st.success("✅ Event created successfully!")
-                st.info("💡 Switch to the 'Browse Events' tab to see your event in the list!")
-
-                st.markdown("### 🤖 AI Analysis Results")
-
-                ai_col1, ai_col2 = st.columns(2)
-
-                with ai_col1:
-                    st.metric("Category", ai_result['category'])
-                    st.metric("Confidence", f"{ai_result['confidence']*100:.1f}%")
-
-                with ai_col2:
-                    st.write("**Suggested Tags:**")
-                    for tag in ai_result['suggested_tags']:
-                        st.markdown(f"- {tag}")
-
-                # Show all probabilities
-                with st.expander("View All Category Probabilities"):
-                    for cat, prob in ai_result['all_probabilities'].items():
-                        st.progress(prob, text=f"{cat}: {prob*100:.1f}%")
+                # Force a rerun to show the event and success message
+                st.rerun()
 
             else:
                 st.error("Please fill in all required fields (marked with *)")
