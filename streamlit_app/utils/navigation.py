@@ -304,7 +304,7 @@ def create_top_navbar():
         }}
 
         .campus-pulse-logo {{
-            height: 100px !important;
+            height: 180px !important;
             width: auto !important;
             object-fit: contain !important;
         }}
@@ -336,10 +336,11 @@ def create_top_navbar():
             background-color: transparent !important;
             border: none !important;
             color: {button_text} !important;
-            text-transform: uppercase !important;
-            font-size: 0.875rem !important;
-            padding: 0.5rem 1rem !important;
+            text-transform: none !important;
+            font-size: 0.9375rem !important;
+            padding: 0.625rem 1.25rem !important;
             border-radius: 6px !important;
+            letter-spacing: 0.01em !important;
         }}
 
         [data-testid="column"] .stButton > button:hover {{
