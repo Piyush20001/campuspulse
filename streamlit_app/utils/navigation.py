@@ -660,7 +660,137 @@ def create_top_navbar():
     </script>
     '''
 
-    st.markdown(navbar_html, unsafe_allow_html=True)
+    # Use components.html for JavaScript execution
+    import streamlit.components.v1 as components
+
+    # Wrap navbar in proper HTML structure with CSS
+    full_navbar_html = f'''
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <style>
+            body {{
+                margin: 0;
+                padding: 0;
+                font-family: 'Inter', sans-serif;
+                overflow: hidden;
+            }}
+            .top-navbar {{
+                background: {navbar_bg};
+                padding: 0 2.5rem;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                height: 80px;
+                border-bottom: 1px solid {navbar_border};
+            }}
+            .navbar-left {{
+                display: flex;
+                align-items: center;
+                flex-shrink: 0;
+            }}
+            .navbar-center {{
+                position: absolute;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%);
+                cursor: pointer;
+            }}
+            .navbar-right {{
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                flex-shrink: 0;
+            }}
+            .navbar-logo {{
+                height: 80px;
+                width: auto;
+                object-fit: contain;
+            }}
+            .campus-pulse-logo {{
+                height: 72px !important;
+                width: auto !important;
+                object-fit: contain !important;
+            }}
+            .nav-button {{
+                font-family: 'Inter', sans-serif;
+                font-weight: 500;
+                font-size: 0.875rem;
+                color: {button_text};
+                background-color: transparent;
+                border: none;
+                padding: 0.5rem 1rem;
+                border-radius: 6px;
+                cursor: pointer;
+                transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 0.25rem;
+                white-space: nowrap;
+                text-transform: uppercase;
+                letter-spacing: 0.025em;
+            }}
+            .nav-button:hover {{
+                background-color: {button_hover_bg};
+                color: white;
+            }}
+            .nav-button-primary {{
+                background-color: {button_hover_bg} !important;
+                color: white !important;
+            }}
+            .nav-button-primary:hover {{
+                background-color: #374151 !important;
+            }}
+            .dropdown {{
+                position: relative;
+                display: inline-block;
+            }}
+            .dropdown-toggle {{
+                text-transform: none !important;
+            }}
+            .dropdown-menu {{
+                display: none;
+                position: absolute;
+                right: 0;
+                top: 100%;
+                margin-top: 0.5rem;
+                background-color: #111827;
+                border: 1px solid {navbar_border};
+                border-radius: 8px;
+                min-width: 200px;
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+                z-index: 1000;
+                padding: 0.5rem 0;
+            }}
+            .dropdown-menu.show {{
+                display: block;
+            }}
+            .dropdown-item {{
+                display: block;
+                width: 100%;
+                padding: 0.5rem 1rem;
+                color: {button_text};
+                text-decoration: none;
+                font-family: 'Inter', sans-serif;
+                font-size: 0.875rem;
+                transition: background-color 0.15s;
+                cursor: pointer;
+                text-align: left;
+            }}
+            .dropdown-item:hover {{
+                background-color: {button_hover_bg};
+                color: white;
+            }}
+        </style>
+    </head>
+    <body>
+        {navbar_html}
+    </body>
+    </html>
+    '''
+
+    components.html(full_navbar_html, height=80, scrolling=False)
 
     # Handle navigation from URL query parameters
     query_params = st.query_params
