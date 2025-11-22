@@ -161,15 +161,32 @@ def create_top_navbar():
         .top-navbar {{
             background: {navbar_bg};
             padding: 0 2.5rem;
-            margin: -6rem -4rem 2rem -4rem;
+            margin: -6rem -4rem 0 -4rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
             height: 80px;
             border-bottom: 1px solid {navbar_border};
-            position: sticky;
-            top: 0;
+            position: relative;
             z-index: 50;
+        }}
+
+        /* Pull Streamlit button row into navbar */
+        .main .block-container > div:first-child {{
+            margin-top: -80px !important;
+            padding-top: 20px !important;
+            padding-right: 2.5rem !important;
+            position: relative !important;
+            z-index: 100 !important;
+            pointer-events: none !important;
+        }}
+
+        .main .block-container > div:first-child [data-testid="column"] {{
+            pointer-events: auto !important;
+        }}
+
+        .main .block-container > div:first-child ~ * {{
+            margin-top: 2rem !important;
         }}
 
         .navbar-left {{
