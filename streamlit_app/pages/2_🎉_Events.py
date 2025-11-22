@@ -26,18 +26,22 @@ st.session_state.current_page = 'Events'
 # Top navigation
 create_top_navbar()
 
-# Initialize session state
-if 'simulator' not in st.session_state:
-    st.session_state.simulator = CrowdDataSimulator()
-if 'event_generator' not in st.session_state:
-    st.session_state.event_generator = UFEventGenerator()
-    st.session_state.events = st.session_state.event_generator.generate_semester_events(50)
-if 'event_classifier' not in st.session_state:
-    st.session_state.event_classifier = ImprovedEventCategorizer()
-if 'forecaster' not in st.session_state:
-    st.session_state.forecaster = CrowdForecaster()
-if 'user_created_events' not in st.session_state:
-    st.session_state.user_created_events = []
+# Initialize session state with error handling
+try:
+    if 'simulator' not in st.session_state or st.session_state.simulator is None:
+        st.session_state.simulator = CrowdDataSimulator()
+    if 'event_generator' not in st.session_state or st.session_state.event_generator is None:
+        st.session_state.event_generator = UFEventGenerator()
+        st.session_state.events = st.session_state.event_generator.generate_semester_events(50)
+    if 'event_classifier' not in st.session_state or st.session_state.event_classifier is None:
+        st.session_state.event_classifier = ImprovedEventCategorizer()
+    if 'forecaster' not in st.session_state or st.session_state.forecaster is None:
+        st.session_state.forecaster = CrowdForecaster()
+    if 'user_created_events' not in st.session_state:
+        st.session_state.user_created_events = []
+except Exception as e:
+    st.error(f"⚠️ Error initializing application components: {str(e)}")
+    st.info("💡 Try refreshing the page. If the issue persists, check that all dependencies are installed.")
 
 # Page header
 st.title("🎉 Campus Events")
@@ -211,14 +215,17 @@ with tab1:
                         st.success("✨ Free Event")
 
                     # Get crowd forecast for event time
-                    if location:
+                    if location and st.session_state.simulator is not None and st.session_state.forecaster is not None:
                         with st.expander("Crowd Forecast"):
-                            hist_data = st.session_state.simulator.generate_historical_data(location, days=1)
-                            recent_levels = hist_data['crowd_level'].values[-12:]
-                            predictions = st.session_state.forecaster.predict(recent_levels)
-                            label, emoji = st.session_state.forecaster.get_forecast_label(predictions)
+                            try:
+                                hist_data = st.session_state.simulator.generate_historical_data(location, days=1)
+                                recent_levels = hist_data['crowd_level'].values[-12:]
+                                predictions = st.session_state.forecaster.predict(recent_levels)
+                                label, emoji = st.session_state.forecaster.get_forecast_label(predictions)
 
-                            st.write(f"{emoji} Expected crowd: **{label}**")
+                                st.write(f"{emoji} Expected crowd: **{label}**")
+                            except Exception as e:
+                                st.warning("⚠️ Crowd forecast temporarily unavailable")
 
                 st.markdown("---")
 
@@ -273,7 +280,15 @@ with tab2:
         if submit_button:
             if event_title and event_description and event_location:
                 # Use AI to categorize
-                ai_result = st.session_state.event_classifier.predict(event_title, event_description)
+                if st.session_state.event_classifier is None:
+                    st.error("⚠️ Event classifier not initialized. Please refresh the page.")
+                    st.stop()
+
+                try:
+                    ai_result = st.session_state.event_classifier.predict(event_title, event_description)
+                except Exception as e:
+                    st.error(f"⚠️ Error categorizing event: {str(e)}")
+                    st.stop()
 
                 # Create event
                 location = next((loc for loc in UF_LOCATIONS if loc['name'] == event_location), UF_LOCATIONS[0])
@@ -358,41 +373,47 @@ with tab3:
 
     if st.button("🔮 Classify This Event", type="primary"):
         if test_title or test_description:
-            result = st.session_state.event_classifier.predict(
-                test_title or "Untitled Event",
-                test_description or ""
-            )
+            if st.session_state.event_classifier is None:
+                st.error("⚠️ Event classifier not initialized. Please refresh the page.")
+            else:
+                try:
+                    result = st.session_state.event_classifier.predict(
+                        test_title or "Untitled Event",
+                        test_description or ""
+                    )
 
-            st.markdown("### Results")
+                    st.markdown("### Results")
 
-            result_col1, result_col2 = st.columns(2)
+                    result_col1, result_col2 = st.columns(2)
 
-            with result_col1:
-                category_colors = {
-                    'Academic': '#0021A5',
-                    'Social': '#FA4616',
-                    'Sports': '#28a745',
-                    'Cultural': '#9C27B0'
-                }
-                color = category_colors.get(result['category'], '#6c757d')
+                    with result_col1:
+                        category_colors = {
+                            'Academic': '#0021A5',
+                            'Social': '#FA4616',
+                            'Sports': '#28a745',
+                            'Cultural': '#9C27B0'
+                        }
+                        color = category_colors.get(result['category'], '#6c757d')
 
-                st.markdown(f"""
-                <div style="text-align: center; padding: 2rem; background: {color}; color: white; border-radius: 10px;">
-                    <h2 style="margin: 0;">{result['category']}</h2>
-                    <p style="margin: 0.5rem 0 0 0; font-size: 1.2rem;">Confidence: {result['confidence']*100:.1f}%</p>
-                </div>
-                """, unsafe_allow_html=True)
+                        st.markdown(f"""
+                        <div style="text-align: center; padding: 2rem; background: {color}; color: white; border-radius: 10px;">
+                            <h2 style="margin: 0;">{result['category']}</h2>
+                            <p style="margin: 0.5rem 0 0 0; font-size: 1.2rem;">Confidence: {result['confidence']*100:.1f}%</p>
+                        </div>
+                        """, unsafe_allow_html=True)
 
-            with result_col2:
-                st.markdown("**Suggested Tags:**")
-                for tag in result['suggested_tags']:
-                    st.markdown(f"- 🏷️ {tag}")
+                    with result_col2:
+                        st.markdown("**Suggested Tags:**")
+                        for tag in result['suggested_tags']:
+                            st.markdown(f"- 🏷️ {tag}")
 
-            st.markdown("---")
-            st.markdown("**All Category Probabilities:**")
+                    st.markdown("---")
+                    st.markdown("**All Category Probabilities:**")
 
-            for category, prob in sorted(result['all_probabilities'].items(), key=lambda x: x[1], reverse=True):
-                st.progress(prob, text=f"{category}: {prob*100:.1f}%")
+                    for category, prob in sorted(result['all_probabilities'].items(), key=lambda x: x[1], reverse=True):
+                        st.progress(prob, text=f"{category}: {prob*100:.1f}%")
+                except Exception as e:
+                    st.error(f"⚠️ Error classifying event: {str(e)}")
 
         else:
             st.warning("Please enter at least a title or description")
