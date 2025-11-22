@@ -121,14 +121,16 @@ def create_top_navbar():
         /* Top navbar styles - Modern glassmorphism */
         .top-navbar {{
             background: {bg_gradient};
-            padding: 1rem 2.5rem;
+            padding: 1.5rem 2.5rem;
             margin: -6rem -4rem 2rem -4rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 8px 32px rgba(0,0,0,0.15);
             backdrop-filter: blur(10px);
-            min-height: 85px;
+            min-height: 100px;
+            height: auto;
+            overflow: visible;
             border-bottom: 1px solid rgba(255,255,255,0.1);
         }}
 
@@ -136,11 +138,14 @@ def create_top_navbar():
             display: flex;
             align-items: center;
             gap: 2rem;
+            flex-shrink: 0;
         }}
 
         .navbar-logo {{
             height: 75px;
             width: auto;
+            max-width: none;
+            object-fit: contain;
             filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
             transition: transform 0.3s ease, filter 0.3s ease;
         }}
@@ -153,6 +158,8 @@ def create_top_navbar():
         .campus-pulse-logo {{
             height: 70px !important;
             width: auto !important;
+            max-width: none !important;
+            object-fit: contain !important;
             filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
             transition: transform 0.3s ease, filter 0.3s ease;
         }}
@@ -167,11 +174,16 @@ def create_top_navbar():
             font-family: 'Inter', sans-serif !important;
             font-weight: 600 !important;
             border-radius: 12px !important;
-            padding: 0.6rem 1.2rem !important;
+            padding: 0.6rem 1rem !important;
             border: none !important;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-            font-size: 0.95rem !important;
-            line-height: 1.5 !important;
+            font-size: 0.9rem !important;
+            line-height: 1.4 !important;
+            height: 44px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            white-space: nowrap !important;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
         }}
 
@@ -371,7 +383,7 @@ def create_top_navbar():
     st.markdown(navbar_html, unsafe_allow_html=True)
 
     # Create row with navigation buttons (center) and user info (right)
-    nav_row = st.columns([2, 1, 1, 1, 1, 1, 0.5, 1, 1])
+    nav_row = st.columns([1.5, 1, 1, 1, 1, 1, 0.3, 0.8, 1])
 
     # Navigation buttons in the center
     with nav_row[1]:
