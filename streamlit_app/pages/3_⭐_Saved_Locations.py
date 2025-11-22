@@ -17,8 +17,15 @@ from models.lstm_forecaster import CrowdForecaster
 from models.anomaly_detector import AnomalyDetector
 from utils.map_utils import get_crowd_color, get_crowd_label
 from utils.chart_utils import create_forecast_chart, create_crowd_gauge
+from utils.navigation import create_top_navbar
 
 st.set_page_config(page_title="Saved Locations - Campus Pulse", page_icon="⭐", layout="wide")
+
+# Set current page
+st.session_state.current_page = 'Saved'
+
+# Top navigation
+create_top_navbar()
 
 # Initialize session state
 if 'simulator' not in st.session_state:

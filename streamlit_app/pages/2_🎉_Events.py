@@ -16,8 +16,15 @@ from data.locations import UF_LOCATIONS, get_location_by_id
 from models.event_classifier_improved import ImprovedEventCategorizer
 from models.lstm_forecaster import CrowdForecaster
 from utils.chart_utils import create_category_distribution
+from utils.navigation import create_top_navbar
 
 st.set_page_config(page_title="Events - Campus Pulse", page_icon="🎉", layout="wide")
+
+# Set current page
+st.session_state.current_page = 'Events'
+
+# Top navigation
+create_top_navbar()
 
 # Initialize session state
 if 'simulator' not in st.session_state:
@@ -35,6 +42,11 @@ if 'user_created_events' not in st.session_state:
 # Page header
 st.title("🎉 Campus Events")
 st.markdown("Discover upcoming events with AI-powered categorization and crowd forecasts")
+
+# Check if we should show success message for newly created event
+if 'show_event_created' in st.session_state and st.session_state.show_event_created:
+    st.success("✅ Event created successfully! Your event is now visible in the Browse Events tab below.")
+    del st.session_state.show_event_created
 
 # Tabs
 tab1, tab2, tab3 = st.tabs(["📅 Browse Events", "➕ Create Event", "🤖 AI Event Classifier"])
@@ -130,6 +142,9 @@ with tab1:
         st.markdown(f"### Showing {len(filtered_events)} Event(s)")
 
         for event in filtered_events[:20]:  # Show max 20
+            # Check if this is a user-created event
+            is_user_created = event in st.session_state.user_created_events
+
             with st.container():
                 col1, col2 = st.columns([3, 1])
 
@@ -143,11 +158,18 @@ with tab1:
                     }
                     color = category_colors.get(event['category'], '#6c757d')
 
+                    # Add "Your Event" badge for user-created events
+                    user_badge = '<span style="background: #FFD700; color: #333; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.85rem; margin-right: 0.5rem; font-weight: bold;">⭐ Your Event</span>' if is_user_created else ''
+
+                    # Add border highlight for user-created events
+                    border_style = f"border: 2px solid {color};" if is_user_created else ""
+
                     st.markdown(f"""
-                    <div style="background: white; padding: 1rem; border-radius: 10px; border-left: 5px solid {color}; margin-bottom: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    <div style="background: white; padding: 1rem; border-radius: 10px; border-left: 5px solid {color}; {border_style} margin-bottom: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                         <h3 style="margin: 0; color: #333;">{event['title']}</h3>
                         <p style="margin: 0.5rem 0; color: #666;">{event['description']}</p>
                         <div style="margin-top: 0.5rem;">
+                            {user_badge}
                             <span style="background: {color}; color: white; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.85rem; margin-right: 0.5rem;">{event['category']}</span>
                             {' '.join([f'<span style="background: #f0f0f0; color: #333; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.85rem; margin-right: 0.5rem;">{tag}</span>' for tag in event.get('tags', [])[:3]])}
                         </div>
@@ -258,9 +280,14 @@ with tab2:
 
                 st.session_state.user_created_events.append(new_event)
 
-                st.success("✅ Event created successfully!")
+                # Set flag to show success message
+                st.session_state.show_event_created = True
+                st.session_state.new_event_title = event_title
 
-                # Show AI results
+                # Show AI results immediately
+                st.success("✅ Event created successfully!")
+                st.info("💡 Switch to the 'Browse Events' tab to see your event in the list!")
+
                 st.markdown("### 🤖 AI Analysis Results")
 
                 ai_col1, ai_col2 = st.columns(2)
