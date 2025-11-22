@@ -338,9 +338,28 @@ def create_top_navbar():
             color: {text_color} !important;
         }}
 
-        /* Fix info/warning/error/success boxes text */
-        .stAlert, .stAlert p, .stAlert div {{
-            color: #262730 !important;
+        /* Fix info/warning/error/success boxes text - dark mode visible */
+        .stAlert, .stAlert p, .stAlert div, .stAlert span {{
+            color: {text_color} !important;
+        }}
+
+        /* Alert boxes - ensure background contrast */
+        .stAlert {{
+            background-color: rgba(31, 41, 55, 0.5) !important;
+            border-left: 4px solid {text_color} !important;
+        }}
+
+        /* Warning/Error/Success/Info boxes - all visible in dark mode */
+        [data-testid="stNotification"],
+        [data-testid="stNotificationContentWarning"],
+        [data-testid="stNotificationContentError"],
+        [data-testid="stNotificationContentSuccess"],
+        [data-testid="stNotificationContentInfo"] {{
+            color: {text_color} !important;
+        }}
+
+        [data-testid="stNotification"] * {{
+            color: {text_color} !important;
         }}
 
         /* Fix dataframe/table text */
