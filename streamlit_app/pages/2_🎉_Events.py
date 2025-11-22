@@ -93,17 +93,17 @@ try:
     if 'user_created_events' not in st.session_state:
         st.session_state.user_created_events = []
 except Exception as e:
-    st.error(f"⚠️ Error initializing application components: {str(e)}")
-    st.info("💡 Try refreshing the page. If the issue persists, check that all dependencies are installed.")
+    st.error(f"Error initializing application components: {str(e)}")
+    st.info("Try refreshing the page. If the issue persists, check that all dependencies are installed.")
 
 # Page header
-st.title("🎉 Campus Events")
+st.title("Campus Events")
 st.markdown("Discover upcoming events with AI-powered categorization and crowd forecasts")
 
 # Check if we should show success message for newly created event
 if 'show_event_created' in st.session_state and st.session_state.show_event_created:
-    st.success(f"✅ Event '{st.session_state.new_event_title}' created successfully! It's now visible in the Browse Events tab below.")
-    st.info("💡 **Tip**: If you don't see your event, check that filters (Category/Time/Location) are not hiding it. Set all filters to 'All' to see all events.")
+    st.success(f"Event '{st.session_state.new_event_title}' created successfully! It's now visible in the Browse Events tab below.")
+    st.info("**Tip**: If you don't see your event, check that filters (Category/Time/Location) are not hiding it. Set all filters to 'All' to see all events.")
     del st.session_state.show_event_created
     if 'new_event_title' in st.session_state:
         del st.session_state.new_event_title
@@ -116,11 +116,11 @@ else:
     default_tab = 0
 
 # Tabs
-tab1, tab2, tab3 = st.tabs(["📅 Browse Events", "➕ Create Event", "🤖 AI Event Classifier"])
+tab1, tab2, tab3 = st.tabs(["Browse Events", "Create Event", "AI Classifier"])
 
 # Tab 1: Browse Events
 with tab1:
-    st.markdown("### 📅 Upcoming Events")
+    st.markdown("### Upcoming Events")
 
     # Filters
     filter_col1, filter_col2, filter_col3 = st.columns(3)
@@ -183,7 +183,7 @@ with tab1:
 
     with stat_col2:
         user_events = len(st.session_state.user_created_events)
-        st.metric("⭐ Your Events", user_events, delta="Created by you" if user_events > 0 else None)
+        st.metric("Your Events", user_events, delta="Created by you" if user_events > 0 else None)
 
     with stat_col3:
         free_events = sum(1 for e in filtered_events if e.get('is_free', True))
@@ -203,7 +203,7 @@ with tab1:
     if len(st.session_state.user_created_events) > 0:
         user_events_visible = sum(1 for e in filtered_events if e in st.session_state.user_created_events)
         if user_events_visible == 0:
-            st.warning(f"⚠️ You have {len(st.session_state.user_created_events)} created event(s) that are hidden by current filters. Try setting Category, Time, and Location filters to 'All' to see all your events.")
+            st.warning(f"You have {len(st.session_state.user_created_events)} created event(s) that are hidden by current filters. Try setting Category, Time, and Location filters to 'All' to see all your events.")
 
     # Event cards
     if len(filtered_events) == 0:
@@ -211,7 +211,7 @@ with tab1:
     else:
         # Show category distribution
         if len(filtered_events) > 3:
-            with st.expander("📊 Event Category Distribution"):
+            with st.expander("Event Category Distribution"):
                 events_df = pd.DataFrame(filtered_events)
                 fig = create_category_distribution(events_df)
                 st.plotly_chart(fig, use_container_width=True)
@@ -236,18 +236,18 @@ with tab1:
                     color = category_colors.get(event['category'], '#6c757d')
 
                     # Add "Your Event" badge for user-created events
-                    user_badge = '<span style="background: #FFD700; color: #333; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.85rem; margin-right: 0.5rem; font-weight: bold;">⭐ Your Event</span>' if is_user_created else ''
+                    user_badge = '<span style="background: #FFD700; color: #333; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.85rem; margin-right: 0.5rem; font-weight: bold;">Your Event</span>' if is_user_created else ''
 
                     # Add border highlight for user-created events
                     border_style = f"border: 2px solid {color};" if is_user_created else ""
 
-                    # Build tags HTML
-                    tags_html = ' '.join([f'<span style="background: #f0f0f0; color: #333; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.85rem; margin-right: 0.5rem;">{tag}</span>' for tag in event.get('tags', [])[:3]])
+                    # Build tags HTML (no hardcoded colors - inherit from theme)
+                    tags_html = ' '.join([f'<span style="background: rgba(0,33,165,0.1); padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.85rem; margin-right: 0.5rem;">{tag}</span>' for tag in event.get('tags', [])[:3]])
 
-                    # Build event card HTML (no leading whitespace to avoid markdown code block interpretation)
-                    event_html = f"""<div style="background: white; padding: 1rem; border-radius: 10px; border-left: 5px solid {color}; {border_style} margin-bottom: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-<h3 style="margin: 0; color: #333;">{event['title']}</h3>
-<p style="margin: 0.5rem 0; color: #666;">{event['description']}</p>
+                    # Build event card HTML - theme-aware, no hardcoded colors
+                    event_html = f"""<div class="event-card" style="border-left: 5px solid {color}; {border_style}">
+<h3 style="margin: 0;">{event['title']}</h3>
+<p style="margin: 0.5rem 0;">{event['description']}</p>
 <div style="margin-top: 0.5rem;">
 {user_badge}<span style="background: {color}; color: white; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.85rem; margin-right: 0.5rem;">{event['category']}</span>
 {tags_html}
@@ -260,12 +260,12 @@ with tab1:
                     location = get_location_by_id(event['location_id'])
                     location_name = location['name'] if location else "Unknown"
 
-                    st.write(f"📍 **{location_name}**")
-                    st.write(f"🕐 **{event['start_time'].strftime('%b %d, %I:%M %p')}**")
-                    st.write(f"👥 **{event.get('attendees_expected', 'N/A')}** expected")
+                    st.write(f"**{location_name}**")
+                    st.write(f"**{event['start_time'].strftime('%b %d, %I:%M %p')}**")
+                    st.write(f"**{event.get('attendees_expected', 'N/A')}** expected")
 
                     if event.get('is_free', False):
-                        st.success("✨ Free Event")
+                        st.success("Free Event")
 
                     # Get crowd forecast for event time
                     if location and st.session_state.simulator is not None and st.session_state.forecaster is not None:
@@ -278,13 +278,13 @@ with tab1:
 
                                 st.write(f"{emoji} Expected crowd: **{label}**")
                             except Exception as e:
-                                st.warning("⚠️ Crowd forecast temporarily unavailable")
+                                st.warning("Crowd forecast temporarily unavailable")
 
                 st.markdown("---")
 
 # Tab 2: Create Event
 with tab2:
-    st.markdown("### ➕ Create New Event")
+    st.markdown("### Create New Event")
     st.markdown("Use AI to automatically categorize and tag your event!")
 
     with st.form("create_event_form"):
@@ -328,19 +328,19 @@ with tab2:
         is_free = st.checkbox("This is a free event", value=True)
         registration_required = st.checkbox("Registration required")
 
-        submit_button = st.form_submit_button("🤖 Create Event with AI Categorization", type="primary", use_container_width=True)
+        submit_button = st.form_submit_button("Create Event with AI", type="primary", use_container_width=True)
 
         if submit_button:
             if event_title and event_description and event_location:
                 # Use AI to categorize
                 if st.session_state.event_classifier is None:
-                    st.error("⚠️ Event classifier not initialized. Please refresh the page.")
+                    st.error("Event classifier not initialized. Please refresh the page.")
                     st.stop()
 
                 try:
                     ai_result = st.session_state.event_classifier.predict(event_title, event_description)
                 except Exception as e:
-                    st.error(f"⚠️ Error categorizing event: {str(e)}")
+                    st.error(f"Error categorizing event: {str(e)}")
                     st.stop()
 
                 # Create event
@@ -384,7 +384,7 @@ with tab2:
 
 # Tab 3: AI Classifier Info
 with tab3:
-    st.markdown("### 🤖 AI Event Classifier")
+    st.markdown("### AI Event Classifier")
     st.markdown("Learn about how the AI categorizes events")
 
     st.markdown("""
@@ -419,15 +419,15 @@ with tab3:
 
     st.markdown("---")
 
-    st.markdown("#### 🧪 Try the Classifier")
+    st.markdown("#### Try the Classifier")
 
     test_title = st.text_input("Enter an event title:", placeholder="e.g., Basketball Game vs Georgia")
     test_description = st.text_area("Enter event description:", placeholder="Describe the event...")
 
-    if st.button("🔮 Classify This Event", type="primary"):
+    if st.button("Classify This Event", type="primary"):
         if test_title or test_description:
             if st.session_state.event_classifier is None:
-                st.error("⚠️ Event classifier not initialized. Please refresh the page.")
+                st.error("Event classifier not initialized. Please refresh the page.")
             else:
                 try:
                     result = st.session_state.event_classifier.predict(
@@ -458,7 +458,7 @@ with tab3:
                     with result_col2:
                         st.markdown("**Suggested Tags:**")
                         for tag in result['suggested_tags']:
-                            st.markdown(f"- 🏷️ {tag}")
+                            st.markdown(f"- {tag}")
 
                     st.markdown("---")
                     st.markdown("**All Category Probabilities:**")
@@ -466,7 +466,7 @@ with tab3:
                     for category, prob in sorted(result['all_probabilities'].items(), key=lambda x: x[1], reverse=True):
                         st.progress(prob, text=f"{category}: {prob*100:.1f}%")
                 except Exception as e:
-                    st.error(f"⚠️ Error classifying event: {str(e)}")
+                    st.error(f"Error classifying event: {str(e)}")
 
         else:
             st.warning("Please enter at least a title or description")
@@ -474,7 +474,7 @@ with tab3:
     st.markdown("---")
 
     # Training section
-    with st.expander("🎓 Model Training Info"):
+    with st.expander("Model Training Info"):
         st.markdown("""
         The classifier is based on a pretrained transformer model (DistilBERT) and can be fine-tuned
         on campus-specific event data for improved accuracy.
@@ -494,7 +494,7 @@ with tab3:
             st.metric("Model", "DistilBERT")
             st.metric("Parameters", "~66M")
 
-        if st.button("🚀 Train Improved Classifier", type="primary", use_container_width=True):
+        if st.button("Train Classifier", type="primary", use_container_width=True):
             with st.spinner("Training improved classifier with advanced techniques... This will take 2-3 minutes."):
                 try:
                     progress_bar = st.progress(0)
@@ -515,20 +515,20 @@ with tab3:
                     progress_bar.progress(100)
                     status_text.text("Training complete!")
 
-                    st.success("✅ Improved classifier trained successfully with advanced fine-tuning!")
+                    st.success("Improved classifier trained successfully with advanced fine-tuning!")
 
                     # Show training results
                     st.balloons()
 
                 except Exception as e:
-                    st.warning(f"⚠️ Transformer training unavailable: {str(e)}")
-                    st.info("💡 The app will use an enhanced rule-based classifier instead, which still works great!")
+                    st.warning(f"Transformer training unavailable: {str(e)}")
+                    st.info("The app will use an enhanced rule-based classifier instead, which still works great!")
                     st.info("To enable full transformer training, ensure PyTorch and Transformers are installed correctly.")
 
 # Footer
 st.markdown("---")
 st.markdown("""
 <div style="text-align: center; color: #666; padding: 1rem 0;">
-    <p>🎉 Campus Pulse Events | Powered by AI</p>
+    <p>Campus Pulse Events | Powered by AI</p>
 </div>
 """, unsafe_allow_html=True)

@@ -118,14 +118,14 @@ if 'signup_data' not in st.session_state:
 # Check if user is logged in
 if 'user' not in st.session_state or st.session_state.user is None:
     # Show login/signup page
-    st.title("👤 Welcome to Campus Pulse")
+    st.title("Welcome to Campus Pulse")
     st.markdown("Sign in or create an account to get the full Campus Pulse experience!")
 
     tab1, tab2 = st.tabs(["🔑 Sign In", "📝 Sign Up"])
 
     # Sign In Tab
     with tab1:
-        st.markdown("### 🔑 Sign In to Your Account")
+        st.markdown("### Sign In to Your Account")
 
         with st.form("signin_form"):
             email = st.text_input("UFL Email", placeholder="yourname@ufl.edu")
@@ -151,7 +151,7 @@ if 'user' not in st.session_state or st.session_state.user is None:
 
     # Sign Up Tab
     with tab2:
-        st.markdown("### 📝 Create Your Account")
+        st.markdown("### Create Your Account")
         st.markdown("Join the Campus Pulse community and personalize your experience!")
 
         with st.form("signup_form"):
@@ -234,7 +234,7 @@ if 'user' not in st.session_state or st.session_state.user is None:
         # Email Verification Section (shown after code is sent)
         if st.session_state.verification_code_sent and st.session_state.signup_data:
             st.markdown("---")
-            st.markdown("### 📧 Email Verification")
+            st.markdown("### Email Verification")
             st.info(f"A 4-digit code has been sent to **{st.session_state.verification_email}**")
 
             verification_code = st.text_input(
@@ -336,36 +336,36 @@ else:
         col1, col2 = st.columns([1, 2])
 
         with col1:
-            st.markdown("### 📸 Profile Picture")
+            st.markdown("### Profile Picture")
             st.markdown('<div style="width: 150px; height: 150px; background: linear-gradient(135deg, #0021A5 0%, #FA4616 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 60px; color: white; font-weight: bold;">' + user['full_name'][0].upper() + '</div>', unsafe_allow_html=True)
 
-            st.markdown("### 🎓 Student Info")
+            st.markdown("### Student Info")
             if user.get('major'):
                 st.markdown(f"**Major:** {user['major']}")
             if user.get('year'):
                 st.markdown(f"**Year:** {user['year']}")
             st.markdown(f"**Email:** {user['email']}")
 
-            st.markdown("### 🔒 Privacy")
+            st.markdown("### Privacy")
             visibility_emoji = "🌍" if user['profile_visibility'] == 'public' else "🔒"
             st.markdown(f"{visibility_emoji} **Profile:** {user['profile_visibility'].title()}")
 
         with col2:
-            st.markdown("### ℹ️ About Me")
+            st.markdown("### About Me")
             if user.get('bio'):
                 st.markdown(f"*{user['bio']}*")
             else:
                 st.info("No bio added yet. Click 'Edit Profile' to add one!")
 
             if user.get('interests'):
-                st.markdown("### 🎯 Interests")
+                st.markdown("### Interests")
                 interests_list = user['interests'].split(',')
                 cols = st.columns(min(len(interests_list), 4))
                 for idx, interest in enumerate(interests_list[:8]):
                     with cols[idx % 4]:
                         st.markdown(f'<span style="background: #F0F2F6; padding: 0.5rem 1rem; border-radius: 20px; display: inline-block; margin: 0.25rem;">🏷️ {interest.strip()}</span>', unsafe_allow_html=True)
 
-            st.markdown("### 📊 Activity Stats")
+            st.markdown("### Activity Stats")
             stat_col1, stat_col2, stat_col3 = st.columns(3)
 
             with stat_col1:
@@ -381,7 +381,7 @@ else:
 
     # Edit Profile Tab
     with profile_tab2:
-        st.markdown("### ✏️ Update Your Profile")
+        st.markdown("### Update Your Profile")
 
         with st.form("update_profile_form"):
             col1, col2 = st.columns(2)
@@ -430,7 +430,7 @@ else:
 
     # Find Students Tab
     with profile_tab3:
-        st.markdown("### 🔍 Discover UF Students")
+        st.markdown("### Discover UF Students")
 
         search_query = st.text_input("🔎 Search by name or major", placeholder="Search students...")
 
@@ -463,7 +463,7 @@ else:
             public_profiles = st.session_state.auth_manager.get_public_profiles(limit=20)
 
             if public_profiles:
-                st.markdown(f"### 🌟 Student Directory ({len(public_profiles)} students)")
+                st.markdown(f"### Student Directory ({len(public_profiles)} students)")
 
                 for student in public_profiles:
                     with st.container():

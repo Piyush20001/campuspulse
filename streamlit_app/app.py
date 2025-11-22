@@ -148,7 +148,7 @@ st.markdown('<h1 class="main-header">🎓 Campus Pulse</h1>', unsafe_allow_html=
 st.markdown('<p class="sub-header">AI-Powered Real-Time Campus Intelligence for University of Florida</p>', unsafe_allow_html=True)
 
 # Quick stats row
-st.markdown("### 📊 Live Campus Stats")
+st.markdown("### Live Campus Stats")
 stat_col1, stat_col2, stat_col3, stat_col4 = st.columns(4)
 
 all_crowds = st.session_state.simulator.get_all_current_crowds()
@@ -174,19 +174,19 @@ st.markdown("---")
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    st.markdown("### 🗺️ Live Crowd Heatmap")
+    st.markdown("### Live Crowd Heatmap")
     st.write("View real-time crowd density across campus locations. Get instant occupancy levels and forecasts.")
     if st.button("Go to Heatmap →", key="btn_heatmap"):
         st.switch_page("pages/1_🗺️_Crowd_Heatmap.py")
 
 with col2:
-    st.markdown("### 🎉 Campus Events")
+    st.markdown("### Campus Events")
     st.write("Discover 100+ real UF events with AI-powered categorization and crowd forecasts.")
     if st.button("Browse Events →", key="btn_events"):
         st.switch_page("pages/2_🎉_Events.py")
 
 with col3:
-    st.markdown("### ⭐ Saved Locations")
+    st.markdown("### Saved Locations")
     st.write("Save your favorite campus spots and get smart recommendations based on forecasts.")
     if st.button("My Locations →", key="btn_saved"):
         st.switch_page("pages/3_⭐_Saved_Locations.py")
@@ -194,12 +194,12 @@ with col3:
 st.markdown("---")
 
 # Feature highlights
-st.markdown("### ✨ Key Features")
+st.markdown("### Key Features")
 
 col1, col2 = st.columns(2)
 
 with col1:
-    st.markdown("#### 🤖 AI-Powered Features")
+    st.markdown("#### AI-Powered Features")
     st.markdown("""
     - **LSTM Forecasting**: Predict crowd levels up to 1 hour ahead
     - **Improved NLP Event Classification**: 90%+ accuracy with transformer fine-tuning
@@ -209,7 +209,7 @@ with col1:
     """)
 
 with col2:
-    st.markdown("#### 📊 Real-Time Intelligence")
+    st.markdown("#### Real-Time Intelligence")
     st.markdown("""
     - **Interactive Heatmap**: Folium map with color-coded crowd density
     - **Stable Map**: Fixed refresh issue - smooth interaction guaranteed
@@ -221,7 +221,7 @@ with col2:
 st.markdown("---")
 
 # Current campus overview
-st.markdown("### 📍 Current Campus Overview")
+st.markdown("### Current Campus Overview")
 
 # Get top 5 busiest locations
 sorted_crowds = sorted(all_crowds, key=lambda x: x['percentage'], reverse=True)
@@ -240,13 +240,13 @@ with col1:
         with col_b:
             # Color based on level
             if crowd['percentage'] > 85:
-                st.markdown(f'<span style="color: red;">🔴 {crowd["percentage"]}%</span>', unsafe_allow_html=True)
+                st.markdown(f'<span style="color: red; font-weight: 600;">{crowd["percentage"]}%</span>', unsafe_allow_html=True)
             elif crowd['percentage'] > 60:
-                st.markdown(f'<span style="color: orange;">🟠 {crowd["percentage"]}%</span>', unsafe_allow_html=True)
+                st.markdown(f'<span style="color: orange; font-weight: 600;">{crowd["percentage"]}%</span>', unsafe_allow_html=True)
             elif crowd['percentage'] > 30:
-                st.markdown(f'<span style="color: #FFD700;">🟡 {crowd["percentage"]}%</span>', unsafe_allow_html=True)
+                st.markdown(f'<span style="color: #FFD700; font-weight: 600;">{crowd["percentage"]}%</span>', unsafe_allow_html=True)
             else:
-                st.markdown(f'<span style="color: green;">🟢 {crowd["percentage"]}%</span>', unsafe_allow_html=True)
+                st.markdown(f'<span style="color: green; font-weight: 600;">{crowd["percentage"]}%</span>', unsafe_allow_html=True)
 
         with col_c:
             st.write(f"{crowd['headcount']}/{crowd['capacity']}")

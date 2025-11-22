@@ -81,11 +81,11 @@ if 'saved_locations' not in st.session_state:
     st.session_state.saved_locations = []
 
 # Page header
-st.title("⭐ Saved Locations")
+st.title("Saved Locations")
 st.markdown("Track crowd levels and events at your favorite campus spots")
 
 # Add location section
-st.markdown("### ➕ Add a Location")
+st.markdown("### Add a Location")
 
 add_col1, add_col2 = st.columns([3, 1])
 
@@ -118,7 +118,7 @@ st.markdown("---")
 if len(st.session_state.saved_locations) == 0:
     st.info("👆 You haven't saved any locations yet. Add one above to get started!")
 else:
-    st.markdown(f"### 📍 Your Saved Locations ({len(st.session_state.saved_locations)})")
+    st.markdown(f"### Your Saved Locations ({len(st.session_state.saved_locations)})")
 
     # Quick summary
     summary_col1, summary_col2, summary_col3 = st.columns(3)
@@ -335,6 +335,6 @@ with action_col3:
 st.markdown("---")
 st.markdown("""
 <div style="text-align: center; color: #666; padding: 1rem 0;">
-    <p>⭐ Saved Locations | Last updated: {}</p>
+    <p>Saved Locations | Last updated: {}</p>
 </div>
 """.format(datetime.now().strftime('%I:%M:%S %p')), unsafe_allow_html=True)

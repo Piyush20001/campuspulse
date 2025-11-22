@@ -90,11 +90,11 @@ if 'last_refresh' not in st.session_state:
     st.session_state.last_refresh = datetime.now()
 
 # Page header
-st.title("🗺️ Live Crowd Heatmap")
+st.title("Live Crowd Heatmap")
 st.markdown("Real-time crowd density across UF campus with AI-powered forecasts")
 
 # Filters
-st.markdown("### 🔍 Filters")
+st.markdown("### Filters")
 
 categories = ["ALL", "GYMS", "LIBRARIES", "DINING", "ACADEMIC", "HOUSING", "STUDY SPOTS", "OUTDOORS"]
 
@@ -239,7 +239,7 @@ with map_col:
     )
 
 with table_col:
-    st.markdown("### 📊 Current Levels")
+    st.markdown("### Current Levels")
 
     # Create DataFrame for display
     display_data = []
@@ -305,7 +305,7 @@ if selected_location:
         st.write(f"**Category**: {selected_location['category']}")
 
     # Historical and forecast chart
-    st.markdown("#### 📊 Trend & Forecast")
+    st.markdown("#### Trend & Forecast")
 
     # Generate historical data
     hist_data = st.session_state.simulator.generate_historical_data(selected_location, days=1, interval_minutes=10)
@@ -339,7 +339,7 @@ st.markdown("---")
 col1, col2, col3 = st.columns([1, 1, 1])
 
 with col2:
-    if st.button("🔄 Refresh Data", use_container_width=True, type="primary", key="manual_refresh_btn"):
+    if st.button("Refresh Data", use_container_width=True, type="primary", key="manual_refresh_btn"):
         st.session_state.force_refresh = True
         st.session_state.simulator = CrowdDataSimulator()
         st.session_state.last_refresh = datetime.now()

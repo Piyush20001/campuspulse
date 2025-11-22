@@ -214,6 +214,8 @@ def create_top_navbar():
             padding: 0.75rem !important;
             font-size: 0.95rem !important;
             transition: all 0.3s ease !important;
+            background-color: {secondary_bg} !important;
+            color: {text_color} !important;
         }}
 
         .stTextInput > div > div > input:focus,
@@ -222,10 +224,60 @@ def create_top_navbar():
             box-shadow: 0 0 0 3px rgba(0,33,165,0.1) !important;
         }}
 
+        /* Input labels */
+        .stTextInput > label, .stTextArea > label, .stSelectbox > label,
+        .stNumberInput > label, .stMultiSelect > label, .stRadio > label {{
+            color: {text_color} !important;
+            font-weight: 500 !important;
+        }}
+
         /* Modern selectbox */
         .stSelectbox > div > div {{
             font-family: 'Inter', sans-serif !important;
             border-radius: 10px !important;
+        }}
+
+        .stSelectbox [data-baseweb="select"] {{
+            background-color: {secondary_bg} !important;
+        }}
+
+        .stSelectbox [data-baseweb="select"] > div {{
+            color: {text_color} !important;
+            background-color: {secondary_bg} !important;
+        }}
+
+        /* Dropdown options */
+        [role="option"] {{
+            color: {text_color} !important;
+            background-color: {secondary_bg} !important;
+        }}
+
+        [role="option"]:hover {{
+            background-color: {bg_color} !important;
+        }}
+
+        /* Fix all text in tabs, expandersexpander headers, etc */
+        .stTabs [data-baseweb="tab"] p {{
+            color: {text_color} !important;
+        }}
+
+        details summary {{
+            color: {text_color} !important;
+        }}
+
+        /* Fix info/warning/error/success boxes text */
+        .stAlert, .stAlert p, .stAlert div {{
+            color: #262730 !important;
+        }}
+
+        /* Fix dataframe/table text */
+        .stDataFrame, .stDataFrame * {{
+            color: {text_color} !important;
+        }}
+
+        /* Fix checkbox and radio text */
+        .stCheckbox label, .stRadio label {{
+            color: {text_color} !important;
         }}
 
         /* Mobile responsive */
