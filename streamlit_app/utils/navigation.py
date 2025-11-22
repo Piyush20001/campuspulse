@@ -76,6 +76,29 @@ def create_top_navbar():
             padding-top: 1rem;
             max-width: 100%;
             background-color: {bg_color} !important;
+            color: {text_color} !important;
+        }}
+
+        /* Force all text elements to use theme colors */
+        .main * {{
+            color: {text_color} !important;
+        }}
+
+        /* Override Streamlit's default white backgrounds */
+        section[data-testid="stSidebar"] > div {{
+            background-color: {bg_color} !important;
+        }}
+
+        div[data-testid="stVerticalBlock"] {{
+            background-color: {bg_color} !important;
+        }}
+
+        div[data-testid="stHorizontalBlock"] {{
+            background-color: {bg_color} !important;
+        }}
+
+        div[data-testid="column"] {{
+            background-color: {bg_color} !important;
         }}
 
         /* Text elements - NO aggressive font overrides */
@@ -98,9 +121,12 @@ def create_top_navbar():
             margin-bottom: 0.75rem !important;
         }}
 
-        h1 {{ font-size: 2.5rem !important; }}
-        h2 {{ font-size: 2rem !important; }}
-        h3 {{ font-size: 1.5rem !important; }}
+        h1 {{ font-size: 2.5rem !important; color: {text_color} !important; }}
+        h2 {{ font-size: 2rem !important; color: {text_color} !important; }}
+        h3 {{ font-size: 1.5rem !important; color: {text_color} !important; }}
+        h4 {{ color: {text_color} !important; }}
+        h5 {{ color: {text_color} !important; }}
+        h6 {{ color: {text_color} !important; }}
 
         /* Metrics and stats */
         [data-testid="stMetricValue"] {{
@@ -182,7 +208,7 @@ def create_top_navbar():
             font-weight: 500 !important;
             border-radius: 6px !important;
             padding: 0.5rem 1rem !important;
-            border: none !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
             transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1) !important;
             font-size: 0.875rem !important;
             line-height: 1.25rem !important;
@@ -192,11 +218,11 @@ def create_top_navbar():
             justify-content: center !important;
             gap: 0.5rem !important;
             white-space: nowrap !important;
-            text-transform: uppercase !important;
+            text-transform: none !important;
             letter-spacing: 0.025em !important;
-            background: transparent !important;
-            color: {button_text} !important;
-            box-shadow: none !important;
+            background-color: {secondary_bg} !important;
+            color: {text_color} !important;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
         }}
 
         .stButton > button:hover {{
@@ -218,13 +244,33 @@ def create_top_navbar():
             background-color: #374151 !important;
         }}
 
-        /* Secondary buttons - Ghost style */
+        /* Secondary buttons */
         .stButton > button[kind="secondary"] {{
-            background: transparent !important;
-            color: {button_text} !important;
+            background-color: {secondary_bg} !important;
+            color: {text_color} !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
         }}
 
         .stButton > button[kind="secondary"]:hover {{
+            background-color: {card_bg} !important;
+            color: white !important;
+            border-color: rgba(255, 255, 255, 0.2) !important;
+        }}
+
+        /* Navbar buttons specific styling */
+        [data-testid="column"] .stButton > button {{
+            background-color: transparent !important;
+            border: none !important;
+            color: {button_text} !important;
+            text-transform: uppercase !important;
+        }}
+
+        [data-testid="column"] .stButton > button:hover {{
+            background-color: {button_hover_bg} !important;
+            color: white !important;
+        }}
+
+        [data-testid="column"] .stButton > button[kind="primary"] {{
             background-color: {button_hover_bg} !important;
             color: white !important;
         }}
@@ -301,6 +347,25 @@ def create_top_navbar():
 
         /* Fix checkbox and radio text */
         .stCheckbox label, .stRadio label {{
+            color: {text_color} !important;
+        }}
+
+        /* Ensure all labels are visible */
+        label {{
+            color: {text_color} !important;
+        }}
+
+        /* Fix divs and spans */
+        div, span {{
+            color: inherit;
+        }}
+
+        /* Make sure markdown content is visible */
+        .stMarkdown {{
+            color: {text_color} !important;
+        }}
+
+        .stMarkdown * {{
             color: {text_color} !important;
         }}
 
