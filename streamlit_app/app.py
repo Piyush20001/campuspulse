@@ -1,0 +1,218 @@
+"""
+Campus Pulse - Main Streamlit Application
+AI-powered real-time campus crowd and event intelligence platform
+"""
+import streamlit as st
+import sys
+import os
+
+# Add parent directory to path
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+from data.simulator import CrowdDataSimulator
+from data.events_data import EventGenerator
+from data.locations import UF_LOCATIONS
+from models.lstm_forecaster import CrowdForecaster
+from models.event_classifier import EventCategorizer
+from models.anomaly_detector import AnomalyDetector
+
+# Page configuration
+st.set_page_config(
+    page_title="Campus Pulse - UF",
+    page_icon="🎓",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
+# Custom CSS
+st.markdown("""
+<style>
+    .main-header {
+        font-size: 3rem;
+        font-weight: bold;
+        color: #0021A5;
+        text-align: center;
+        padding: 1rem 0;
+        background: linear-gradient(90deg, #0021A5, #FA4616);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .sub-header {
+        text-align: center;
+        color: #666;
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
+    }
+    .metric-card {
+        background: white;
+        padding: 1rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .stButton>button {
+        width: 100%;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+# Initialize session state
+def init_session_state():
+    """Initialize session state variables"""
+    if 'simulator' not in st.session_state:
+        st.session_state.simulator = CrowdDataSimulator()
+
+    if 'event_generator' not in st.session_state:
+        st.session_state.event_generator = EventGenerator()
+        st.session_state.events = st.session_state.event_generator.generate_random_events(30)
+
+    if 'forecaster' not in st.session_state:
+        st.session_state.forecaster = CrowdForecaster()
+
+    if 'event_classifier' not in st.session_state:
+        st.session_state.event_classifier = EventCategorizer()
+
+    if 'anomaly_detector' not in st.session_state:
+        st.session_state.anomaly_detector = AnomalyDetector()
+
+    if 'saved_locations' not in st.session_state:
+        st.session_state.saved_locations = []
+
+    if 'user_created_events' not in st.session_state:
+        st.session_state.user_created_events = []
+
+init_session_state()
+
+# Sidebar
+with st.sidebar:
+    st.markdown("### 🎓 Campus Pulse")
+    st.markdown("**University of Florida**")
+    st.markdown("---")
+
+    # Navigation
+    st.markdown("### 📍 Navigation")
+    st.markdown("Use the pages in the sidebar to navigate:")
+    st.markdown("- 🗺️ **Crowd Heatmap** - Live crowd density map")
+    st.markdown("- 🎉 **Events** - Campus events & AI categorization")
+    st.markdown("- ⭐ **Saved Locations** - Your favorite places")
+
+    st.markdown("---")
+
+    # Quick stats
+    st.markdown("### 📊 Quick Stats")
+    all_crowds = st.session_state.simulator.get_all_current_crowds()
+    avg_occupancy = sum(c['percentage'] for c in all_crowds) / len(all_crowds)
+
+    st.metric("Avg Campus Occupancy", f"{avg_occupancy:.0f}%")
+    st.metric("Active Locations", len(UF_LOCATIONS))
+    st.metric("Upcoming Events", len([e for e in st.session_state.events if e['start_time'].date() >= st.date.today()]))
+
+    st.markdown("---")
+
+    # Refresh button
+    if st.button("🔄 Refresh Data", use_container_width=True):
+        # Regenerate crowd data
+        st.session_state.simulator = CrowdDataSimulator()
+        st.rerun()
+
+# Main page content
+st.markdown('<h1 class="main-header">🎓 Campus Pulse</h1>', unsafe_allow_html=True)
+st.markdown('<p class="sub-header">AI-Powered Real-Time Campus Intelligence for University of Florida</p>', unsafe_allow_html=True)
+
+st.markdown("---")
+
+# Welcome section
+col1, col2, col3 = st.columns(3)
+
+with col1:
+    st.markdown("### 🗺️ Live Crowd Heatmap")
+    st.write("View real-time crowd density across campus locations. Get instant occupancy levels and forecasts.")
+    if st.button("Go to Heatmap →", key="btn_heatmap"):
+        st.switch_page("pages/1_🗺️_Crowd_Heatmap.py")
+
+with col2:
+    st.markdown("### 🎉 Campus Events")
+    st.write("Discover upcoming events with AI-powered categorization and crowd forecasts for event times.")
+    if st.button("Browse Events →", key="btn_events"):
+        st.switch_page("pages/2_🎉_Events.py")
+
+with col3:
+    st.markdown("### ⭐ Saved Locations")
+    st.write("Save your favorite campus spots and get notifications about crowd levels and events.")
+    if st.button("My Locations →", key="btn_saved"):
+        st.switch_page("pages/3_⭐_Saved_Locations.py")
+
+st.markdown("---")
+
+# Feature highlights
+st.markdown("### ✨ Key Features")
+
+col1, col2 = st.columns(2)
+
+with col1:
+    st.markdown("#### 🤖 AI-Powered Features")
+    st.markdown("""
+    - **LSTM Forecasting**: Predict crowd levels up to 1 hour ahead
+    - **NLP Event Classification**: Automatic event categorization using transformers
+    - **Anomaly Detection**: Alert for unusual crowd patterns using autoencoders
+    - **Smart Recommendations**: Get personalized suggestions based on your preferences
+    """)
+
+with col2:
+    st.markdown("#### 📊 Real-Time Intelligence")
+    st.markdown("""
+    - **Live Heatmap**: Interactive map with color-coded crowd density
+    - **Historical Trends**: View past crowd patterns and trends
+    - **Event Integration**: See events overlaid on crowd data
+    - **Custom Alerts**: Get notified when your favorite spots are available
+    """)
+
+st.markdown("---")
+
+# Current campus overview
+st.markdown("### 📍 Current Campus Overview")
+
+# Get top 5 busiest locations
+all_crowds = st.session_state.simulator.get_all_current_crowds()
+sorted_crowds = sorted(all_crowds, key=lambda x: x['percentage'], reverse=True)
+
+col1, col2 = st.columns([2, 1])
+
+with col1:
+    st.markdown("#### Busiest Locations Right Now")
+
+    for i, crowd in enumerate(sorted_crowds[:5]):
+        col_a, col_b, col_c = st.columns([3, 1, 1])
+
+        with col_a:
+            st.write(f"**{i+1}. {crowd['location_name']}**")
+
+        with col_b:
+            # Color based on level
+            if crowd['percentage'] > 85:
+                st.markdown(f'<span style="color: red;">🔴 {crowd["percentage"]}%</span>', unsafe_allow_html=True)
+            elif crowd['percentage'] > 60:
+                st.markdown(f'<span style="color: orange;">🟠 {crowd["percentage"]}%</span>', unsafe_allow_html=True)
+            elif crowd['percentage'] > 30:
+                st.markdown(f'<span style="color: #FFD700;">🟡 {crowd["percentage"]}%</span>', unsafe_allow_html=True)
+            else:
+                st.markdown(f'<span style="color: green;">🟢 {crowd["percentage"]}%</span>', unsafe_allow_html=True)
+
+        with col_c:
+            st.write(f"{crowd['headcount']}/{crowd['capacity']}")
+
+with col2:
+    st.markdown("#### Quietest Spots")
+    quietest = sorted(all_crowds, key=lambda x: x['percentage'])[:3]
+
+    for crowd in quietest:
+        st.success(f"**{crowd['location_name']}** - {crowd['percentage']}% full")
+
+st.markdown("---")
+
+# Footer
+st.markdown("""
+<div style="text-align: center; color: #666; padding: 2rem 0;">
+    <p>Campus Pulse | University of Florida | Powered by AI</p>
+    <p style="font-size: 0.8rem;">Data updates every 30 seconds • Forecasts updated every 10 minutes</p>
+</div>
+""", unsafe_allow_html=True)
