@@ -12,6 +12,7 @@ Campus Pulse combines real-time crowd analytics, AI-powered event classification
 - 🔍 **Anomaly Detection** - Autoencoder-based unusual pattern detection
 - ⭐ **Saved Locations** - Personalize your campus monitoring
 - 🎉 **Event Management** - Browse and create campus events with AI tagging
+- 👤 **Student Profiles** - UFL email authentication with customizable profiles and privacy controls
 
 ## 🚀 Quick Start with Docker (Recommended)
 

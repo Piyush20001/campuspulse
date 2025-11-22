@@ -106,7 +106,12 @@ def create_top_navbar():
     st.markdown(navbar_html, unsafe_allow_html=True)
 
     # Create navigation buttons using Streamlit columns
-    cols = st.columns([1, 1, 1, 1, 1, 3])
+    # Show user name if logged in
+    user_name = ""
+    if 'user' in st.session_state and st.session_state.user:
+        user_name = st.session_state.user.get('full_name', '').split()[0]  # First name only
+
+    cols = st.columns([1, 1, 1, 1, 1, 1, 2])
 
     with cols[0]:
         if st.button("🏠 Home", key="nav_home", use_container_width=True,
@@ -133,6 +138,13 @@ def create_top_navbar():
             st.switch_page("pages/3_⭐_Saved_Locations.py")
 
     with cols[4]:
+        profile_label = f"👤 {user_name}" if user_name else "👤 Profile"
+        if st.button(profile_label, key="nav_profile", use_container_width=True,
+                    type="primary" if current_page == 'Profile' else "secondary"):
+            st.session_state.current_page = 'Profile'
+            st.switch_page("pages/4_👤_Profile.py")
+
+    with cols[5]:
         if st.button("🔄 Refresh", key="nav_refresh", use_container_width=True):
             # Trigger data refresh
             if 'last_refresh' in st.session_state:
