@@ -1,0 +1,51 @@
+# Prometheus Configuration for Campus Pulse
+global:
+  scrape_interval: 15s  # How frequently to scrape targets
+  evaluation_interval: 15s  # How frequently to evaluate rules
+  external_labels:
+    cluster: 'campus-pulse'
+    environment: 'production'
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - alertmanager:9093
+
+# Load rules once and periodically evaluate them
+rule_files:
+  - "alert_rules.yml"
+
+# Scrape configurations
+scrape_configs:
+  # Campus Pulse Application Metrics
+  - job_name: 'campus-pulse-app'
+    scrape_interval: 10s
+    static_configs:
+      - targets: ['app:8501']  # Streamlit default port
+        labels:
+          service: 'campus-pulse'
+          component: 'web-app'
+
+  # Prometheus Self-Monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Node Exporter for System Metrics (optional)
+  - job_name: 'node'
+    static_configs:
+      - targets: ['node-exporter:9100']
+        labels:
+          instance: 'campus-pulse-server'
+
+  # Python Application Metrics Endpoint
+  - job_name: 'campus-pulse-metrics'
+    metrics_path: '/metrics'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['app:8000']  # Metrics endpoint
+        labels:
+          service: 'campus-pulse'
+          component: 'metrics-exporter'
