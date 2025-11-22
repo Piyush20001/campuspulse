@@ -8,6 +8,15 @@ import sys
 # Add parent directory to path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+try:
+    from utils.image_utils import get_uf_logo_html, get_campus_pulse_logo_html
+except ImportError:
+    # Fallback if image_utils not available
+    def get_uf_logo_html(css_class="navbar-logo", style=""):
+        return '<img src="https://i.imgur.com/5bZvhKL.png" class="navbar-logo" alt="UF Logo" />'
+    def get_campus_pulse_logo_html(css_class="navbar-logo", style=""):
+        return ''
+
 def create_top_navbar():
     """Create a horizontal navigation bar at the top"""
 
@@ -152,23 +161,31 @@ def create_top_navbar():
 
     # Left side - Logos and branding
     navbar_html += '<div class="navbar-left">'
-    navbar_html += '<img src="https://i.imgur.com/5bZvhKL.png" class="navbar-logo" alt="UF Logo" />'
 
-    # Campus Pulse logo with heat gradient
-    navbar_html += '''
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60" class="navbar-logo" style="height: 45px; width: 45px; margin: 0 0.5rem;">
-      <defs>
-        <radialGradient id="heatGradient">
-          <stop offset="0%" style="stop-color:#FA4616;stop-opacity:1" />
-          <stop offset="50%" style="stop-color:#FFA500;stop-opacity:0.7" />
-          <stop offset="100%" style="stop-color:#0021A5;stop-opacity:0.3" />
-        </radialGradient>
-      </defs>
-      <circle cx="30" cy="30" r="25" fill="url(#heatGradient)"/>
-      <circle cx="30" cy="30" r="18" fill="none" stroke="white" stroke-width="2" opacity="0.6"/>
-      <circle cx="30" cy="30" r="8" fill="white"/>
-    </svg>
-    '''
+    # UF Logo (loads from assets/images/uf_logo.png or falls back to external URL)
+    navbar_html += get_uf_logo_html(css_class="navbar-logo", style="")
+
+    # Campus Pulse logo (loads from assets/images/ or uses SVG fallback)
+    campus_logo = get_campus_pulse_logo_html(css_class="navbar-logo", style="height: 45px; width: 45px; margin: 0 0.5rem;")
+
+    if campus_logo:
+        navbar_html += campus_logo
+    else:
+        # SVG fallback if no custom logo
+        navbar_html += '''
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60" class="navbar-logo" style="height: 45px; width: 45px; margin: 0 0.5rem;">
+          <defs>
+            <radialGradient id="heatGradient">
+              <stop offset="0%" style="stop-color:#FA4616;stop-opacity:1" />
+              <stop offset="50%" style="stop-color:#FFA500;stop-opacity:0.7" />
+              <stop offset="100%" style="stop-color:#0021A5;stop-opacity:0.3" />
+            </radialGradient>
+          </defs>
+          <circle cx="30" cy="30" r="25" fill="url(#heatGradient)"/>
+          <circle cx="30" cy="30" r="18" fill="none" stroke="white" stroke-width="2" opacity="0.6"/>
+          <circle cx="30" cy="30" r="8" fill="white"/>
+        </svg>
+        '''
 
     navbar_html += '<div class="navbar-brand">'
     navbar_html += '<span>Campus Pulse</span>'
