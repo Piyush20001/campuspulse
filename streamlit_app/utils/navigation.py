@@ -309,6 +309,76 @@ def create_top_navbar():
             object-fit: contain !important;
         }}
 
+        /* Position button row into navbar area */
+        .main > .block-container > div:first-of-type {{
+            margin-top: -80px !important;
+            padding-top: 20px !important;
+            padding-right: 2.5rem !important;
+            position: relative !important;
+            z-index: 100 !important;
+            pointer-events: none !important;
+        }}
+
+        .main > .block-container > div:first-of-type [data-testid="column"] {{
+            pointer-events: auto !important;
+            background-color: transparent !important;
+        }}
+
+        /* Add spacing after navbar for content */
+        .main > .block-container > div:nth-of-type(2) {{
+            margin-top: 2rem !important;
+        }}
+
+        /* Navbar button styling - Match React ghost variant */
+        [data-testid="column"] .stButton > button {{
+            font-family: 'Inter', sans-serif !important;
+            font-weight: 500 !important;
+            background-color: transparent !important;
+            border: none !important;
+            color: {button_text} !important;
+            text-transform: uppercase !important;
+            font-size: 0.875rem !important;
+            padding: 0.5rem 1rem !important;
+            border-radius: 6px !important;
+        }}
+
+        [data-testid="column"] .stButton > button:hover {{
+            background-color: {button_hover_bg} !important;
+            color: white !important;
+        }}
+
+        [data-testid="column"] .stButton > button[kind="primary"] {{
+            background-color: {button_hover_bg} !important;
+            color: white !important;
+        }}
+
+        [data-testid="column"] .stButton > button[kind="primary"]:hover {{
+            background-color: #374151 !important;
+        }}
+
+        /* Expander for user dropdown */
+        [data-testid="column"] .streamlit-expanderHeader {{
+            background-color: transparent !important;
+            border: none !important;
+            color: {button_text} !important;
+            font-weight: 500 !important;
+            padding: 0.5rem 1rem !important;
+            border-radius: 6px !important;
+            font-size: 0.875rem !important;
+        }}
+
+        [data-testid="column"] .streamlit-expanderHeader:hover {{
+            background-color: {button_hover_bg} !important;
+        }}
+
+        [data-testid="column"] details {{
+            border: none !important;
+        }}
+
+        [data-testid="column"] details[open] summary {{
+            border-bottom: none !important;
+        }}
+
         /* Button styling - Match React ghost variant */
         .stButton > button {{
             font-family: 'Inter', sans-serif !important;
@@ -591,69 +661,11 @@ def create_top_navbar():
         '''
     navbar_html += '</div>'  # Close navbar-center
 
-    # Right side - Navigation buttons
-    navbar_html += '<div class="navbar-right">'
-
-    # Check if user is logged in for username display
-    if 'user' in st.session_state and st.session_state.user:
-        user_name = st.session_state.user.get('full_name', 'User').split()[0]
-        navbar_html += f'''
-        <div class="dropdown">
-            <button class="nav-button dropdown-toggle" onclick="toggleDropdown(); event.stopPropagation();">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="12" cy="7" r="4"></circle>
-                </svg>
-                {user_name.upper()}
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-            </button>
-            <div class="dropdown-menu" id="userDropdown">
-                <a class="dropdown-item" href="?nav=saved" target="_parent">📍 Saved Locations</a>
-                <a class="dropdown-item" href="?nav=settings" target="_parent">⚙️ Settings</a>
-                <a class="dropdown-item" href="?nav=signout" target="_parent">🚪 Sign Out</a>
-            </div>
-        </div>
-        '''
-    else:
-        navbar_html += '<a href="?nav=signin" target="_parent" style="text-decoration: none;"><button class="nav-button nav-button-primary">SIGN IN</button></a>'
-
-    # CROWD button
-    navbar_html += '<a href="?nav=crowd" target="_parent" style="text-decoration: none;"><button class="nav-button">CROWD</button></a>'
-
-    # EVENTS button
-    navbar_html += '<a href="?nav=events" target="_parent" style="text-decoration: none;"><button class="nav-button">EVENTS</button></a>'
-
-    navbar_html += '</div>'  # Close navbar-right
+    # Right side - empty div for spacing (buttons will be Streamlit widgets below)
+    navbar_html += '<div class="navbar-right"></div>'
     navbar_html += '</div>'  # Close top-navbar
 
-    # Add JavaScript for dropdown
-    navbar_html += '''
-    <script>
-        function toggleDropdown() {
-            var dropdown = document.getElementById("userDropdown");
-            if (dropdown) {
-                dropdown.classList.toggle("show");
-            }
-        }
-
-        // Close dropdown when clicking outside
-        window.onclick = function(event) {
-            if (!event.target.matches('.dropdown-toggle') && !event.target.closest('.dropdown-toggle')) {
-                var dropdowns = document.getElementsByClassName("dropdown-menu");
-                for (var i = 0; i < dropdowns.length; i++) {
-                    var openDropdown = dropdowns[i];
-                    if (openDropdown.classList.contains('show')) {
-                        openDropdown.classList.remove('show');
-                    }
-                }
-            }
-        }
-    </script>
-    '''
-
-    # Use components.html for JavaScript execution
+    # Use components.html for navbar without buttons
     import streamlit.components.v1 as components
 
     # Wrap navbar in proper HTML structure with CSS
@@ -689,12 +701,6 @@ def create_top_navbar():
                 transform: translate(-50%, -50%);
                 cursor: pointer;
             }}
-            .navbar-right {{
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
-                flex-shrink: 0;
-            }}
             .navbar-logo {{
                 height: 80px;
                 width: auto;
@@ -705,76 +711,6 @@ def create_top_navbar():
                 width: auto !important;
                 object-fit: contain !important;
             }}
-            .nav-button {{
-                font-family: 'Inter', sans-serif;
-                font-weight: 500;
-                font-size: 0.875rem;
-                color: {button_text};
-                background-color: transparent;
-                border: none;
-                padding: 0.5rem 1rem;
-                border-radius: 6px;
-                cursor: pointer;
-                transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                gap: 0.25rem;
-                white-space: nowrap;
-                text-transform: uppercase;
-                letter-spacing: 0.025em;
-            }}
-            .nav-button:hover {{
-                background-color: {button_hover_bg};
-                color: white;
-            }}
-            .nav-button-primary {{
-                background-color: {button_hover_bg} !important;
-                color: white !important;
-            }}
-            .nav-button-primary:hover {{
-                background-color: #374151 !important;
-            }}
-            .dropdown {{
-                position: relative;
-                display: inline-block;
-            }}
-            .dropdown-toggle {{
-                text-transform: none !important;
-            }}
-            .dropdown-menu {{
-                display: none;
-                position: absolute;
-                right: 0;
-                top: 100%;
-                margin-top: 0.5rem;
-                background-color: #111827;
-                border: 1px solid {navbar_border};
-                border-radius: 8px;
-                min-width: 200px;
-                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
-                z-index: 1000;
-                padding: 0.5rem 0;
-            }}
-            .dropdown-menu.show {{
-                display: block;
-            }}
-            .dropdown-item {{
-                display: block;
-                width: 100%;
-                padding: 0.5rem 1rem;
-                color: {button_text};
-                text-decoration: none;
-                font-family: 'Inter', sans-serif;
-                font-size: 0.875rem;
-                transition: background-color 0.15s;
-                cursor: pointer;
-                text-align: left;
-            }}
-            .dropdown-item:hover {{
-                background-color: {button_hover_bg};
-                color: white;
-            }}
         </style>
     </head>
     <body>
@@ -784,6 +720,41 @@ def create_top_navbar():
     '''
 
     components.html(full_navbar_html, height=80, scrolling=False)
+
+    # Add Streamlit buttons below navbar, positioned to appear in navbar
+    # Create columns for right-side buttons
+    button_cols = st.columns([8.5, 1.2, 1, 1])
+
+    with button_cols[1]:
+        # Check if user is logged in
+        if 'user' in st.session_state and st.session_state.user:
+            # Show username button with dropdown in expander
+            user_name = st.session_state.user.get('full_name', 'User').split()[0]
+            with st.expander(f"👤 {user_name.upper()}", expanded=False):
+                if st.button("📍 Saved Locations", key="nav_saved", use_container_width=True):
+                    st.session_state.current_page = 'Saved'
+                    st.switch_page("pages/3_📍_Saved_Locations.py")
+                if st.button("⚙️ Settings", key="nav_settings", use_container_width=True):
+                    st.info("Settings page coming soon!")
+                if st.button("🚪 Sign Out", key="nav_signout", use_container_width=True):
+                    st.session_state.user = None
+                    st.session_state.current_page = 'Home'
+                    st.rerun()
+        else:
+            # Show sign in button
+            if st.button("SIGN IN", key="nav_signin", use_container_width=True, type="primary"):
+                st.session_state.current_page = 'Profile'
+                st.switch_page("pages/4_👤_Profile.py")
+
+    with button_cols[2]:
+        if st.button("CROWD", key="nav_crowd", use_container_width=True, type="secondary"):
+            st.session_state.current_page = 'Crowd Map'
+            st.switch_page("pages/1_🗺️_Crowd_Heatmap.py")
+
+    with button_cols[3]:
+        if st.button("EVENTS", key="nav_events", use_container_width=True, type="secondary"):
+            st.session_state.current_page = 'Events'
+            st.switch_page("pages/2_🎉_Events.py")
 
     # Handle navigation from URL query parameters
     query_params = st.query_params
