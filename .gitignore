@@ -72,7 +72,9 @@ htmlcov/
 
 # Model weights and caches
 *.pt
-*.pth
 *.ckpt
 models/saved_models/
 .cache/
+
+# Allow specific trained LSTM model
+!streamlit_app/models/lstm_crowd_model.pth
