@@ -76,7 +76,7 @@ def create_top_navbar():
         .stMarkdown, .stText, p, span, div {{
             color: {text_color} !important;
             font-family: 'Inter', sans-serif !important;
-            letter-spacing: -0.01em;
+            line-height: 1.6 !important;
         }}
 
         /* Headings with modern font */
@@ -84,7 +84,8 @@ def create_top_navbar():
             color: {text_color} !important;
             font-family: 'Outfit', 'Inter', sans-serif !important;
             font-weight: 700 !important;
-            letter-spacing: -0.02em !important;
+            line-height: 1.3 !important;
+            margin-bottom: 0.5rem !important;
         }}
 
         h1 {{ font-size: 2.5rem !important; }}
@@ -170,7 +171,7 @@ def create_top_navbar():
             border: none !important;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
             font-size: 0.95rem !important;
-            letter-spacing: -0.01em !important;
+            line-height: 1.5 !important;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
         }}
 
@@ -278,6 +279,29 @@ def create_top_navbar():
         /* Fix checkbox and radio text */
         .stCheckbox label, .stRadio label {{
             color: {text_color} !important;
+        }}
+
+        /* Fix Plotly chart elements and text overlap */
+        .js-plotly-plot .plotly {{
+            line-height: normal !important;
+        }}
+
+        /* Fix expander headers globally */
+        .streamlit-expanderHeader {{
+            line-height: 1.5 !important;
+            overflow: visible !important;
+        }}
+
+        .streamlit-expanderHeader p, .streamlit-expanderHeader span {{
+            line-height: 1.5 !important;
+            margin: 0 !important;
+            white-space: normal !important;
+        }}
+
+        /* Ensure proper text rendering everywhere */
+        * {{
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }}
 
         /* Mobile responsive */

@@ -68,6 +68,13 @@ st.markdown("""
         border-radius: 12px;
         font-weight: 600;
         padding: 1rem;
+        line-height: 1.5 !important;
+        overflow: visible !important;
+    }
+
+    .streamlit-expanderHeader p {
+        line-height: 1.5 !important;
+        margin: 0 !important;
     }
 
     /* Data editor / table styling */
