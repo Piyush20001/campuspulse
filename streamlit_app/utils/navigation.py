@@ -599,7 +599,7 @@ def create_top_navbar():
         user_name = st.session_state.user.get('full_name', 'User').split()[0]
         navbar_html += f'''
         <div class="dropdown">
-            <button class="nav-button dropdown-toggle" onclick="toggleDropdown()">
+            <button class="nav-button dropdown-toggle" onclick="toggleDropdown(); event.stopPropagation();">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
                     <circle cx="12" cy="7" r="4"></circle>
@@ -610,27 +610,34 @@ def create_top_navbar():
                 </svg>
             </button>
             <div class="dropdown-menu" id="userDropdown">
-                <a class="dropdown-item" href="?nav=saved">📍 Saved Locations</a>
-                <a class="dropdown-item" href="?nav=settings">⚙️ Settings</a>
-                <a class="dropdown-item" href="?nav=signout">🚪 Sign Out</a>
+                <a class="dropdown-item" onclick="navigateToPage('saved')">📍 Saved Locations</a>
+                <a class="dropdown-item" onclick="navigateToPage('settings')">⚙️ Settings</a>
+                <a class="dropdown-item" onclick="navigateToPage('signout')">🚪 Sign Out</a>
             </div>
         </div>
         '''
     else:
-        navbar_html += '<a href="?nav=signin" style="text-decoration: none;"><button class="nav-button nav-button-primary">SIGN IN</button></a>'
+        navbar_html += '<button class="nav-button nav-button-primary" onclick="navigateToPage(\'signin\')">SIGN IN</button>'
 
     # CROWD button
-    navbar_html += '<a href="?nav=crowd" style="text-decoration: none;"><button class="nav-button">CROWD</button></a>'
+    navbar_html += '<button class="nav-button" onclick="navigateToPage(\'crowd\')">CROWD</button>'
 
     # EVENTS button
-    navbar_html += '<a href="?nav=events" style="text-decoration: none;"><button class="nav-button">EVENTS</button></a>'
+    navbar_html += '<button class="nav-button" onclick="navigateToPage(\'events\')">EVENTS</button>'
 
     navbar_html += '</div>'  # Close navbar-right
     navbar_html += '</div>'  # Close top-navbar
 
-    # Add JavaScript for dropdown
+    # Add JavaScript for navigation and dropdown
     navbar_html += '''
     <script>
+        function navigateToPage(page) {
+            // Navigate in same tab by setting query parameter
+            var url = new URL(window.location.href);
+            url.searchParams.set('nav', page);
+            window.location.href = url.toString();
+        }
+
         function toggleDropdown() {
             var dropdown = document.getElementById("userDropdown");
             if (dropdown) {
