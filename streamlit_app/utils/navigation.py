@@ -50,8 +50,17 @@ def create_top_navbar():
             background-color: {bg_color} !important;
         }}
 
+        /* Hide Streamlit's default header completely */
         [data-testid="stHeader"] {{
-            background-color: {bg_color} !important;
+            display: none !important;
+        }}
+
+        header[data-testid="stHeader"] {{
+            display: none !important;
+        }}
+
+        .stApp > header {{
+            display: none !important;
         }}
 
         .main {{
@@ -154,7 +163,20 @@ def create_top_navbar():
 
         /* Hide default sidebar */
         [data-testid="stSidebar"] {{
-            display: none;
+            display: none !important;
+        }}
+
+        /* Hide Streamlit toolbar/hamburger menu */
+        #MainMenu {{
+            display: none !important;
+        }}
+
+        footer {{
+            display: none !important;
+        }}
+
+        .stDeployButton {{
+            display: none !important;
         }}
 
         /* Top navbar styles - Match React design */
