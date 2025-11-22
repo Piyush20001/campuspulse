@@ -18,6 +18,13 @@ from models.event_classifier_improved import ImprovedEventCategorizer
 from models.anomaly_detector import AnomalyDetector
 from utils.navigation import create_top_navbar
 
+# Import metrics collector
+try:
+    from monitoring.prometheus_metrics import MetricsCollector
+    METRICS_ENABLED = True
+except ImportError:
+    METRICS_ENABLED = False
+
 # Page configuration
 st.set_page_config(
     page_title="Campus Pulse - UF",
@@ -143,6 +150,10 @@ init_session_state()
 # Top navigation
 create_top_navbar()
 
+# Collect metrics
+if METRICS_ENABLED:
+    MetricsCollector.record_page_view("Home")
+
 # Main page content
 st.markdown('<h1 class="main-header">🎓 Campus Pulse</h1>', unsafe_allow_html=True)
 st.markdown('<p class="sub-header">AI-Powered Real-Time Campus Intelligence for University of Florida</p>', unsafe_allow_html=True)
@@ -153,6 +164,12 @@ stat_col1, stat_col2, stat_col3, stat_col4 = st.columns(4)
 
 all_crowds = st.session_state.simulator.get_all_current_crowds()
 avg_occupancy = sum(c['percentage'] for c in all_crowds) / len(all_crowds)
+
+# Update Prometheus metrics
+if METRICS_ENABLED:
+    MetricsCollector.update_location_metrics(all_crowds)
+    MetricsCollector.update_events_count(len(st.session_state.events))
+    MetricsCollector.update_active_users(1)  # Simplified - in production use session tracking
 
 with stat_col1:
     st.metric("Avg Campus Occupancy", f"{avg_occupancy:.0f}%")
