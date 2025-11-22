@@ -28,15 +28,17 @@ def create_top_navbar():
     theme = st.session_state.theme
 
     if theme == 'dark':
-        bg_gradient = 'linear-gradient(90deg, #001A4D 0%, #8B1E0A 100%)'
-        bg_color = '#0A1929'
+        bg_gradient = 'linear-gradient(90deg, #000000 0%, #1a1a1a 50%, #000000 100%)'
+        bg_color = '#000000'
         text_color = '#FFFFFF'
-        secondary_bg = '#1E3A5F'
+        secondary_bg = '#1a1a1a'
+        card_bg = '#0d0d0d'
     else:
         bg_gradient = 'linear-gradient(90deg, #0021A5 0%, #FA4616 100%)'
         bg_color = '#FFFFFF'
         text_color = '#262730'
         secondary_bg = '#F0F2F6'
+        card_bg = '#FAFAFA'
 
     # Custom CSS for top navbar - MODERN 2025 AESTHETIC
     st.markdown(f"""
@@ -118,7 +120,7 @@ def create_top_navbar():
             display: none;
         }}
 
-        /* Top navbar styles - Modern glassmorphism */
+        /* Top navbar styles - Modern with smooth animations */
         .top-navbar {{
             background: {bg_gradient};
             padding: 1.5rem 2.5rem;
@@ -126,12 +128,36 @@ def create_top_navbar():
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
             backdrop-filter: blur(10px);
             min-height: 100px;
             height: auto;
             overflow: visible;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 2px solid rgba(255,255,255,0.1);
+            animation: slideDown 0.5s ease-out;
+            position: relative;
+            z-index: 1000;
+        }}
+
+        @keyframes slideDown {{
+            from {{
+                transform: translateY(-100%);
+                opacity: 0;
+            }}
+            to {{
+                transform: translateY(0);
+                opacity: 1;
+            }}
+        }}
+
+        @keyframes fadeIn {{
+            from {{ opacity: 0; transform: translateY(10px); }}
+            to {{ opacity: 1; transform: translateY(0); }}
+        }}
+
+        @keyframes scaleIn {{
+            from {{ transform: scale(0.95); opacity: 0; }}
+            to {{ transform: scale(1); opacity: 1; }}
         }}
 
         .navbar-left {{
@@ -139,6 +165,7 @@ def create_top_navbar():
             align-items: center;
             gap: 2rem;
             flex-shrink: 0;
+            animation: fadeIn 0.7s ease-out 0.2s both;
         }}
 
         .navbar-logo {{
@@ -146,13 +173,14 @@ def create_top_navbar():
             width: auto;
             max-width: none;
             object-fit: contain;
-            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
-            transition: transform 0.3s ease, filter 0.3s ease;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: scaleIn 0.6s ease-out;
         }}
 
         .navbar-logo:hover {{
-            transform: scale(1.05);
-            filter: drop-shadow(0 6px 12px rgba(0,0,0,0.3));
+            transform: scale(1.08) rotate(2deg);
+            filter: drop-shadow(0 8px 16px rgba(0,0,0,0.4));
         }}
 
         .campus-pulse-logo {{
@@ -160,21 +188,22 @@ def create_top_navbar():
             width: auto !important;
             max-width: none !important;
             object-fit: contain !important;
-            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
-            transition: transform 0.3s ease, filter 0.3s ease;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: scaleIn 0.6s ease-out 0.1s both;
         }}
 
         .campus-pulse-logo:hover {{
-            transform: scale(1.05);
-            filter: drop-shadow(0 6px 12px rgba(0,0,0,0.3));
+            transform: scale(1.08) rotate(-2deg);
+            filter: drop-shadow(0 8px 16px rgba(0,0,0,0.4));
         }}
 
-        /* Modern button styling */
+        /* Modern button styling with animations */
         .stButton > button {{
             font-family: 'Inter', sans-serif !important;
             font-weight: 600 !important;
-            border-radius: 12px !important;
-            padding: 0.6rem 1rem !important;
+            border-radius: 10px !important;
+            padding: 0.65rem 1.2rem !important;
             border: none !important;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
             font-size: 0.9rem !important;
@@ -184,38 +213,64 @@ def create_top_navbar():
             align-items: center !important;
             justify-content: center !important;
             white-space: nowrap !important;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15) !important;
+            position: relative !important;
+            overflow: hidden !important;
+            animation: fadeIn 0.5s ease-out both;
+        }}
+
+        .stButton > button::before {{
+            content: '' !important;
+            position: absolute !important;
+            top: 50% !important;
+            left: 50% !important;
+            width: 0 !important;
+            height: 0 !important;
+            border-radius: 50% !important;
+            background: rgba(255,255,255,0.1) !important;
+            transform: translate(-50%, -50%) !important;
+            transition: width 0.6s, height 0.6s !important;
+        }}
+
+        .stButton > button:hover::before {{
+            width: 300px !important;
+            height: 300px !important;
         }}
 
         .stButton > button:hover {{
-            transform: translateY(-2px) !important;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.2) !important;
+            transform: translateY(-3px) scale(1.02) !important;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.25) !important;
         }}
 
         .stButton > button:active {{
-            transform: translateY(0px) !important;
+            transform: translateY(-1px) scale(0.98) !important;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
         }}
 
         /* Primary buttons */
         .stButton > button[kind="primary"] {{
             background: linear-gradient(135deg, #0021A5 0%, #FA4616 100%) !important;
             color: white !important;
+            box-shadow: 0 4px 15px rgba(0,33,165,0.3) !important;
         }}
 
         .stButton > button[kind="primary"]:hover {{
             background: linear-gradient(135deg, #001a85 0%, #e63f12 100%) !important;
+            box-shadow: 0 8px 30px rgba(0,33,165,0.4) !important;
         }}
 
         /* Secondary buttons */
         .stButton > button[kind="secondary"] {{
-            background-color: {secondary_bg} !important;
+            background-color: {card_bg} !important;
             color: {text_color} !important;
-            border: 2px solid rgba(0,33,165,0.2) !important;
+            border: 1.5px solid rgba(128,128,128,0.3) !important;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
         }}
 
         .stButton > button[kind="secondary"]:hover {{
-            border-color: rgba(0,33,165,0.4) !important;
+            border-color: rgba(0,33,165,0.5) !important;
             background-color: {secondary_bg} !important;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2) !important;
         }}
 
         /* Modern input fields */
@@ -387,31 +442,31 @@ def create_top_navbar():
 
     # Navigation buttons in the center
     with nav_row[1]:
-        if st.button("🏠 Home", key="nav_home", use_container_width=True,
+        if st.button("Home", key="nav_home", use_container_width=True,
                     type="primary" if current_page == 'Home' else "secondary"):
             st.session_state.current_page = 'Home'
             st.switch_page("app.py")
 
     with nav_row[2]:
-        if st.button("🗺️ Crowd Map", key="nav_map", use_container_width=True,
+        if st.button("Crowd Map", key="nav_map", use_container_width=True,
                     type="primary" if current_page == 'Crowd Map' else "secondary"):
             st.session_state.current_page = 'Crowd Map'
             st.switch_page("pages/1_🗺️_Crowd_Heatmap.py")
 
     with nav_row[3]:
-        if st.button("🎉 Events", key="nav_events", use_container_width=True,
+        if st.button("Events", key="nav_events", use_container_width=True,
                     type="primary" if current_page == 'Events' else "secondary"):
             st.session_state.current_page = 'Events'
             st.switch_page("pages/2_🎉_Events.py")
 
     with nav_row[4]:
-        if st.button("⭐ Saved", key="nav_saved", use_container_width=True,
+        if st.button("Saved", key="nav_saved", use_container_width=True,
                     type="primary" if current_page == 'Saved' else "secondary"):
             st.session_state.current_page = 'Saved'
             st.switch_page("pages/3_⭐_Saved_Locations.py")
 
     with nav_row[5]:
-        if st.button("🔄 Refresh", key="nav_refresh", use_container_width=True):
+        if st.button("Refresh", key="nav_refresh", use_container_width=True):
             # Trigger data refresh
             if 'last_refresh' in st.session_state:
                 del st.session_state['last_refresh']
@@ -422,8 +477,7 @@ def create_top_navbar():
 
     # Theme toggle
     with nav_row[7]:
-        theme_icon = "🌙" if st.session_state.theme == 'light' else "☀️"
-        theme_label = f"{theme_icon}"
+        theme_label = "Light" if st.session_state.theme == 'dark' else "Dark"
         if st.button(theme_label, key="theme_toggle", help="Toggle Dark/Light Theme", use_container_width=True):
             st.session_state.theme = 'dark' if st.session_state.theme == 'light' else 'light'
             # Update user preference if logged in
@@ -440,12 +494,12 @@ def create_top_navbar():
     with nav_row[8]:
         if 'user' in st.session_state and st.session_state.user:
             user_name = st.session_state.user.get('full_name', '').split()[0]
-            if st.button(f"👤 {user_name}", key="nav_profile_user", use_container_width=True,
+            if st.button(f"{user_name}", key="nav_profile_user", use_container_width=True,
                         type="primary" if current_page == 'Profile' else "secondary"):
                 st.session_state.current_page = 'Profile'
                 st.switch_page("pages/4_👤_Profile.py")
         else:
-            if st.button("🔐 Sign In", key="nav_signin", use_container_width=True, type="primary"):
+            if st.button("Sign In", key="nav_signin", use_container_width=True, type="primary"):
                 st.session_state.current_page = 'Profile'
                 st.switch_page("pages/4_👤_Profile.py")
 
