@@ -45,10 +45,6 @@ def create_top_navbar():
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
 
         /* FORCE THEME COLORS - Override all Streamlit defaults */
-        * {{
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
-        }}
-
         .stApp {{
             background-color: {bg_color} !important;
         }}
@@ -72,11 +68,14 @@ def create_top_navbar():
             background-color: {bg_color} !important;
         }}
 
-        /* All text elements with modern typography */
-        .stMarkdown, .stText, p, span, div {{
+        /* Text elements - NO aggressive font overrides */
+        .stMarkdown, .stText {{
             color: {text_color} !important;
-            font-family: 'Inter', sans-serif !important;
-            line-height: 1.6 !important;
+        }}
+
+        p {{
+            color: {text_color} !important;
+            line-height: 1.6;
         }}
 
         /* Headings with modern font */
@@ -84,8 +83,9 @@ def create_top_navbar():
             color: {text_color} !important;
             font-family: 'Outfit', 'Inter', sans-serif !important;
             font-weight: 700 !important;
-            line-height: 1.3 !important;
-            margin-bottom: 0.5rem !important;
+            line-height: 1.4 !important;
+            margin-top: 1rem !important;
+            margin-bottom: 0.75rem !important;
         }}
 
         h1 {{ font-size: 2.5rem !important; }}
