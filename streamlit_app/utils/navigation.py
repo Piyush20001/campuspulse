@@ -183,15 +183,33 @@ def create_top_navbar():
         .top-navbar {{
             background: {navbar_bg};
             padding: 0 2.5rem;
-            margin: -6rem -4rem 2rem -4rem;
+            margin: -6rem -4rem 0 -4rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
             height: 80px;
             border-bottom: 1px solid {navbar_border};
-            position: sticky;
-            top: 0;
+            position: relative;
             z-index: 50;
+        }}
+
+        /* Pull Streamlit button row into navbar */
+        .main .block-container > div:first-child {{
+            margin-top: -80px !important;
+            padding-top: 20px !important;
+            padding-right: 2.5rem !important;
+            position: relative !important;
+            z-index: 100 !important;
+            pointer-events: none !important;
+        }}
+
+        .main .block-container > div:first-child [data-testid="column"] {{
+            pointer-events: auto !important;
+        }}
+
+        /* Add spacing after navbar for content */
+        .main .block-container > div:first-child ~ * {{
+            margin-top: 2rem !important;
         }}
 
         .navbar-left {{
@@ -215,85 +233,48 @@ def create_top_navbar():
             flex-shrink: 0;
         }}
 
-        /* Navigation buttons - matching React ghost variant */
-        .nav-button {{
-            font-family: 'Inter', sans-serif;
-            font-weight: 500;
-            font-size: 0.875rem;
-            color: {button_text};
-            background-color: transparent;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.25rem;
-            white-space: nowrap;
-            text-transform: uppercase;
-            letter-spacing: 0.025em;
+        /* Navbar buttons - use existing Streamlit button styles with overrides */
+        [data-testid="column"] .stButton > button {{
+            background-color: transparent !important;
+            border: none !important;
+            color: {button_text} !important;
+            text-transform: uppercase !important;
+            font-weight: 500 !important;
         }}
 
-        .nav-button:hover {{
-            background-color: {button_hover_bg};
-            color: white;
+        [data-testid="column"] .stButton > button:hover {{
+            background-color: {button_hover_bg} !important;
+            color: white !important;
         }}
 
-        /* Dropdown container */
-        .dropdown {{
-            position: relative;
-            display: inline-block;
+        [data-testid="column"] .stButton > button[kind="primary"] {{
+            background-color: {button_hover_bg} !important;
+            color: white !important;
         }}
 
-        .dropdown-toggle {{
-            text-transform: none !important;
+        [data-testid="column"] .stButton > button[kind="primary"]:hover {{
+            background-color: #374151 !important;
         }}
 
-        /* Dropdown menu */
-        .dropdown-menu {{
-            display: none;
-            position: absolute;
-            right: 0;
-            top: 100%;
-            margin-top: 0.5rem;
-            background-color: #111827;
-            border: 1px solid {navbar_border};
-            border-radius: 8px;
-            min-width: 224px;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
-            z-index: 1000;
-            padding: 0.5rem 0;
+        /* Expander for user dropdown */
+        [data-testid="column"] .streamlit-expanderHeader {{
+            background-color: transparent !important;
+            border: none !important;
+            color: {button_text} !important;
+            font-weight: 500 !important;
+            padding: 0.5rem 1rem !important;
         }}
 
-        .dropdown-menu.show {{
-            display: block;
+        [data-testid="column"] .streamlit-expanderHeader:hover {{
+            background-color: {button_hover_bg} !important;
         }}
 
-        /* Dropdown items */
-        .dropdown-item {{
-            display: block;
-            width: 100%;
-            padding: 0.5rem 1rem;
-            color: {button_text};
-            text-decoration: none;
-            font-family: 'Inter', sans-serif;
-            font-size: 0.875rem;
-            transition: background-color 0.15s;
-            cursor: pointer;
+        [data-testid="column"] details {{
+            border: none !important;
         }}
 
-        .dropdown-item:hover {{
-            background-color: {button_hover_bg};
-            color: white;
-        }}
-
-        /* Dropdown divider */
-        .dropdown-divider {{
-            height: 1px;
-            background-color: #374151;
-            margin: 0.5rem 0;
+        [data-testid="column"] details[open] summary {{
+            border-bottom: none !important;
         }}
 
         .navbar-logo {{
@@ -592,71 +573,45 @@ def create_top_navbar():
 
     # Right side - Navigation buttons
     navbar_html += '<div class="navbar-right">'
-
-    # Username dropdown button
-    navbar_html += '''
-    <div class="dropdown">
-        <button class="nav-button dropdown-toggle" onclick="toggleDropdown()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
-                <circle cx="12" cy="7" r="4"></circle>
-            </svg>
-            USERNAME
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="6 9 12 15 18 9"></polyline>
-            </svg>
-        </button>
-        <div class="dropdown-menu" id="userDropdown">
-            <a class="dropdown-item" href="?page=profile">Profile</a>
-            <a class="dropdown-item" href="?page=saved">Saved Locations</a>
-            <a class="dropdown-item" href="?page=interested">My Interested Events</a>
-            <div class="dropdown-divider"></div>
-            <a class="dropdown-item" href="?page=organizer">Organizer Dashboard</a>
-            <a class="dropdown-item" href="?page=create">Create Event</a>
-            <a class="dropdown-item" href="?page=manage">Manage My Events</a>
-            <a class="dropdown-item" href="?page=analytics">Event Analytics</a>
-            <div class="dropdown-divider"></div>
-            <a class="dropdown-item" href="?page=settings">Settings</a>
-            <a class="dropdown-item" href="?page=help">Help / About</a>
-            <a class="dropdown-item" href="?page=feedback">Give Feedback</a>
-            <a class="dropdown-item" href="?page=signout">Sign Out</a>
-        </div>
-    </div>
-    '''
-
-    # CROWD button
-    navbar_html += '<button class="nav-button" onclick="window.location.href=\'?page=crowd\'">CROWD</button>'
-
-    # EVENTS button
-    navbar_html += '<button class="nav-button" onclick="window.location.href=\'?page=events\'">EVENTS</button>'
-
-    navbar_html += '</div>'  # Close navbar-right
+    navbar_html += '</div>'  # Close navbar-right (buttons will be Streamlit widgets below)
     navbar_html += '</div>'  # Close top-navbar
 
-    # Add JavaScript for dropdown
-    navbar_html += '''
-    <script>
-        function toggleDropdown() {
-            var dropdown = document.getElementById("userDropdown");
-            dropdown.classList.toggle("show");
-        }
-
-        // Close dropdown when clicking outside
-        window.onclick = function(event) {
-            if (!event.target.matches('.dropdown-toggle') && !event.target.matches('.dropdown-toggle *')) {
-                var dropdowns = document.getElementsByClassName("dropdown-menu");
-                for (var i = 0; i < dropdowns.length; i++) {
-                    var openDropdown = dropdowns[i];
-                    if (openDropdown.classList.contains('show')) {
-                        openDropdown.classList.remove('show');
-                    }
-                }
-            }
-        }
-    </script>
-    '''
-
     st.markdown(navbar_html, unsafe_allow_html=True)
+
+    # Add Streamlit buttons in navbar-right position
+    # Create columns for right-side buttons
+    button_cols = st.columns([8.5, 1.2, 1, 1])
+
+    with button_cols[1]:
+        # Check if user is logged in
+        if 'user' in st.session_state and st.session_state.user:
+            # Show username button with dropdown in expander
+            user_name = st.session_state.user.get('full_name', 'User').split()[0]
+            with st.expander(f"👤 {user_name.upper()}", expanded=False):
+                if st.button("📍 Saved Locations", key="nav_saved", use_container_width=True):
+                    st.session_state.current_page = 'Saved'
+                    st.switch_page("pages/3_📍_Saved_Locations.py")
+                if st.button("⚙️ Settings", key="nav_settings", use_container_width=True):
+                    st.info("Settings page coming soon!")
+                if st.button("🚪 Sign Out", key="nav_signout", use_container_width=True):
+                    st.session_state.user = None
+                    st.session_state.current_page = 'Home'
+                    st.rerun()
+        else:
+            # Show sign in button
+            if st.button("SIGN IN", key="nav_signin", use_container_width=True, type="primary"):
+                st.session_state.current_page = 'Profile'
+                st.switch_page("pages/4_👤_Profile.py")
+
+    with button_cols[2]:
+        if st.button("CROWD", key="nav_crowd", use_container_width=True, type="secondary"):
+            st.session_state.current_page = 'Crowd Map'
+            st.switch_page("pages/1_🗺️_Crowd_Heatmap.py")
+
+    with button_cols[3]:
+        if st.button("EVENTS", key="nav_events", use_container_width=True, type="secondary"):
+            st.session_state.current_page = 'Events'
+            st.switch_page("pages/2_🎉_Events.py")
 
     # Minimal spacing
     st.markdown("")
