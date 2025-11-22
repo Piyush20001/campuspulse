@@ -87,7 +87,15 @@ if 'ml_predictor' not in st.session_state:
     st.session_state.ml_predictor = MLCrowdPredictor(model_type='random_forest')
     model_path = os.path.join(os.path.dirname(__file__), '..', 'models', 'crowd_predictor_model_v2.pkl')
     if os.path.exists(model_path):
-        st.session_state.ml_predictor.load(model_path)
+        try:
+            st.session_state.ml_predictor.load(model_path)
+        except (ModuleNotFoundError, ImportError, AttributeError) as e:
+            # Model failed to load - likely due to library version mismatch
+            st.session_state.ml_predictor.is_trained = False
+            st.warning(f"⚠️ ML model could not be loaded (library version mismatch). Using fallback predictions.")
+        except Exception as e:
+            st.session_state.ml_predictor.is_trained = False
+            st.warning(f"⚠️ ML model loading error. Using fallback predictions.")
     else:
         st.warning("ML model not found. Using fallback predictions.")
 if 'anomaly_detector' not in st.session_state:
