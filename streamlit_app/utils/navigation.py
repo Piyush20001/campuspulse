@@ -40,7 +40,7 @@ def create_top_navbar():
         text_color = '#262730'
         secondary_bg = '#F0F2F6'
         card_bg = '#FAFAFA'
-        navbar_bg = 'linear-gradient(90deg, #0021A5 0%, #FA4616 100%)'
+        navbar_bg = '#FFFFFF'
 
     # Custom CSS for top navbar - MODERN 2025 AESTHETIC
     st.markdown(f"""
@@ -125,15 +125,15 @@ def create_top_navbar():
         /* Top navbar styles - Clean and compact */
         .top-navbar {{
             background: {navbar_bg};
-            padding: 1rem 2.5rem;
+            padding: 1.2rem 2.5rem;
             margin: -6rem -4rem 2rem -4rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-            min-height: 80px;
-            height: 80px;
-            border-bottom: 1px solid rgba(255,255,255,0.08);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+            min-height: 95px;
+            height: auto;
+            border-bottom: 1px solid rgba(0,0,0,0.08);
             animation: slideDown 0.5s ease-out;
             position: relative;
             z-index: 1000;
@@ -184,33 +184,33 @@ def create_top_navbar():
         }}
 
         .navbar-logo {{
-            height: 55px;
+            height: 50px;
             width: auto;
             max-width: none;
             object-fit: contain;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
             transition: all 0.3s ease;
             animation: fadeIn 0.5s ease-out;
         }}
 
         .navbar-logo:hover {{
             transform: scale(1.05);
-            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
         }}
 
         .campus-pulse-logo {{
-            height: 60px !important;
+            height: 55px !important;
             width: auto !important;
             max-width: none !important;
             object-fit: contain !important;
-            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.4));
+            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.3));
             transition: all 0.3s ease;
             animation: scaleIn 0.5s ease-out 0.1s both;
         }}
 
         .campus-pulse-logo:hover {{
             transform: scale(1.05);
-            filter: drop-shadow(0 6px 12px rgba(0,0,0,0.5));
+            filter: drop-shadow(0 6px 12px rgba(0,0,0,0.4));
         }}
 
         /* Modern button styling with animations */
@@ -383,10 +383,10 @@ def create_top_navbar():
                 justify-content: center;
             }}
             .navbar-logo {{
-                height: 45px;
+                height: 40px;
             }}
             .campus-pulse-logo {{
-                height: 50px !important;
+                height: 45px !important;
             }}
             h1 {{ font-size: 1.75rem !important; }}
             h2 {{ font-size: 1.5rem !important; }}
@@ -418,7 +418,7 @@ def create_top_navbar():
     else:
         # SVG fallback if no custom logo
         navbar_html += '''
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" class="campus-pulse-logo" style="height: 60px; width: 60px;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" class="campus-pulse-logo" style="height: 55px; width: 55px;">
           <defs>
             <radialGradient id="heatGradient">
               <stop offset="0%" style="stop-color:#FA4616;stop-opacity:1" />
