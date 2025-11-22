@@ -632,10 +632,10 @@ def create_top_navbar():
     navbar_html += '''
     <script>
         function navigateToPage(page) {
-            // Navigate in same tab by setting query parameter
-            var url = new URL(window.location.href);
+            // Navigate parent window (not iframe) by setting query parameter
+            var url = new URL(window.parent.location.href);
             url.searchParams.set('nav', page);
-            window.location.href = url.toString();
+            window.parent.location.href = url.toString();
         }
 
         function toggleDropdown() {
