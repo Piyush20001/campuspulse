@@ -128,11 +128,12 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Initialize performance metrics tracker
+# Initialize performance metrics tracker and start page timing
+import time as time_module
+page_start_time = time_module.time()
+
 if METRICS_ENABLED:
     metrics_tracker = get_metrics_tracker()
-    if 'page_load_start' not in st.session_state:
-        st.session_state.page_load_start = datetime.now()
 else:
     metrics_tracker = None
 
@@ -170,27 +171,34 @@ init_session_state()
 create_top_navbar()
 
 # Track page load time
-if METRICS_ENABLED and metrics_tracker and 'page_load_start' in st.session_state:
-    load_time_ms = (datetime.now() - st.session_state.page_load_start).total_seconds() * 1000
+if METRICS_ENABLED and metrics_tracker:
+    load_time_ms = (time_module.time() - page_start_time) * 1000
     user_email = st.session_state.user.get('email') if 'user' in st.session_state and st.session_state.user else None
     metrics_tracker.record_page_load("Home", load_time_ms, user_email)
-    # Clear page load start
-    del st.session_state.page_load_start
+    # Also record as response time
+    metrics_tracker.record_response_time("home_page", load_time_ms, user_email, "success")
 
 # Quick stats row with performance tracking
 st.markdown("### Live Campus Stats")
 stat_col1, stat_col2, stat_col3, stat_col4 = st.columns(4)
 
 # Track data retrieval performance
-import time
-data_start = time.time()
+data_start = time_module.time()
 all_crowds = st.session_state.simulator.get_all_current_crowds()
 avg_occupancy = sum(c['percentage'] for c in all_crowds) / len(all_crowds)
-data_time_ms = (time.time() - data_start) * 1000
+data_time_ms = (time_module.time() - data_start) * 1000
 
 # Record API latency for data retrieval
 if METRICS_ENABLED and metrics_tracker:
     metrics_tracker.record_api_latency("get_all_current_crowds", data_time_ms)
+
+# Count events timing
+events_start = time_module.time()
+upcoming_events = len([e for e in st.session_state.events if e['start_time'] > datetime.now()])
+events_time_ms = (time_module.time() - events_start) * 1000
+
+if METRICS_ENABLED and metrics_tracker:
+    metrics_tracker.record_api_latency("count_upcoming_events", events_time_ms)
 
 with stat_col1:
     st.metric("Avg Campus Occupancy", f"{avg_occupancy:.0f}%")
@@ -199,7 +207,6 @@ with stat_col2:
     st.metric("Active Locations", len(UF_LOCATIONS))
 
 with stat_col3:
-    upcoming_events = len([e for e in st.session_state.events if e['start_time'] > datetime.now()])
     st.metric("Upcoming Events", upcoming_events)
 
 with stat_col4:
