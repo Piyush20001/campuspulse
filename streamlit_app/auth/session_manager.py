@@ -47,11 +47,15 @@ class SessionManager:
                 'expires_at': (datetime.now() + timedelta(days=self.session_expiry_days)).isoformat()
             }
 
-            # Convert to JSON and escape for JavaScript
-            session_json = json.dumps(session_data).replace("'", "\\'").replace('"', '\\"')
+            # Convert to JSON
+            session_json = json.dumps(session_data)
+
+            # Escape the JSON string for JavaScript
+            # Replace backslash first, then quotes
+            escaped_json = session_json.replace('\\', '\\\\').replace("'", "\\'")
 
             # Save to localStorage using JavaScript
-            js_code = f"localStorage.setItem('{self.storage_key}', '{session_json}');"
+            js_code = f"localStorage.setItem('{self.storage_key}', '{escaped_json}');"
             st_javascript(js_code)
 
             return True
