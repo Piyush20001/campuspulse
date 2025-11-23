@@ -1,95 +1,107 @@
 """
-Session Manager for persistent login using cookies
+Session Manager for persistent login using browser localStorage
 Handles saving and restoring user sessions across page refreshes
 """
 import streamlit as st
-import extra_streamlit_components as stx
+from streamlit_javascript import st_javascript
 import json
 from datetime import datetime, timedelta
 
 
 class SessionManager:
-    """Manages persistent user sessions using cookies"""
+    """Manages persistent user sessions using browser localStorage"""
 
-    def __init__(self, cookie_name="campus_pulse_session", cookie_expiry_days=30):
+    def __init__(self, storage_key="campus_pulse_session", session_expiry_days=30):
         """
         Initialize session manager
 
         Args:
-            cookie_name: Name of the cookie to store session data
-            cookie_expiry_days: Number of days before cookie expires
+            storage_key: Key to use in localStorage
+            session_expiry_days: Number of days before session expires
         """
-        self.cookie_name = cookie_name
-        self.cookie_expiry_days = cookie_expiry_days
-        self.cookie_manager = stx.CookieManager()
+        self.storage_key = storage_key
+        self.session_expiry_days = session_expiry_days
 
     def save_session(self, user_data):
         """
-        Save user session to cookie
+        Save user session to browser localStorage
 
         Args:
             user_data: Dictionary containing user information
+
+        Returns:
+            True if successful, False otherwise
         """
         try:
-            # Convert user data to JSON string
-            session_data = json.dumps(user_data)
+            # Add expiry timestamp
+            session_data = {
+                'user': user_data,
+                'expires_at': (datetime.now() + timedelta(days=self.session_expiry_days)).isoformat()
+            }
 
-            # Calculate expiry date
-            expiry_date = datetime.now() + timedelta(days=self.cookie_expiry_days)
+            # Convert to JSON
+            session_json = json.dumps(session_data)
 
-            # Save to cookie
-            self.cookie_manager.set(
-                self.cookie_name,
-                session_data,
-                expires_at=expiry_date
-            )
+            # Save to localStorage using JavaScript
+            js_code = f"""
+            localStorage.setItem('{self.storage_key}', '{session_json.replace("'", "\\'")}');
+            """
+            st_javascript(js_code)
 
             return True
+
         except Exception as e:
             print(f"Error saving session: {str(e)}")
             return False
 
     def load_session(self):
         """
-        Load user session from cookie
+        Load user session from browser localStorage
 
         Returns:
             Dictionary containing user data or None if no valid session
         """
         try:
-            # Get all cookies
-            cookies = self.cookie_manager.get_all()
+            # Get data from localStorage using JavaScript
+            js_code = f"""
+            localStorage.getItem('{self.storage_key}');
+            """
+            session_json = st_javascript(js_code)
 
-            if not cookies:
-                return None
-
-            # Get session cookie
-            session_data = cookies.get(self.cookie_name)
-
-            if not session_data:
+            if not session_json or session_json == "null":
                 return None
 
             # Parse JSON
-            user_data = json.loads(session_data)
+            session_data = json.loads(session_json)
 
-            return user_data
+            # Check if expired
+            expires_at = datetime.fromisoformat(session_data['expires_at'])
+            if datetime.now() > expires_at:
+                self.clear_session()
+                return None
+
+            return session_data['user']
 
         except Exception as e:
             print(f"Error loading session: {str(e)}")
             return None
 
     def clear_session(self):
-        """Clear user session from cookie"""
+        """Clear user session from browser localStorage"""
         try:
-            self.cookie_manager.delete(self.cookie_name)
+            js_code = f"""
+            localStorage.removeItem('{self.storage_key}');
+            """
+            st_javascript(js_code)
             return True
+
         except Exception as e:
             print(f"Error clearing session: {str(e)}")
             return False
 
     def restore_session_state(self):
         """
-        Restore session state from cookie if not already logged in
+        Restore session state from localStorage if not already logged in
         Should be called at the start of each page
 
         Returns:
@@ -99,7 +111,7 @@ class SessionManager:
         if 'user' in st.session_state and st.session_state.user:
             return False
 
-        # Try to load session from cookie
+        # Try to load session from localStorage
         user_data = self.load_session()
 
         if user_data:
