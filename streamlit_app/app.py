@@ -20,12 +20,14 @@ from utils.navigation import create_top_navbar
 from components.feedback_form import create_feedback_form
 from auth.session_manager import SessionManager
 
-# Import metrics collector
+# Import performance metrics tracker
 try:
-    from monitoring.prometheus_metrics import MetricsCollector
+    from monitoring.performance_metrics import get_metrics_tracker
     METRICS_ENABLED = True
 except ImportError:
     METRICS_ENABLED = False
+    def get_metrics_tracker():
+        return None
 
 # Page configuration
 st.set_page_config(
@@ -126,6 +128,14 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+# Initialize performance metrics tracker
+if METRICS_ENABLED:
+    metrics_tracker = get_metrics_tracker()
+    if 'page_load_start' not in st.session_state:
+        st.session_state.page_load_start = datetime.now()
+else:
+    metrics_tracker = None
+
 # Initialize session state
 def init_session_state():
     """Initialize session state variables"""
@@ -159,22 +169,28 @@ init_session_state()
 # Top navigation
 create_top_navbar()
 
-# Collect metrics
-if METRICS_ENABLED:
-    MetricsCollector.record_page_view("Home")
+# Track page load time
+if METRICS_ENABLED and metrics_tracker and 'page_load_start' in st.session_state:
+    load_time_ms = (datetime.now() - st.session_state.page_load_start).total_seconds() * 1000
+    user_email = st.session_state.user.get('email') if 'user' in st.session_state and st.session_state.user else None
+    metrics_tracker.record_page_load("Home", load_time_ms, user_email)
+    # Clear page load start
+    del st.session_state.page_load_start
 
-# Quick stats row
+# Quick stats row with performance tracking
 st.markdown("### Live Campus Stats")
 stat_col1, stat_col2, stat_col3, stat_col4 = st.columns(4)
 
+# Track data retrieval performance
+import time
+data_start = time.time()
 all_crowds = st.session_state.simulator.get_all_current_crowds()
 avg_occupancy = sum(c['percentage'] for c in all_crowds) / len(all_crowds)
+data_time_ms = (time.time() - data_start) * 1000
 
-# Update Prometheus metrics
-if METRICS_ENABLED:
-    MetricsCollector.update_location_metrics(all_crowds)
-    MetricsCollector.update_events_count(len(st.session_state.events))
-    MetricsCollector.update_active_users(1)  # Simplified - in production use session tracking
+# Record API latency for data retrieval
+if METRICS_ENABLED and metrics_tracker:
+    metrics_tracker.record_api_latency("get_all_current_crowds", data_time_ms)
 
 with stat_col1:
     st.metric("Avg Campus Occupancy", f"{avg_occupancy:.0f}%")

@@ -28,6 +28,8 @@ wheels/
 
 # Databases (exclude user data and feedback)
 campus_pulse_feedback.db
+campus_pulse_performance.db
+campus_pulse_sessions.db
 
 # ML Models
 trained_models/*.pth

@@ -259,16 +259,20 @@ def create_top_navbar():
         }}
 
         .dropdown-item {{
-            display: block;
+            display: flex;
+            align-items: center;
             width: 100%;
-            padding: 0.5rem 1rem;
+            padding: 0.75rem 1rem;
             color: {button_text};
             text-decoration: none;
             font-family: 'Inter', sans-serif;
             font-size: 0.875rem;
+            font-weight: 500;
             transition: background-color 0.15s;
             cursor: pointer;
             text-align: left;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
         }}
 
         .dropdown-item:hover {{
@@ -731,13 +735,13 @@ def create_top_navbar():
         if 'user' in st.session_state and st.session_state.user:
             # Show username button with dropdown in expander
             user_name = st.session_state.user.get('full_name', 'User').split()[0]
-            with st.expander(f"👤 {user_name.upper()}", expanded=False):
-                if st.button("⭐ Saved Locations", key="nav_saved", use_container_width=True):
+            with st.expander(f"{user_name.upper()}", expanded=False):
+                if st.button("SAVED LOCATIONS", key="nav_saved", use_container_width=True):
                     st.session_state.current_page = 'Saved'
                     st.switch_page("pages/3_⭐_Saved_Locations.py")
-                if st.button("⚙️ Settings", key="nav_settings", use_container_width=True):
+                if st.button("SETTINGS", key="nav_settings", use_container_width=True):
                     st.info("Settings page coming soon!")
-                if st.button("🚪 Sign Out", key="nav_signout", use_container_width=True):
+                if st.button("SIGN OUT", key="nav_signout", use_container_width=True):
                     st.session_state.user = None
                     st.session_state.current_page = 'Home'
                     st.rerun()
