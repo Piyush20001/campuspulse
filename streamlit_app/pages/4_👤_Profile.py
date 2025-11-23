@@ -130,7 +130,7 @@ if 'user' not in st.session_state or st.session_state.user is None:
     st.title("Welcome to Campus Pulse")
     st.markdown("Sign in or create an account to get the full Campus Pulse experience!")
 
-    tab1, tab2 = st.tabs(["🔑 Sign In", "📝 Sign Up"])
+    tab1, tab2, tab3 = st.tabs(["Sign In", "Sign Up", "Admin Login"])
 
     # Sign In Tab
     with tab1:
@@ -158,7 +158,7 @@ if 'user' not in st.session_state or st.session_state.user is None:
                     st.error("Please fill in all fields")
 
         st.markdown("---")
-        st.info("📧 Use your UFL email address (@ufl.edu) to sign in")
+        st.info("Use your UFL email address (@ufl.edu) to sign in")
 
     # Sign Up Tab
     with tab2:
@@ -200,7 +200,7 @@ if 'user' not in st.session_state or st.session_state.user is None:
             st.markdown("---")
             agree_terms = st.checkbox("I agree to Campus Pulse Terms of Service and Privacy Policy")
 
-            submit_signup = st.form_submit_button("📧 Send Verification Code", type="primary", use_container_width=True)
+            submit_signup = st.form_submit_button("Send Verification Code", type="primary", use_container_width=True)
 
             if submit_signup:
                 if not agree_terms:
@@ -237,7 +237,7 @@ if 'user' not in st.session_state or st.session_state.user is None:
                                 st.session_state.verification_code_sent = True
 
                                 st.success(message)
-                                st.info("💡 Check your email for the 4-digit verification code!")
+                                st.info("Check your email for the 4-digit verification code!")
                                 st.rerun()
                             else:
                                 st.error(message)
@@ -258,7 +258,7 @@ if 'user' not in st.session_state or st.session_state.user is None:
             col_verify1, col_verify2 = st.columns(2)
 
             with col_verify1:
-                if st.button("✅ Verify & Create Account", type="primary", use_container_width=True):
+                if st.button("Verify & Create Account", type="primary", use_container_width=True):
                     if len(verification_code) != 4:
                         st.error("Please enter the complete 4-digit code")
                     else:
@@ -297,8 +297,8 @@ if 'user' not in st.session_state or st.session_state.user is None:
                                 st.session_state.signup_data = None
                                 st.session_state.verification_email = None
 
-                                st.success("🎉 Account created successfully!")
-                                st.info("💡 Please switch to the 'Sign In' tab to log in")
+                                st.success("Account created successfully!")
+                                st.info("Please switch to the 'Sign In' tab to log in")
                                 st.balloons()
                             else:
                                 st.error(message)
@@ -306,7 +306,7 @@ if 'user' not in st.session_state or st.session_state.user is None:
                             st.error(message)
 
             with col_verify2:
-                if st.button("🔄 Resend Code", use_container_width=True):
+                if st.button("Resend Code", use_container_width=True):
                     success, code, message = st.session_state.email_verifier.send_verification_email(
                         st.session_state.verification_email
                     )
@@ -321,6 +321,50 @@ if 'user' not in st.session_state or st.session_state.user is None:
         - At least 8 characters long
         - Contains uppercase and lowercase letters
         - Contains at least one number
+        """)
+
+    # Admin Login Tab
+    with tab3:
+        st.markdown("### Admin Access")
+        st.warning("This section is for administrators only. Regular users should use the Sign In tab.")
+
+        with st.form("admin_login_form"):
+            admin_email = st.text_input("Admin Email", placeholder="admin@ufl.edu")
+            admin_password = st.text_input("Admin Password", type="password")
+
+            admin_submit = st.form_submit_button("Login as Admin", type="primary", use_container_width=True)
+
+            if admin_submit:
+                if admin_email and admin_password:
+                    # Authenticate user
+                    success, user_data, message = st.session_state.auth_manager.sign_in(admin_email, admin_password)
+                    if success:
+                        # Check if user has admin role
+                        user_role = get_user_role(admin_email)
+                        if user_role == 'admin':
+                            st.session_state.user = user_data
+                            st.session_state.session_manager.save_session(user_data)
+                            st.success("Welcome, Administrator!")
+                            st.balloons()
+                            st.info("Navigate to the Admin Panel from the sidebar to manage the system.")
+                            st.rerun()
+                        else:
+                            st.error("Access Denied: You do not have administrator privileges.")
+                            st.info("If you need admin access, please contact the system administrator.")
+                    else:
+                        st.error(message)
+                else:
+                    st.error("Please fill in all fields")
+
+        st.markdown("---")
+        st.info("Administrators can access the Admin Panel to manage feedback, user roles, and organizer requests.")
+
+        st.markdown("#### How to get admin access:")
+        st.markdown("""
+        1. Create a regular account first (use Sign Up tab)
+        2. Run `python3 make_admin.py` from the project directory
+        3. Enter your UFL email when prompted
+        4. Return here and login with your credentials
         """)
 
 else:
@@ -407,7 +451,7 @@ else:
                         if st.form_submit_button("Submit Request", type="primary", use_container_width=True):
                             if reason and len(reason) > 20:
                                 if request_organizer_access(user['email'], user['full_name'], reason):
-                                    st.success("✅ Request submitted! An admin will review it soon.")
+                                    st.success("Request submitted! An admin will review it soon.")
                                     st.session_state.show_organizer_request = False
                                     st.rerun()
                                 else:
