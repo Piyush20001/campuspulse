@@ -17,6 +17,7 @@ from models.event_classifier_improved import ImprovedEventCategorizer
 from models.lstm_forecaster import CrowdForecaster
 from utils.chart_utils import create_category_distribution
 from utils.navigation import create_top_navbar
+from database.feedback_db import get_user_role
 
 st.set_page_config(page_title="Events - Campus Pulse", page_icon="🎉", layout="wide")
 
@@ -293,6 +294,41 @@ with tab1:
 with tab2:
     st.markdown("### Create New Event")
     st.markdown("Use AI to automatically categorize and tag your event!")
+
+    # Check if user has organizer permissions
+    user_email = None
+    user_role = 'user'
+
+    if 'user' in st.session_state and st.session_state.user:
+        user_email = st.session_state.user.get('email', '')
+        user_role = get_user_role(user_email)
+
+    if user_role not in ['organizer', 'admin']:
+        st.warning("🔒 Event creation is restricted to organizers only")
+        st.info("To create events, you need organizer permissions.")
+
+        col1, col2 = st.columns([1, 2])
+
+        with col1:
+            if user_email:
+                if st.button("🎫 Request Organizer Access", type="primary", use_container_width=True):
+                    st.switch_page("pages/4_👤_Profile.py")
+            else:
+                if st.button("🔑 Sign In to Request Access", type="primary", use_container_width=True):
+                    st.switch_page("pages/4_👤_Profile.py")
+
+        with col2:
+            st.markdown("""
+            **Why become an organizer?**
+            - Create and promote campus events
+            - Reach the UF community
+            - Build your event portfolio
+            """)
+
+        st.stop()
+
+    # User is authorized - show event creation form
+    st.success(f"✅ Authorized as {user_role.title()}")
 
     with st.form("create_event_form"):
         event_title = st.text_input("Event Title*", placeholder="e.g., Machine Learning Workshop")

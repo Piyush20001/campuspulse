@@ -26,6 +26,9 @@ wheels/
 # Streamlit
 .streamlit/
 
+# Databases (exclude user data and feedback)
+campus_pulse_feedback.db
+
 # ML Models
 trained_models/*.pth
 trained_models/*.pt

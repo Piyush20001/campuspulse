@@ -20,6 +20,7 @@ from utils.map_utils import create_base_map, add_heatmap_layer, add_location_mar
 from utils.chart_utils import create_sparkline, create_forecast_chart, create_comparison_bar_chart
 from utils.config import UF_CENTER
 from utils.navigation import create_top_navbar
+from components.feedback_form import create_feedback_form
 
 st.set_page_config(page_title="Crowd Heatmap - Campus Pulse", page_icon="🗺️", layout="wide")
 
@@ -372,6 +373,9 @@ with col2:
         for key in keys_to_delete:
             del st.session_state[key]
         st.rerun()
+
+# Feedback form
+create_feedback_form()
 
 st.markdown("""
 <div style="text-align: center; color: #666; padding: 1rem 0;">

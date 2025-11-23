@@ -11,6 +11,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from auth.auth_manager import AuthManager
 from auth.email_verification import EmailVerification
 from utils.navigation import create_top_navbar
+from database.feedback_db import get_user_role, request_organizer_access, get_organizer_requests
 
 st.set_page_config(page_title="Profile - Campus Pulse", page_icon="👤", layout="wide")
 
@@ -349,6 +350,64 @@ else:
             st.markdown("### Privacy")
             visibility_emoji = "🌍" if user['profile_visibility'] == 'public' else "🔒"
             st.markdown(f"{visibility_emoji} **Profile:** {user['profile_visibility'].title()}")
+
+            # User role and organizer request
+            st.markdown("### Role & Permissions")
+            user_role = get_user_role(user['email'])
+
+            if user_role == 'admin':
+                st.success("👑 Administrator")
+                st.caption("Full system access")
+            elif user_role == 'organizer':
+                st.success("🎫 Event Organizer")
+                st.caption("Can create and manage events")
+            else:
+                st.info("👤 Standard User")
+
+                # Check if user has pending request
+                user_requests = [r for r in get_organizer_requests() if r['user_email'] == user['email']]
+
+                if user_requests and user_requests[0]['status'] == 'pending':
+                    st.warning("🕐 Organizer access request pending")
+                    st.caption("Your request is under review")
+                elif user_requests and user_requests[0]['status'] == 'rejected':
+                    st.error("❌ Previous request was rejected")
+                    st.caption("Please contact admin for more information")
+                else:
+                    if st.button("🎫 Request Organizer Access", use_container_width=True):
+                        st.session_state.show_organizer_request = True
+                        st.rerun()
+
+            # Organizer request form
+            if st.session_state.get('show_organizer_request', False):
+                with st.form("organizer_request_form"):
+                    st.markdown("#### Request Organizer Access")
+                    st.write("Organizers can create and manage campus events.")
+
+                    reason = st.text_area(
+                        "Why do you want to become an organizer?",
+                        placeholder="I'm a club president and want to create events for our organization...",
+                        max_chars=500
+                    )
+
+                    col_a, col_b = st.columns(2)
+
+                    with col_a:
+                        if st.form_submit_button("Submit Request", type="primary", use_container_width=True):
+                            if reason and len(reason) > 20:
+                                if request_organizer_access(user['email'], user['full_name'], reason):
+                                    st.success("✅ Request submitted! An admin will review it soon.")
+                                    st.session_state.show_organizer_request = False
+                                    st.rerun()
+                                else:
+                                    st.error("You already have a pending request")
+                            else:
+                                st.error("Please provide a detailed reason (at least 20 characters)")
+
+                    with col_b:
+                        if st.form_submit_button("Cancel", use_container_width=True):
+                            st.session_state.show_organizer_request = False
+                            st.rerun()
 
         with col2:
             st.markdown("### About Me")

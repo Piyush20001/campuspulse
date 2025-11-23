@@ -17,6 +17,7 @@ from models.lstm_forecaster import CrowdForecaster
 from models.event_classifier_improved import ImprovedEventCategorizer
 from models.anomaly_detector import AnomalyDetector
 from utils.navigation import create_top_navbar
+from components.feedback_form import create_feedback_form
 
 # Import metrics collector
 try:
@@ -272,6 +273,9 @@ with col2:
         st.success(f"**{crowd['location_name']}** - {crowd['percentage']}% full")
 
 st.markdown("---")
+
+# Feedback form
+create_feedback_form()
 
 # Footer
 st.markdown("""
