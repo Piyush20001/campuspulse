@@ -5,8 +5,8 @@ Run this to see the performance dashboard populate with data
 import sys
 import os
 
-# Add parent directory to path
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+# Add streamlit_app directory to path
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'streamlit_app'))
 
 from monitoring.performance_metrics import get_metrics_tracker
 import random
@@ -15,6 +15,9 @@ import time
 def populate_test_metrics():
     """Populate performance metrics with test data"""
     print("Populating performance metrics with test data...")
+
+    # Change to streamlit_app directory so database is created in the right place
+    os.chdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'streamlit_app'))
 
     metrics_tracker = get_metrics_tracker()
 
