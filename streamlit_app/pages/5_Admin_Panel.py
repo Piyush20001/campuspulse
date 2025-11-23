@@ -23,6 +23,11 @@ from database.feedback_db import (
 )
 from utils.navigation import create_top_navbar
 from auth.session_manager import SessionManager
+from monitoring.performance_metrics import get_metrics_tracker
+import plotly.express as px
+import plotly.graph_objects as go
+from datetime import timedelta
+import sqlite3
 
 st.set_page_config(page_title="Admin Panel - Campus Pulse", layout="wide")
 
@@ -97,7 +102,7 @@ st.markdown('<h1 class="admin-header">Admin Panel</h1>', unsafe_allow_html=True)
 st.markdown(f"Welcome, **{st.session_state.user.get('full_name', 'Admin')}**")
 
 # Tabs for different admin functions
-tab1, tab2, tab3, tab4 = st.tabs(["Dashboard", "Feedback Management", "Organizer Requests", "User Roles"])
+tab1, tab2, tab3, tab4, tab5 = st.tabs(["Dashboard", "Feedback Management", "Organizer Requests", "User Roles", "Performance Metrics"])
 
 # TAB 1: Dashboard
 with tab1:
@@ -304,6 +309,168 @@ with tab4:
         - **Organizer**: Can create and manage events
         - **Admin**: Full system access, manage feedback and roles
         """)
+
+# TAB 5: Performance Metrics
+with tab5:
+    st.markdown("### System Performance Metrics")
+    st.markdown("Monitor response times, API latency, and system performance")
+
+    # Initialize metrics tracker
+    metrics_tracker = get_metrics_tracker()
+
+    # Time range selector
+    time_range = st.selectbox(
+        "Time Range",
+        ["Last Hour", "Last 6 Hours", "Last 24 Hours", "Last 7 Days"],
+        index=2,
+        key="perf_time_range"
+    )
+
+    hours_map = {
+        "Last Hour": 1,
+        "Last 6 Hours": 6,
+        "Last 24 Hours": 24,
+        "Last 7 Days": 168
+    }
+    hours = hours_map[time_range]
+
+    st.markdown("---")
+
+    # Response Time Overview
+    st.markdown("#### Response Time Overview")
+
+    overall_stats = metrics_tracker.get_response_time_stats(hours=hours)
+
+    if overall_stats.get('count', 0) > 0:
+        col1, col2, col3, col4 = st.columns(4)
+
+        with col1:
+            st.metric("Total Requests", f"{overall_stats['count']:,}")
+
+        with col2:
+            st.metric("Avg Response", f"{overall_stats['avg_ms']:.1f}ms")
+
+        with col3:
+            st.metric("P95 Response", f"{overall_stats['p95_ms']:.1f}ms")
+
+        with col4:
+            st.metric("P99 Response", f"{overall_stats['p99_ms']:.1f}ms")
+
+        # Per-endpoint breakdown
+        st.markdown("---")
+        st.markdown("#### Response Times by Endpoint")
+
+        endpoint_stats = metrics_tracker.get_all_endpoint_stats(hours=hours)
+
+        if endpoint_stats:
+            df = pd.DataFrame(endpoint_stats)
+
+            st.dataframe(
+                df[['endpoint', 'count', 'avg_ms', 'median_ms', 'p95_ms']].round(2),
+                use_container_width=True,
+                hide_index=True,
+                column_config={
+                    "endpoint": "Endpoint",
+                    "count": st.column_config.NumberColumn("Requests", format="%d"),
+                    "avg_ms": st.column_config.NumberColumn("Avg (ms)", format="%.1f"),
+                    "median_ms": st.column_config.NumberColumn("Median (ms)", format="%.1f"),
+                    "p95_ms": st.column_config.NumberColumn("P95 (ms)", format="%.1f")
+                }
+            )
+
+            # Chart
+            fig = px.bar(
+                df,
+                x='endpoint',
+                y='avg_ms',
+                title='Average Response Time by Endpoint',
+                labels={'endpoint': 'Endpoint', 'avg_ms': 'Avg Response Time (ms)'},
+                color='avg_ms',
+                color_continuous_scale='RdYlGn_r'
+            )
+            fig.update_layout(showlegend=False, height=350)
+            st.plotly_chart(fig, use_container_width=True)
+
+    else:
+        st.info("No performance data available yet. Metrics will appear as users interact with the app.")
+
+    # API Latency
+    st.markdown("---")
+    st.markdown("#### API Call Latency")
+
+    conn = sqlite3.connect(metrics_tracker.db_path)
+    cursor = conn.cursor()
+
+    since_time = (datetime.now() - timedelta(hours=hours)).isoformat()
+
+    cursor.execute("""
+        SELECT operation, latency_ms, timestamp
+        FROM api_latency
+        WHERE timestamp >= ?
+        ORDER BY timestamp DESC
+        LIMIT 100
+    """, (since_time,))
+
+    latency_data = cursor.fetchall()
+    conn.close()
+
+    if latency_data:
+        operations = {}
+        for op, latency, _ in latency_data:
+            if op not in operations:
+                operations[op] = []
+            operations[op].append(latency)
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+            st.metric("Total API Calls", len(latency_data))
+
+        with col2:
+            all_latencies = [lat for _, lat, _ in latency_data]
+            avg_latency = sum(all_latencies) / len(all_latencies)
+            st.metric("Avg Latency", f"{avg_latency:.1f}ms")
+
+        # Per-operation stats
+        op_stats = []
+        for op, latencies in operations.items():
+            op_stats.append({
+                'operation': op,
+                'count': len(latencies),
+                'avg_ms': sum(latencies) / len(latencies),
+                'max_ms': max(latencies)
+            })
+
+        df_ops = pd.DataFrame(op_stats)
+        st.dataframe(
+            df_ops.round(2),
+            use_container_width=True,
+            hide_index=True
+        )
+
+    else:
+        st.info("No API latency data available for the selected time range.")
+
+    # Model Performance
+    st.markdown("---")
+    st.markdown("#### ML Model Performance")
+
+    model_stats = metrics_tracker.get_model_performance_stats(hours=hours)
+
+    if model_stats:
+        col1, col2, col3 = st.columns(3)
+
+        with col1:
+            st.metric("Total Inferences", model_stats.get('count', 0))
+
+        with col2:
+            st.metric("Avg Inference Time", f"{model_stats.get('avg_inference_ms', 0):.1f}ms")
+
+        with col3:
+            st.metric("Total Predictions", model_stats.get('total_predictions', 0))
+
+    else:
+        st.info("No model inference data available yet.")
 
 # Footer
 st.markdown("---")
