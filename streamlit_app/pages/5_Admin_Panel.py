@@ -23,7 +23,7 @@ from database.feedback_db import (
 )
 from utils.navigation import create_top_navbar
 
-st.set_page_config(page_title="Admin Panel - Campus Pulse", page_icon="👑", layout="wide")
+st.set_page_config(page_title="Admin Panel - Campus Pulse", layout="wide")
 
 # Set current page
 st.session_state.current_page = 'Admin'
@@ -80,16 +80,16 @@ if 'user' in st.session_state and st.session_state.user:
     is_admin = (user_role == 'admin')
 
 if not is_admin:
-    st.error("🚫 Access Denied: This page is only accessible to administrators.")
+    st.error("Access Denied: This page is only accessible to administrators.")
     st.info("If you believe you should have admin access, please contact the system administrator.")
     st.stop()
 
 # Admin Panel Header
-st.markdown('<h1 class="admin-header">👑 Admin Panel</h1>', unsafe_allow_html=True)
+st.markdown('<h1 class="admin-header">Admin Panel</h1>', unsafe_allow_html=True)
 st.markdown(f"Welcome, **{st.session_state.user.get('full_name', 'Admin')}**")
 
 # Tabs for different admin functions
-tab1, tab2, tab3, tab4 = st.tabs(["📊 Dashboard", "💬 Feedback Management", "🎫 Organizer Requests", "👥 User Roles"])
+tab1, tab2, tab3, tab4 = st.tabs(["Dashboard", "Feedback Management", "Organizer Requests", "User Roles"])
 
 # TAB 1: Dashboard
 with tab1:
@@ -135,7 +135,7 @@ with tab1:
     if all_feedback:
         st.markdown("### Recent Feedback")
         avg_rating = sum(f['rating'] for f in all_feedback) / len(all_feedback)
-        st.metric("Average Rating", f"{'⭐' * int(avg_rating)} ({avg_rating:.2f}/5)")
+        st.metric("Average Rating", f"{avg_rating:.2f}/5")
 
         # Feedback by category
         categories = {}
@@ -176,7 +176,7 @@ with tab2:
                 with col1:
                     st.markdown(f"**{feedback['user_name']}** ({feedback['user_email']})")
                     st.caption(f"{feedback['timestamp']} | {feedback['category'].replace('_', ' ').title()}")
-                    st.write(f"{'⭐' * feedback['rating']}")
+                    st.write(f"Rating: {feedback['rating']}/5")
                     st.write(feedback['feedback_text'])
 
                 with col2:
@@ -235,14 +235,14 @@ with tab3:
                     st.write(f"**Status:** {request['status'].upper()}")
 
                     if request['status'] == 'pending':
-                        if st.button("✅ Approve", key=f"approve_{request['id']}", type="primary"):
+                        if st.button("Approve", key=f"approve_{request['id']}", type="primary"):
                             if approve_organizer_request(request['id'], current_user_email):
                                 st.success("Approved! User is now an organizer.")
                                 st.rerun()
                             else:
                                 st.error("Error approving request")
 
-                        if st.button("❌ Reject", key=f"reject_{request['id']}"):
+                        if st.button("Reject", key=f"reject_{request['id']}"):
                             reject_organizer_request(request['id'], current_user_email)
                             st.warning("Request rejected")
                             st.rerun()
@@ -284,7 +284,7 @@ with tab4:
             if st.form_submit_button("Grant Role", type="primary"):
                 if user_email_input:
                     grant_role(user_email_input, role_input, current_user_email)
-                    st.success(f"✅ Granted {role_input} role to {user_email_input}")
+                    st.success(f"Granted {role_input} role to {user_email_input}")
                     st.rerun()
                 else:
                     st.error("Please enter a user email")

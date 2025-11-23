@@ -13,7 +13,7 @@ from auth.email_verification import EmailVerification
 from utils.navigation import create_top_navbar
 from database.feedback_db import get_user_role, request_organizer_access, get_organizer_requests
 
-st.set_page_config(page_title="Profile - Campus Pulse", page_icon="👤", layout="wide")
+st.set_page_config(page_title="Profile - Campus Pulse", layout="wide")
 
 # Set current page
 st.session_state.current_page = 'Profile'
@@ -180,7 +180,7 @@ if 'user' not in st.session_state or st.session_state.user is None:
             profile_visibility = st.radio(
                 "Who can see your profile?",
                 ["public", "private"],
-                format_func=lambda x: "🌍 Public - Visible to all students" if x == "public" else "🔒 Private - Only you can see",
+                format_func=lambda x: "Public - Visible to all students" if x == "public" else "Private - Only you can see",
                 horizontal=True
             )
 
@@ -317,7 +317,7 @@ else:
     # User is logged in - show profile page
     user = st.session_state.user
 
-    st.title(f"👤 {user['full_name']}'s Profile")
+    st.title(f"{user['full_name']}'s Profile")
 
     # Logout button
     col1, col2, col3 = st.columns([6, 1, 1])
@@ -348,33 +348,32 @@ else:
             st.markdown(f"**Email:** {user['email']}")
 
             st.markdown("### Privacy")
-            visibility_emoji = "🌍" if user['profile_visibility'] == 'public' else "🔒"
-            st.markdown(f"{visibility_emoji} **Profile:** {user['profile_visibility'].title()}")
+            st.markdown(f"**Profile:** {user['profile_visibility'].title()}")
 
             # User role and organizer request
             st.markdown("### Role & Permissions")
             user_role = get_user_role(user['email'])
 
             if user_role == 'admin':
-                st.success("👑 Administrator")
+                st.success("Administrator")
                 st.caption("Full system access")
             elif user_role == 'organizer':
-                st.success("🎫 Event Organizer")
+                st.success("Event Organizer")
                 st.caption("Can create and manage events")
             else:
-                st.info("👤 Standard User")
+                st.info("Standard User")
 
                 # Check if user has pending request
                 user_requests = [r for r in get_organizer_requests() if r['user_email'] == user['email']]
 
                 if user_requests and user_requests[0]['status'] == 'pending':
-                    st.warning("🕐 Organizer access request pending")
+                    st.warning("Organizer access request pending")
                     st.caption("Your request is under review")
                 elif user_requests and user_requests[0]['status'] == 'rejected':
-                    st.error("❌ Previous request was rejected")
+                    st.error("Previous request was rejected")
                     st.caption("Please contact admin for more information")
                 else:
-                    if st.button("🎫 Request Organizer Access", use_container_width=True):
+                    if st.button("Request Organizer Access", use_container_width=True):
                         st.session_state.show_organizer_request = True
                         st.rerun()
 
@@ -461,11 +460,11 @@ else:
                 "Profile Visibility",
                 ["public", "private"],
                 index=0 if user['profile_visibility'] == 'public' else 1,
-                format_func=lambda x: "🌍 Public" if x == "public" else "🔒 Private",
+                format_func=lambda x: "Public" if x == "public" else "Private",
                 horizontal=True
             )
 
-            submit_update = st.form_submit_button("💾 Save Changes", type="primary", use_container_width=True)
+            submit_update = st.form_submit_button("Save Changes", type="primary", use_container_width=True)
 
             if submit_update:
                 updates = {
@@ -551,7 +550,7 @@ else:
 st.markdown("---")
 st.markdown("""
 <div style="text-align: center; color: #666; padding: 1rem 0;">
-    <p>👤 Campus Pulse Profiles | Powered by AI</p>
-    <p style="font-size: 0.8rem;">🔒 Your privacy is important to us. Profile visibility settings can be changed anytime.</p>
+    <p>Campus Pulse Profiles | Powered by AI</p>
+    <p style="font-size: 0.8rem;">Your privacy is important to us. Profile visibility settings can be changed anytime.</p>
 </div>
 """, unsafe_allow_html=True)
