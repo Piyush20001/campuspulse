@@ -179,7 +179,8 @@ class CrowdForecaster:
 
     def load_model(self, path):
         """Load model and scaler"""
-        checkpoint = torch.load(path, map_location=torch.device('cpu'))
+        # Use weights_only=False to load sklearn scaler (safe for self-trained models)
+        checkpoint = torch.load(path, map_location=torch.device('cpu'), weights_only=False)
         self.model.load_state_dict(checkpoint['model_state_dict'])
         self.scaler = checkpoint['scaler']
         self.sequence_length = checkpoint['sequence_length']
