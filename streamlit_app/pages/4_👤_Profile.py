@@ -149,9 +149,15 @@ if 'user' not in st.session_state or st.session_state.user is None:
                         st.session_state.user = user_data
                         # Save session to cookie for persistence
                         st.session_state.session_manager.save_session(user_data)
-                        st.success(message)
-                        st.balloons()
-                        st.rerun()
+
+                        # Check if user is admin and redirect to admin panel
+                        user_role = get_user_role(email)
+                        if user_role == 'admin':
+                            st.switch_page("pages/5_Admin_Panel.py")
+                        else:
+                            st.success(message)
+                            st.balloons()
+                            st.rerun()
                     else:
                         st.error(message)
                 else:
@@ -344,10 +350,8 @@ if 'user' not in st.session_state or st.session_state.user is None:
                         if user_role == 'admin':
                             st.session_state.user = user_data
                             st.session_state.session_manager.save_session(user_data)
-                            st.success("Welcome, Administrator!")
-                            st.balloons()
-                            st.info("Navigate to the Admin Panel from the sidebar to manage the system.")
-                            st.rerun()
+                            # Redirect to Admin Panel
+                            st.switch_page("pages/5_Admin_Panel.py")
                         else:
                             st.error("Access Denied: You do not have administrator privileges.")
                             st.info("If you need admin access, please contact the system administrator.")
