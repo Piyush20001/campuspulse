@@ -85,10 +85,15 @@ if 'forecaster' not in st.session_state:
     if os.path.exists(lstm_model_path):
         try:
             st.session_state.forecaster = CrowdForecaster(model_path=lstm_model_path)
-        except Exception as e:
-            # Fallback if LSTM can't load
+        except ModuleNotFoundError as e:
+            # PyTorch not installed
             st.session_state.forecaster = CrowdForecaster()
-            st.warning(f"⚠️ LSTM model could not be loaded. Using fallback predictions.")
+            st.warning(f"⚠️ PyTorch not installed. Install with: pip install torch")
+        except Exception as e:
+            # Other loading error - show the actual error for debugging
+            st.session_state.forecaster = CrowdForecaster()
+            st.error(f"⚠️ LSTM model loading error: {str(e)}")
+            st.info("Using fallback persistence forecast. Check if PyTorch is installed.")
     else:
         # No trained model yet
         st.session_state.forecaster = CrowdForecaster()
