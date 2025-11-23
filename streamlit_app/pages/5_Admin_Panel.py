@@ -318,13 +318,92 @@ with tab5:
     # Initialize metrics tracker
     metrics_tracker = get_metrics_tracker()
 
-    # Time range selector
-    time_range = st.selectbox(
-        "Time Range",
-        ["Last Hour", "Last 6 Hours", "Last 24 Hours", "Last 7 Days"],
-        index=2,
-        key="perf_time_range"
-    )
+    # Export button and time range selector
+    col_export, col_time = st.columns([2, 1])
+
+    with col_export:
+        st.markdown("#### Export Performance Data")
+        if st.button("Download All Metrics as CSV", type="primary", use_container_width=True):
+            # Export all metrics to CSV
+            conn = sqlite3.connect(metrics_tracker.db_path)
+
+            # Export response times
+            df_response = pd.read_sql_query("SELECT * FROM response_times ORDER BY timestamp DESC", conn)
+
+            # Export API latency
+            df_api = pd.read_sql_query("SELECT * FROM api_latency ORDER BY timestamp DESC", conn)
+
+            # Export page loads
+            df_pages = pd.read_sql_query("SELECT * FROM page_loads ORDER BY timestamp DESC", conn)
+
+            # Export model inference
+            df_models = pd.read_sql_query("SELECT * FROM model_inference ORDER BY timestamp DESC", conn)
+
+            # Export database queries
+            df_queries = pd.read_sql_query("SELECT * FROM db_queries ORDER BY timestamp DESC", conn)
+
+            conn.close()
+
+            # Create combined CSV with summary
+            timestamp_str = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+            # Save individual CSV files
+            csv_response = df_response.to_csv(index=False).encode('utf-8')
+            csv_api = df_api.to_csv(index=False).encode('utf-8')
+            csv_pages = df_pages.to_csv(index=False).encode('utf-8')
+            csv_models = df_models.to_csv(index=False).encode('utf-8')
+            csv_queries = df_queries.to_csv(index=False).encode('utf-8')
+
+            # Create download buttons
+            st.success("✅ CSV files ready for download!")
+
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                st.download_button(
+                    label="Response Times CSV",
+                    data=csv_response,
+                    file_name=f"response_times_{timestamp_str}.csv",
+                    mime="text/csv"
+                )
+                st.download_button(
+                    label="API Latency CSV",
+                    data=csv_api,
+                    file_name=f"api_latency_{timestamp_str}.csv",
+                    mime="text/csv"
+                )
+
+            with col2:
+                st.download_button(
+                    label="Page Loads CSV",
+                    data=csv_pages,
+                    file_name=f"page_loads_{timestamp_str}.csv",
+                    mime="text/csv"
+                )
+                st.download_button(
+                    label="Model Inference CSV",
+                    data=csv_models,
+                    file_name=f"model_inference_{timestamp_str}.csv",
+                    mime="text/csv"
+                )
+
+            with col3:
+                st.download_button(
+                    label="DB Queries CSV",
+                    data=csv_queries,
+                    file_name=f"db_queries_{timestamp_str}.csv",
+                    mime="text/csv"
+                )
+
+            st.info(f"📊 Total records: {len(df_response) + len(df_api) + len(df_pages) + len(df_models) + len(df_queries)}")
+
+    with col_time:
+        # Time range selector
+        time_range = st.selectbox(
+            "Time Range",
+            ["Last Hour", "Last 6 Hours", "Last 24 Hours", "Last 7 Days"],
+            index=2,
+            key="perf_time_range"
+        )
 
     hours_map = {
         "Last Hour": 1,

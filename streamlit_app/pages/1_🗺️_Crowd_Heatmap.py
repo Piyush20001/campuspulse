@@ -23,6 +23,15 @@ from utils.navigation import create_top_navbar
 from components.feedback_form import create_feedback_form
 from auth.session_manager import SessionManager
 
+# Import performance metrics tracker
+try:
+    from monitoring.performance_metrics import get_metrics_tracker
+    METRICS_ENABLED = True
+except ImportError:
+    METRICS_ENABLED = False
+    def get_metrics_tracker():
+        return None
+
 st.set_page_config(page_title="Crowd Heatmap - Campus Pulse", page_icon="🗺️", layout="wide")
 
 # Initialize session manager
@@ -35,8 +44,24 @@ st.session_state.session_manager.restore_session_state()
 # Set current page
 st.session_state.current_page = 'Crowd Map'
 
+# Initialize performance metrics tracker and track page load
+import time as time_module
+page_start_time = time_module.time()
+
+if METRICS_ENABLED:
+    metrics_tracker = get_metrics_tracker()
+else:
+    metrics_tracker = None
+
 # Top navigation
 create_top_navbar()
+
+# Track page load time
+if METRICS_ENABLED and metrics_tracker:
+    load_time_ms = (time_module.time() - page_start_time) * 1000
+    user_email = st.session_state.user.get('email') if 'user' in st.session_state and st.session_state.user else None
+    metrics_tracker.record_page_load("Crowd Heatmap", load_time_ms, user_email)
+    metrics_tracker.record_response_time("crowd_heatmap", load_time_ms, user_email, "success")
 
 # Modern heatmap page styling
 st.markdown("""
@@ -177,6 +202,10 @@ else:
 forecast_cache_key = f'forecasts_{selected_filter}'
 if forecast_cache_key not in st.session_state or 'force_refresh' in st.session_state:
     forecasts = []
+
+    # Track total LSTM inference time
+    total_inference_start = time_module.time()
+
     for location in filtered_locations:
         # Generate historical data for time series input
         hist_data = st.session_state.simulator.generate_historical_data(location, days=1, interval_minutes=10)
@@ -184,8 +213,15 @@ if forecast_cache_key not in st.session_state or 'force_refresh' in st.session_s
         # Get last 2 hours of data (12 time steps) for LSTM input
         recent_levels = hist_data['crowd_level'].values[-12:]
 
-        # Predict next hour (6 time steps) using LSTM
+        # Predict next hour (6 time steps) using LSTM - Track inference time
+        inference_start = time_module.time()
         predictions = st.session_state.forecaster.predict(recent_levels)
+        inference_time_ms = (time_module.time() - inference_start) * 1000
+
+        # Record model inference performance
+        if METRICS_ENABLED and metrics_tracker:
+            metrics_tracker.record_model_inference("LSTM_Forecaster", inference_time_ms, num_predictions=len(predictions))
+
         label, emoji = st.session_state.forecaster.get_forecast_label(predictions)
 
         forecasts.append({
@@ -194,6 +230,13 @@ if forecast_cache_key not in st.session_state or 'force_refresh' in st.session_s
             'label': label,
             'emoji': emoji
         })
+
+    # Record total batch inference time as API latency
+    total_inference_time_ms = (time_module.time() - total_inference_start) * 1000
+    if METRICS_ENABLED and metrics_tracker:
+        metrics_tracker.record_api_latency("lstm_batch_forecast", total_inference_time_ms,
+                                          metadata=f"{len(filtered_locations)} locations")
+
     st.session_state[forecast_cache_key] = forecasts
 else:
     forecasts = st.session_state[forecast_cache_key]
