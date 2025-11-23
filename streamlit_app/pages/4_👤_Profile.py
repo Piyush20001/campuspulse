@@ -10,10 +10,18 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from auth.auth_manager import AuthManager
 from auth.email_verification import EmailVerification
+from auth.session_manager import SessionManager
 from utils.navigation import create_top_navbar
 from database.feedback_db import get_user_role, request_organizer_access, get_organizer_requests
 
 st.set_page_config(page_title="Profile - Campus Pulse", layout="wide")
+
+# Initialize session manager
+if 'session_manager' not in st.session_state:
+    st.session_state.session_manager = SessionManager()
+
+# Restore session from cookie if available
+st.session_state.session_manager.restore_session_state()
 
 # Set current page
 st.session_state.current_page = 'Profile'
@@ -139,6 +147,8 @@ if 'user' not in st.session_state or st.session_state.user is None:
                     success, user_data, message = st.session_state.auth_manager.sign_in(email, password)
                     if success:
                         st.session_state.user = user_data
+                        # Save session to cookie for persistence
+                        st.session_state.session_manager.save_session(user_data)
                         st.success(message)
                         st.balloons()
                         st.rerun()
@@ -322,8 +332,10 @@ else:
     # Logout button
     col1, col2, col3 = st.columns([6, 1, 1])
     with col3:
-        if st.button("🚪 Logout", type="secondary"):
+        if st.button("Logout", type="secondary"):
             st.session_state.user = None
+            # Clear session cookie
+            st.session_state.session_manager.clear_session()
             st.success("Logged out successfully")
             st.rerun()
 

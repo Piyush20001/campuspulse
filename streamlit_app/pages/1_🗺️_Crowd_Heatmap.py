@@ -21,8 +21,16 @@ from utils.chart_utils import create_sparkline, create_forecast_chart, create_co
 from utils.config import UF_CENTER
 from utils.navigation import create_top_navbar
 from components.feedback_form import create_feedback_form
+from auth.session_manager import SessionManager
 
 st.set_page_config(page_title="Crowd Heatmap - Campus Pulse", page_icon="🗺️", layout="wide")
+
+# Initialize session manager
+if 'session_manager' not in st.session_state:
+    st.session_state.session_manager = SessionManager()
+
+# Restore session from cookie if available
+st.session_state.session_manager.restore_session_state()
 
 # Set current page
 st.session_state.current_page = 'Crowd Map'

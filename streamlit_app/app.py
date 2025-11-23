@@ -18,6 +18,7 @@ from models.event_classifier_improved import ImprovedEventCategorizer
 from models.anomaly_detector import AnomalyDetector
 from utils.navigation import create_top_navbar
 from components.feedback_form import create_feedback_form
+from auth.session_manager import SessionManager
 
 # Import metrics collector
 try:
@@ -33,6 +34,13 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="collapsed"  # Hide sidebar by default
 )
+
+# Initialize session manager
+if 'session_manager' not in st.session_state:
+    st.session_state.session_manager = SessionManager()
+
+# Restore session from cookie if available
+st.session_state.session_manager.restore_session_state()
 
 # Set current page
 st.session_state.current_page = 'Home'

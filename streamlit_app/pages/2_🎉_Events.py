@@ -18,8 +18,16 @@ from models.lstm_forecaster import CrowdForecaster
 from utils.chart_utils import create_category_distribution
 from utils.navigation import create_top_navbar
 from database.feedback_db import get_user_role
+from auth.session_manager import SessionManager
 
 st.set_page_config(page_title="Events - Campus Pulse", page_icon="🎉", layout="wide")
+
+# Initialize session manager
+if 'session_manager' not in st.session_state:
+    st.session_state.session_manager = SessionManager()
+
+# Restore session from cookie if available
+st.session_state.session_manager.restore_session_state()
 
 # Set current page
 st.session_state.current_page = 'Events'

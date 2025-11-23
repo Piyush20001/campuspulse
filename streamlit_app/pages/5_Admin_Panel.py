@@ -22,8 +22,16 @@ from database.feedback_db import (
     get_user_role
 )
 from utils.navigation import create_top_navbar
+from auth.session_manager import SessionManager
 
 st.set_page_config(page_title="Admin Panel - Campus Pulse", layout="wide")
+
+# Initialize session manager
+if 'session_manager' not in st.session_state:
+    st.session_state.session_manager = SessionManager()
+
+# Restore session from cookie if available
+st.session_state.session_manager.restore_session_state()
 
 # Set current page
 st.session_state.current_page = 'Admin'

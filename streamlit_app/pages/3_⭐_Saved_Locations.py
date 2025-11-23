@@ -18,8 +18,16 @@ from models.anomaly_detector import AnomalyDetector
 from utils.map_utils import get_crowd_color, get_crowd_label
 from utils.chart_utils import create_forecast_chart, create_crowd_gauge
 from utils.navigation import create_top_navbar
+from auth.session_manager import SessionManager
 
 st.set_page_config(page_title="Saved Locations - Campus Pulse", page_icon="⭐", layout="wide")
+
+# Initialize session manager
+if 'session_manager' not in st.session_state:
+    st.session_state.session_manager = SessionManager()
+
+# Restore session from cookie if available
+st.session_state.session_manager.restore_session_state()
 
 # Set current page
 st.session_state.current_page = 'Saved'
