@@ -3,9 +3,14 @@ Session Manager for persistent login using browser localStorage
 Handles saving and restoring user sessions across page refreshes
 """
 import streamlit as st
-from streamlit_javascript import st_javascript
 import json
 from datetime import datetime, timedelta
+
+try:
+    from streamlit_javascript import st_javascript
+    HAS_JAVASCRIPT = True
+except ImportError:
+    HAS_JAVASCRIPT = False
 
 
 class SessionManager:
@@ -32,6 +37,9 @@ class SessionManager:
         Returns:
             True if successful, False otherwise
         """
+        if not HAS_JAVASCRIPT:
+            return False
+
         try:
             # Add expiry timestamp
             session_data = {
@@ -39,13 +47,11 @@ class SessionManager:
                 'expires_at': (datetime.now() + timedelta(days=self.session_expiry_days)).isoformat()
             }
 
-            # Convert to JSON
-            session_json = json.dumps(session_data)
+            # Convert to JSON and escape for JavaScript
+            session_json = json.dumps(session_data).replace("'", "\\'").replace('"', '\\"')
 
             # Save to localStorage using JavaScript
-            js_code = f"""
-            localStorage.setItem('{self.storage_key}', '{session_json.replace("'", "\\'")}');
-            """
+            js_code = f"localStorage.setItem('{self.storage_key}', '{session_json}');"
             st_javascript(js_code)
 
             return True
@@ -61,11 +67,12 @@ class SessionManager:
         Returns:
             Dictionary containing user data or None if no valid session
         """
+        if not HAS_JAVASCRIPT:
+            return None
+
         try:
             # Get data from localStorage using JavaScript
-            js_code = f"""
-            localStorage.getItem('{self.storage_key}');
-            """
+            js_code = f"localStorage.getItem('{self.storage_key}');"
             session_json = st_javascript(js_code)
 
             if not session_json or session_json == "null":
@@ -88,10 +95,11 @@ class SessionManager:
 
     def clear_session(self):
         """Clear user session from browser localStorage"""
+        if not HAS_JAVASCRIPT:
+            return False
+
         try:
-            js_code = f"""
-            localStorage.removeItem('{self.storage_key}');
-            """
+            js_code = f"localStorage.removeItem('{self.storage_key}');"
             st_javascript(js_code)
             return True
 
