@@ -732,9 +732,9 @@ def create_top_navbar():
             # Show username button with dropdown in expander
             user_name = st.session_state.user.get('full_name', 'User').split()[0]
             with st.expander(f"👤 {user_name.upper()}", expanded=False):
-                if st.button("📍 Saved Locations", key="nav_saved", use_container_width=True):
+                if st.button("⭐ Saved Locations", key="nav_saved", use_container_width=True):
                     st.session_state.current_page = 'Saved'
-                    st.switch_page("pages/3_📍_Saved_Locations.py")
+                    st.switch_page("pages/3_⭐_Saved_Locations.py")
                 if st.button("⚙️ Settings", key="nav_settings", use_container_width=True):
                     st.info("Settings page coming soon!")
                 if st.button("🚪 Sign Out", key="nav_signout", use_container_width=True):
@@ -776,7 +776,7 @@ def create_top_navbar():
             st.switch_page("pages/4_👤_Profile.py")
         elif nav_action == 'saved':
             st.session_state.current_page = 'Saved'
-            st.switch_page("pages/3_📍_Saved_Locations.py")
+            st.switch_page("pages/3_⭐_Saved_Locations.py")
         elif nav_action == 'settings':
             st.info("Settings page coming soon!")
         elif nav_action == 'signout':
