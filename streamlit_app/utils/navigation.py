@@ -304,7 +304,7 @@ def create_top_navbar():
         }}
 
         .campus-pulse-logo {{
-            height: 180px !important;
+            height: 200px !important;
             width: auto !important;
             object-fit: contain !important;
         }}

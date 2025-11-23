@@ -154,10 +154,6 @@ create_top_navbar()
 if METRICS_ENABLED:
     MetricsCollector.record_page_view("Home")
 
-# Main page content
-st.markdown('<h1 class="main-header">🎓 Campus Pulse</h1>', unsafe_allow_html=True)
-st.markdown('<p class="sub-header">AI-Powered Real-Time Campus Intelligence for University of Florida</p>', unsafe_allow_html=True)
-
 # Quick stats row
 st.markdown("### Live Campus Stats")
 stat_col1, stat_col2, stat_col3, stat_col4 = st.columns(4)
