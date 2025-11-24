@@ -120,7 +120,7 @@ st.markdown("Discover upcoming events with AI-powered categorization and crowd f
 if 'show_event_created' in st.session_state and st.session_state.show_event_created:
     event_category = st.session_state.get('new_event_category', 'Unknown')
     st.success(f"🎉 Event '{st.session_state.new_event_title}' created successfully and classified as **{event_category}**!")
-    st.info(f"✨ **Filters auto-adjusted!** Category filter is now set to **'{event_category}'** so you can see your event immediately in the Browse Events tab below.")
+    st.info(f"✨ **Filters set to 'All'!** Your event is now visible in the Browse Events tab below. Look for the 👤 User Created badge.")
     del st.session_state.show_event_created
     if 'new_event_title' in st.session_state:
         del st.session_state.new_event_title
@@ -136,13 +136,10 @@ else:
 
 # Auto-set filters to show newly created event
 if 'auto_set_filters' in st.session_state and st.session_state.auto_set_filters:
-    # Use session state to pre-select the right category
-    if 'default_category_filter' not in st.session_state:
-        st.session_state.default_category_filter = st.session_state.get('new_event_category', 'All')
-    if 'default_time_filter' not in st.session_state:
-        st.session_state.default_time_filter = 'All Upcoming'
-    if 'default_location_filter' not in st.session_state:
-        st.session_state.default_location_filter = 'All Locations'
+    # Force all filters to 'All' to guarantee new event is visible
+    st.session_state.default_category_filter = 'All'
+    st.session_state.default_time_filter = 'All Upcoming'
+    st.session_state.default_location_filter = 'All Locations'
     del st.session_state.auto_set_filters
 else:
     # Use current filter values or defaults
@@ -476,12 +473,7 @@ with tab2:
                 st.session_state.new_event_title = event_title
                 st.session_state.new_event_category = ai_result['category']
                 st.session_state.switch_to_browse = True
-
-                # Auto-set filters to show the new event
-                st.session_state.auto_set_filters = True
-                st.session_state.default_category_filter = ai_result['category']
-                st.session_state.default_time_filter = 'All Upcoming'
-                st.session_state.default_location_filter = 'All Locations'
+                st.session_state.auto_set_filters = True  # Signal to reset filters to 'All'
 
                 # Force a rerun to show the event and success message
                 st.rerun()
