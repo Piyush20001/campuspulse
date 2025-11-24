@@ -79,7 +79,9 @@ st.markdown("""
 if 'simulator' not in st.session_state:
     st.session_state.simulator = CrowdDataSimulator()
 if 'forecaster' not in st.session_state:
-    st.session_state.forecaster = CrowdForecaster()
+    # Load the trained LSTM model
+    model_path = os.path.join(os.path.dirname(__file__), '..', 'models', 'lstm_crowd_model.pth')
+    st.session_state.forecaster = CrowdForecaster(model_path=model_path)
 if 'anomaly_detector' not in st.session_state:
     st.session_state.anomaly_detector = AnomalyDetector()
 if 'event_generator' not in st.session_state:

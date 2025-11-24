@@ -105,7 +105,9 @@ try:
     if 'event_classifier' not in st.session_state or st.session_state.event_classifier is None:
         st.session_state.event_classifier = ImprovedEventCategorizer()
     if 'forecaster' not in st.session_state or st.session_state.forecaster is None:
-        st.session_state.forecaster = CrowdForecaster()
+        # Load the trained LSTM model
+        model_path = os.path.join(os.path.dirname(__file__), '..', 'models', 'lstm_crowd_model.pth')
+        st.session_state.forecaster = CrowdForecaster(model_path=model_path)
     if 'user_created_events' not in st.session_state:
         st.session_state.user_created_events = []
 except Exception as e:

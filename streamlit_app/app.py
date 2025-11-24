@@ -148,7 +148,9 @@ def init_session_state():
         st.session_state.events = st.session_state.event_generator.generate_semester_events(50)
 
     if 'forecaster' not in st.session_state:
-        st.session_state.forecaster = CrowdForecaster()
+        # Load the trained LSTM model
+        model_path = os.path.join(os.path.dirname(__file__), 'models', 'lstm_crowd_model.pth')
+        st.session_state.forecaster = CrowdForecaster(model_path=model_path)
 
     if 'event_classifier' not in st.session_state:
         st.session_state.event_classifier = ImprovedEventCategorizer()
