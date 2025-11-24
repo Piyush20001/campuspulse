@@ -206,7 +206,7 @@ if 'user' not in st.session_state or st.session_state.user is None:
             st.markdown("---")
             agree_terms = st.checkbox("I agree to Campus Pulse Terms of Service and Privacy Policy")
 
-            submit_signup = st.form_submit_button("Send Verification Code", type="primary", use_container_width=True)
+            submit_signup = st.form_submit_button("Create Account", type="primary", use_container_width=True)
 
             if submit_signup:
                 if not agree_terms:
@@ -224,102 +224,33 @@ if 'user' not in st.session_state or st.session_state.user is None:
                         if not is_valid:
                             st.error(msg)
                         else:
-                            # Send verification code
-                            success, code, message = st.session_state.email_verifier.send_verification_email(signup_email)
-
-                            if success:
-                                # Store signup data temporarily
-                                st.session_state.signup_data = {
-                                    'email': signup_email,
-                                    'password': signup_password,
-                                    'full_name': full_name,
-                                    'bio': bio,
-                                    'profile_visibility': profile_visibility,
-                                    'major': major,
-                                    'year': year,
-                                    'interests': interests
-                                }
-                                st.session_state.verification_email = signup_email
-                                st.session_state.verification_code_sent = True
-
-                                st.success(message)
-                                st.info("Check your email for the 4-digit verification code!")
-                                st.rerun()
-                            else:
-                                st.error(message)
-
-        # Email Verification Section (shown after code is sent)
-        if st.session_state.verification_code_sent and st.session_state.signup_data:
-            st.markdown("---")
-            st.markdown("### Email Verification")
-            st.info(f"A 4-digit code has been sent to **{st.session_state.verification_email}**")
-
-            verification_code = st.text_input(
-                "Enter 4-Digit Code",
-                max_chars=4,
-                placeholder="1234",
-                help="Check your email for the verification code"
-            )
-
-            col_verify1, col_verify2 = st.columns(2)
-
-            with col_verify1:
-                if st.button("Verify & Create Account", type="primary", use_container_width=True):
-                    if len(verification_code) != 4:
-                        st.error("Please enter the complete 4-digit code")
-                    else:
-                        # Verify the code
-                        success, message = st.session_state.email_verifier.verify_code(
-                            st.session_state.verification_email,
-                            verification_code
-                        )
-
-                        if success:
-                            # Create the account
-                            signup_data = st.session_state.signup_data
+                            # Create account directly without email verification
                             success, message = st.session_state.auth_manager.sign_up(
-                                email=signup_data['email'],
-                                password=signup_data['password'],
-                                full_name=signup_data['full_name'],
-                                bio=signup_data['bio'],
-                                profile_visibility=signup_data['profile_visibility']
+                                email=signup_email,
+                                password=signup_password,
+                                full_name=full_name,
+                                bio=bio,
+                                profile_visibility=profile_visibility
                             )
 
                             if success:
                                 # Update profile with additional info
                                 _, user_data, _ = st.session_state.auth_manager.sign_in(
-                                    signup_data['email'],
-                                    signup_data['password']
+                                    signup_email,
+                                    signup_password
                                 )
                                 if user_data:
                                     st.session_state.auth_manager.update_profile(user_data['id'], {
-                                        'major': signup_data['major'],
-                                        'year': signup_data['year'],
-                                        'interests': signup_data['interests']
+                                        'major': major,
+                                        'year': year,
+                                        'interests': interests
                                     })
-
-                                # Clear verification state
-                                st.session_state.verification_code_sent = False
-                                st.session_state.signup_data = None
-                                st.session_state.verification_email = None
 
                                 st.success("Account created successfully!")
                                 st.info("Please switch to the 'Sign In' tab to log in")
                                 st.balloons()
                             else:
                                 st.error(message)
-                        else:
-                            st.error(message)
-
-            with col_verify2:
-                if st.button("Resend Code", use_container_width=True):
-                    success, code, message = st.session_state.email_verifier.send_verification_email(
-                        st.session_state.verification_email
-                    )
-                    if success:
-                        st.success(message)
-                    else:
-                        st.error(message)
 
         st.markdown("---")
         st.markdown("""

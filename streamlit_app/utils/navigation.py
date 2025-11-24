@@ -728,9 +728,15 @@ def create_top_navbar():
 
     # Add Streamlit buttons below navbar, positioned to appear in navbar
     # Create columns for right-side buttons
-    button_cols = st.columns([8.5, 1.2, 1, 1])
+    button_cols = st.columns([7.5, 1, 1.2, 1, 1])
 
     with button_cols[1]:
+        # HOME button
+        if st.button("🏠 HOME", key="nav_home", use_container_width=True, type="secondary"):
+            st.session_state.current_page = 'Home'
+            st.switch_page("app.py")
+
+    with button_cols[2]:
         # Check if user is logged in
         if 'user' in st.session_state and st.session_state.user:
             # Show username button with dropdown in expander
@@ -751,12 +757,12 @@ def create_top_navbar():
                 st.session_state.current_page = 'Profile'
                 st.switch_page("pages/4_👤_Profile.py")
 
-    with button_cols[2]:
+    with button_cols[3]:
         if st.button("CROWD", key="nav_crowd", use_container_width=True, type="secondary"):
             st.session_state.current_page = 'Crowd Map'
             st.switch_page("pages/1_🗺️_Crowd_Heatmap.py")
 
-    with button_cols[3]:
+    with button_cols[4]:
         if st.button("EVENTS", key="nav_events", use_container_width=True, type="secondary"):
             st.session_state.current_page = 'Events'
             st.switch_page("pages/2_🎉_Events.py")
