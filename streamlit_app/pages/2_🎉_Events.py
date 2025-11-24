@@ -118,11 +118,14 @@ st.markdown("Discover upcoming events with AI-powered categorization and crowd f
 
 # Check if we should show success message for newly created event
 if 'show_event_created' in st.session_state and st.session_state.show_event_created:
-    st.success(f"Event '{st.session_state.new_event_title}' created successfully! It's now visible in the Browse Events tab below.")
-    st.info("**Tip**: If you don't see your event, check that filters (Category/Time/Location) are not hiding it. Set all filters to 'All' to see all events.")
+    event_category = st.session_state.get('new_event_category', 'Unknown')
+    st.success(f"🎉 Event '{st.session_state.new_event_title}' created successfully and classified as **{event_category}**!")
+    st.info(f"💡 **Tip**: Your event is now visible in the Browse Events tab. To see it, make sure the Category filter is set to **'All'** or **'{event_category}'**.")
     del st.session_state.show_event_created
     if 'new_event_title' in st.session_state:
         del st.session_state.new_event_title
+    if 'new_event_category' in st.session_state:
+        del st.session_state.new_event_category
 
 # Default to Browse Events tab if we just created an event
 if 'switch_to_browse' in st.session_state and st.session_state.switch_to_browse:
@@ -394,6 +397,14 @@ with tab2:
                     st.error(f"Error categorizing event: {str(e)}")
                     st.stop()
 
+                # Show AI classification result
+                st.info(f"✨ AI classified your event as: **{ai_result['category']}** (Confidence: {ai_result['confidence']:.0%})")
+
+                # Show suggested tags
+                if ai_result.get('suggested_tags'):
+                    tags_preview = ', '.join(ai_result['suggested_tags'][:5])
+                    st.success(f"🏷️ Suggested tags: {tags_preview}")
+
                 # Create event
                 location = next((loc for loc in UF_LOCATIONS if loc['name'] == event_location), UF_LOCATIONS[0])
 
@@ -417,7 +428,8 @@ with tab2:
                     'organizer': organizer if organizer else "User",
                     'attendees_expected': expected_attendees,
                     'is_free': is_free,
-                    'registration_required': registration_required
+                    'registration_required': registration_required,
+                    'created_by_user': True  # Flag to identify user-created events
                 }
 
                 st.session_state.user_created_events.append(new_event)
@@ -425,6 +437,7 @@ with tab2:
                 # Set flags for success message and tab switching
                 st.session_state.show_event_created = True
                 st.session_state.new_event_title = event_title
+                st.session_state.new_event_category = ai_result['category']
                 st.session_state.switch_to_browse = True
 
                 # Force a rerun to show the event and success message
