@@ -120,7 +120,7 @@ st.markdown("Discover upcoming events with AI-powered categorization and crowd f
 if 'show_event_created' in st.session_state and st.session_state.show_event_created:
     event_category = st.session_state.get('new_event_category', 'Unknown')
     st.success(f"🎉 Event '{st.session_state.new_event_title}' created successfully and classified as **{event_category}**!")
-    st.info(f"💡 **Tip**: Your event is now visible in the Browse Events tab. To see it, make sure the Category filter is set to **'All'** or **'{event_category}'**.")
+    st.info(f"✨ **Filters auto-adjusted!** Category filter is now set to **'{event_category}'** so you can see your event immediately in the Browse Events tab below.")
     del st.session_state.show_event_created
     if 'new_event_title' in st.session_state:
         del st.session_state.new_event_title
@@ -134,6 +134,25 @@ if 'switch_to_browse' in st.session_state and st.session_state.switch_to_browse:
 else:
     default_tab = 0
 
+# Auto-set filters to show newly created event
+if 'auto_set_filters' in st.session_state and st.session_state.auto_set_filters:
+    # Use session state to pre-select the right category
+    if 'default_category_filter' not in st.session_state:
+        st.session_state.default_category_filter = st.session_state.get('new_event_category', 'All')
+    if 'default_time_filter' not in st.session_state:
+        st.session_state.default_time_filter = 'All Upcoming'
+    if 'default_location_filter' not in st.session_state:
+        st.session_state.default_location_filter = 'All Locations'
+    del st.session_state.auto_set_filters
+else:
+    # Use current filter values or defaults
+    if 'default_category_filter' not in st.session_state:
+        st.session_state.default_category_filter = 'All'
+    if 'default_time_filter' not in st.session_state:
+        st.session_state.default_time_filter = 'All Upcoming'
+    if 'default_location_filter' not in st.session_state:
+        st.session_state.default_location_filter = 'All Locations'
+
 # Tabs
 tab1, tab2, tab3 = st.tabs(["Browse Events", "Create Event", "AI Classifier"])
 
@@ -141,26 +160,44 @@ tab1, tab2, tab3 = st.tabs(["Browse Events", "Create Event", "AI Classifier"])
 with tab1:
     st.markdown("### Upcoming Events")
 
-    # Filters
+    # Filters with default values from session state
     filter_col1, filter_col2, filter_col3 = st.columns(3)
 
     with filter_col1:
+        category_options = ["All"] + st.session_state.event_classifier.categories
+        default_cat_index = category_options.index(st.session_state.default_category_filter) if st.session_state.default_category_filter in category_options else 0
         category_filter = st.selectbox(
             "Filter by Category",
-            ["All"] + st.session_state.event_classifier.categories
+            category_options,
+            index=default_cat_index,
+            key="category_filter_select"
         )
+        # Update session state when user changes filter
+        st.session_state.default_category_filter = category_filter
 
     with filter_col2:
+        time_options = ["All Upcoming", "Today", "This Week", "This Month"]
+        default_time_index = time_options.index(st.session_state.default_time_filter) if st.session_state.default_time_filter in time_options else 0
         time_filter = st.selectbox(
             "Time Range",
-            ["All Upcoming", "Today", "This Week", "This Month"]
+            time_options,
+            index=default_time_index,
+            key="time_filter_select"
         )
+        # Update session state when user changes filter
+        st.session_state.default_time_filter = time_filter
 
     with filter_col3:
+        location_options = ["All Locations"] + [loc['name'] for loc in UF_LOCATIONS]
+        default_loc_index = location_options.index(st.session_state.default_location_filter) if st.session_state.default_location_filter in location_options else 0
         location_filter = st.selectbox(
             "Filter by Location",
-            ["All Locations"] + [loc['name'] for loc in UF_LOCATIONS]
+            location_options,
+            index=default_loc_index,
+            key="location_filter_select"
         )
+        # Update session state when user changes filter
+        st.session_state.default_location_filter = location_filter
 
     # Combine generated and user-created events
     all_events = st.session_state.events + st.session_state.user_created_events
@@ -439,6 +476,12 @@ with tab2:
                 st.session_state.new_event_title = event_title
                 st.session_state.new_event_category = ai_result['category']
                 st.session_state.switch_to_browse = True
+
+                # Auto-set filters to show the new event
+                st.session_state.auto_set_filters = True
+                st.session_state.default_category_filter = ai_result['category']
+                st.session_state.default_time_filter = 'All Upcoming'
+                st.session_state.default_location_filter = 'All Locations'
 
                 # Force a rerun to show the event and success message
                 st.rerun()
