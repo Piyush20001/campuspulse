@@ -449,6 +449,11 @@ with tab2:
                 start_datetime = datetime.combine(event_date, event_time)
                 end_datetime = start_datetime + timedelta(hours=duration_hours)
 
+                # Validate event is in the future
+                if start_datetime <= datetime.now():
+                    st.error("⏰ Event start time must be in the future! Please select a future date/time.")
+                    st.stop()
+
                 new_event = {
                     'id': len(st.session_state.events) + len(st.session_state.user_created_events) + 1,
                     'title': event_title,
