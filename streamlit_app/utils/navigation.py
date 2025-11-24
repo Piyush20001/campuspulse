@@ -745,8 +745,6 @@ def create_top_navbar():
                 if st.button("SAVED LOCATIONS", key="nav_saved", use_container_width=True):
                     st.session_state.current_page = 'Saved'
                     st.switch_page("pages/3_⭐_Saved_Locations.py")
-                if st.button("SETTINGS", key="nav_settings", use_container_width=True):
-                    st.info("Settings page coming soon!")
                 if st.button("SIGN OUT", key="nav_signout", use_container_width=True):
                     st.session_state.user = None
                     st.session_state.current_page = 'Home'
