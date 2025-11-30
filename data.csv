@@ -1,0 +1,113 @@
+timestamp,facility,sub_area,zone_id,count_in_area,Capacity
+10/22/2025 15:30:00,Southwest Rec Center,Maguire Field,Z-SWRC-01,11,
+10/23/2025 15:30:00,Southwest Rec Center,SWRC Weight Room,Z-SWRC-02,126,
+10/24/2025 15:30:00,Southwest Rec Center,SWRC Cardio Room 1,Z-SWRC-03,25,
+10/25/2025 15:30:00,Southwest Rec Center,SWRC Cardio Room 2,Z-SWRC-04,17,
+10/26/2025 15:30:00,Southwest Rec Center,Multi-Purpose Court 1,Z-SWRC-05,3,
+10/27/2025 15:30:00,Southwest Rec Center,Multi-Purpose Court 2,Z-SWRC-06,7,
+10/28/2025 15:30:00,Southwest Rec Center,Multi-Purpose Court 3,Z-SWRC-07,1,
+10/29/2025 15:30:00,Southwest Rec Center,Multi-Purpose Court 4,Z-SWRC-08,0,
+10/30/2025 15:30:00,Southwest Rec Center,Multi-Purpose Court 5,Z-SWRC-09,0,
+10/31/2025 15:30:00,Southwest Rec Center,Multi-Purpose Court 6,Z-SWRC-10,0,
+11/1/2025 15:30:00,Southwest Rec Center,SWRC Tennis Courts,Z-SWRC-11,4,
+11/2/2025 15:30:00,Southwest Rec Center,UVS Sand Volleyball,Z-SWRC-12,6,
+11/3/2025 15:30:00,Lake Wauberg,LW North,LW,0,
+11/4/2025 15:30:00,Student Recreation and Fitness Centre,SRFC Squash,Z-SRFC-01,0,
+11/5/2025 15:30:00,Student Recreation and Fitness Centre,SRFC Table Tennis,Z-SRFC-02,0,
+11/6/2025 15:30:00,Student Recreation and Fitness Centre,SRFC Weight Room,Z-SRFC-03,33,
+11/7/2025 15:30:00,Student Recreation and Fitness Centre,SRFC Cardio Room,Z-SRFC-04,18,
+11/8/2025 15:30:00,Student Recreation and Fitness Centre,SRFC Lower Functional Area,Z-SRFC-05,5,
+11/9/2025 15:30:00,Student Recreation and Fitness Centre,SRFC Multi-purpose Court,Z-SRFC-06,1,
+11/10/2025 15:30:00,Student Recreation and Fitness Centre,SRFC Racquetball,Z-SRFC-07,0,
+11/11/2025 15:30:00,Aquatics,Florida Pool,Z-AQ-01,13,
+11/12/2025 15:30:00,Aquatics,O'Connell Center Pool,Z-AQ-02,0,
+11/13/2025 15:30:00,Smathers Libraries,Library West,Z-SL-01,762,1564
+11/14/2025 15:30:00,Smathers Libraries,Marston Science Library,Z-SL-02,1286,2208
+11/15/2025 15:30:00,Smathers Libraries,Health Science Center Library,Z-SL-03,204,761
+11/16/2025 15:30:00,Smathers Libraries,Architecture and Fine Arts Library,Z-SL-04,49,124
+11/17/2025 15:30:00,Smathers Libraries,Education Library,Z-SL-05,207,560
+11/18/2025 15:30:00,Smathers Libraries,Smathers Library,Z-SL-06,167,231
+2025-10-22 17:30:00,Southwest Rec Center,Maguire Field,Z-SWRC-01,11,
+2025-10-23 17:30:00,Southwest Rec Center,SWRC Weight Room,Z-SWRC-02,173,
+2025-10-24 17:30:00,Southwest Rec Center,SWRC Cardio Room 1,Z-SWRC-03,47,
+2025-10-25 17:30:00,Southwest Rec Center,SWRC Cardio Room 2,Z-SWRC-04,25,
+2025-10-26 17:30:00,Southwest Rec Center,Multi-Purpose Court 1,Z-SWRC-05,10,
+2025-10-27 17:30:00,Southwest Rec Center,Multi-Purpose Court 2,Z-SWRC-06,10,
+2025-10-28 17:30:00,Southwest Rec Center,Multi-Purpose Court 3,Z-SWRC-07,4,
+2025-10-29 17:30:00,Southwest Rec Center,Multi-Purpose Court 4,Z-SWRC-08,2,
+2025-10-30 17:30:00,Southwest Rec Center,Multi-Purpose Court 5,Z-SWRC-09,0,
+2025-10-31 17:30:00,Southwest Rec Center,Multi-Purpose Court 6,Z-SWRC-10,1,
+2025-11-01 17:30:00,Southwest Rec Center,SWRC Tennis Courts,Z-SWRC-11,10,
+2025-11-02 17:30:00,Southwest Rec Center,UVS Sand Volleyball,Z-SWRC-12,10,
+2025-11-03 17:30:00,Lake Wauberg,LW North,LW,0,
+2025-11-04 17:30:00,Student Recreation and Fitness Centre,SRFC Squash,Z-SRFC-01,0,
+2025-11-05 17:30:00,Student Recreation and Fitness Centre,SRFC Table Tennis,Z-SRFC-02,0,
+2025-11-06 17:30:00,Student Recreation and Fitness Centre,SRFC Weight Room,Z-SRFC-03,48,
+2025-11-07 17:30:00,Student Recreation and Fitness Centre,SRFC Cardio Room,Z-SRFC-04,17,
+2025-11-08 17:30:00,Student Recreation and Fitness Centre,SRFC Lower Functional Area,Z-SRFC-05,8,
+2025-11-09 17:30:00,Student Recreation and Fitness Centre,SRFC Multi-purpose Court,Z-SRFC-06,8,
+2025-11-10 17:30:00,Student Recreation and Fitness Centre,SRFC Racquetball,Z-SRFC-07,0,
+2025-11-11 17:30:00,Aquatics,Florida Pool,Z-AQ-01,13,
+2025-11-12 17:30:00,Aquatics,O'Connell Center Pool,Z-AQ-02,0,
+2025-11-13 17:30:00,Smathers Libraries,Library West,Z-SL-01,659,1564
+2025-11-14 17:30:00,Smathers Libraries,Marston Science Library,Z-SL-02,1219,2208
+2025-11-15 17:30:00,Smathers Libraries,Health Science Center Library,Z-SL-03,124,761
+2025-11-16 17:30:00,Smathers Libraries,Architecture and Fine Arts Library,Z-SL-04,50,124
+2025-11-17 17:30:00,Smathers Libraries,Education Library,Z-SL-05,87,560
+2025-11-18 17:30:00,Smathers Libraries,Smathers Library,Z-SL-06,135,231
+2025-10-22 20:00:00,Southwest Rec Center,Maguire Field,Z-SWRC-01,70,
+2025-10-23 20:00:00,Southwest Rec Center,SWRC Weight Room,Z-SWRC-02,127,
+2025-10-24 20:00:00,Southwest Rec Center,SWRC Cardio Room 1,Z-SWRC-03,29,
+2025-10-25 20:00:00,Southwest Rec Center,SWRC Cardio Room 2,Z-SWRC-04,16,
+2025-10-26 20:00:00,Southwest Rec Center,Multi-Purpose Court 1,Z-SWRC-05,15,
+2025-10-27 20:00:00,Southwest Rec Center,Multi-Purpose Court 2,Z-SWRC-06,22,
+2025-10-28 20:00:00,Southwest Rec Center,Multi-Purpose Court 3,Z-SWRC-07,14,
+2025-10-29 20:00:00,Southwest Rec Center,Multi-Purpose Court 4,Z-SWRC-08,13,
+2025-10-30 20:00:00,Southwest Rec Center,Multi-Purpose Court 5,Z-SWRC-09,6,
+2025-10-31 20:00:00,Southwest Rec Center,Multi-Purpose Court 6,Z-SWRC-10,6,
+2025-11-01 20:00:00,Southwest Rec Center,SWRC Tennis Courts,Z-SWRC-11,21,
+2025-11-02 20:00:00,Southwest Rec Center,UVS Sand Volleyball,Z-SWRC-12,10,
+2025-11-03 20:00:00,Lake Wauberg,LW North,LW,0,
+2025-11-04 20:00:00,Student Recreation and Fitness Centre,SRFC Squash,Z-SRFC-01,0,
+2025-11-05 20:00:00,Student Recreation and Fitness Centre,SRFC Table Tennis,Z-SRFC-02,6,
+2025-11-06 20:00:00,Student Recreation and Fitness Centre,SRFC Weight Room,Z-SRFC-03,34,
+2025-11-07 20:00:00,Student Recreation and Fitness Centre,SRFC Cardio Room,Z-SRFC-04,21,
+2025-11-08 20:00:00,Student Recreation and Fitness Centre,SRFC Lower Functional Area,Z-SRFC-05,5,
+2025-11-09 20:00:00,Student Recreation and Fitness Centre,SRFC Multi-purpose Court,Z-SRFC-06,16,
+2025-11-10 20:00:00,Student Recreation and Fitness Centre,SRFC Racquetball,Z-SRFC-07,15,
+2025-11-11 20:00:00,Aquatics,Florida Pool,Z-AQ-01,13,
+2025-11-12 20:00:00,Aquatics,O'Connell Center Pool,Z-AQ-02,0,
+2025-11-13 20:00:00,Smathers Libraries,Library West,Z-SL-01,497,1564
+2025-11-14 20:00:00,Smathers Libraries,Marston Science Library,Z-SL-02,897,2208
+2025-11-15 20:00:00,Smathers Libraries,Health Science Center Library,Z-SL-03,63,761
+2025-11-16 20:00:00,Smathers Libraries,Architecture and Fine Arts Library,Z-SL-04,29,124
+2025-11-17 20:00:00,Smathers Libraries,Education Library,Z-SL-05,93,560
+2025-11-18 20:00:00,Smathers Libraries,Smathers Library,Z-SL-06,98,231
+2025-10-22 9:36:00,Southwest Rec Center,Maguire Field,Z-SWRC-01,0,
+2025-10-23 9:36:00,Southwest Rec Center,SWRC Weight Room,Z-SWRC-02,75,
+2025-10-24 9:36:00,Southwest Rec Center,SWRC Cardio Room 1,Z-SWRC-03,25,
+2025-10-25 9:36:00,Southwest Rec Center,SWRC Cardio Room 2,Z-SWRC-04,10,
+2025-10-26 9:36:00,Southwest Rec Center,Multi-Purpose Court 1,Z-SWRC-05,0,
+2025-10-27 9:36:00,Southwest Rec Center,Multi-Purpose Court 2,Z-SWRC-06,0,
+2025-10-28 9:36:00,Southwest Rec Center,Multi-Purpose Court 3,Z-SWRC-07,0,
+2025-10-29 9:36:00,Southwest Rec Center,Multi-Purpose Court 4,Z-SWRC-08,11,
+2025-10-30 9:36:00,Southwest Rec Center,Multi-Purpose Court 5,Z-SWRC-09,0,
+2025-10-31 9:36:00,Southwest Rec Center,Multi-Purpose Court 6,Z-SWRC-10,0,
+2025-11-01 9:36:00,Southwest Rec Center,SWRC Tennis Courts,Z-SWRC-11,0,
+2025-11-02 9:36:00,Southwest Rec Center,UVS Sand Volleyball,Z-SWRC-12,0,
+2025-11-03 9:36:00,Lake Wauberg,LW North,LW,0,
+2025-11-04 9:36:00,Student Recreation and Fitness Centre,SRFC Squash,Z-SRFC-01,0,
+2025-11-05 9:36:00,Student Recreation and Fitness Centre,SRFC Table Tennis,Z-SRFC-02,0,
+2025-11-06 9:36:00,Student Recreation and Fitness Centre,SRFC Weight Room,Z-SRFC-03,23,
+2025-11-07 9:36:00,Student Recreation and Fitness Centre,SRFC Cardio Room,Z-SRFC-04,7,
+2025-11-08 9:36:00,Student Recreation and Fitness Centre,SRFC Lower Functional Area,Z-SRFC-05,4,
+2025-11-09 9:36:00,Student Recreation and Fitness Centre,SRFC Multi-purpose Court,Z-SRFC-06,1,
+2025-11-10 9:36:00,Student Recreation and Fitness Centre,SRFC Racquetball,Z-SRFC-07,0,
+2025-11-11 9:36:00,Aquatics,Florida Pool,Z-AQ-01,13,
+2025-11-12 9:36:00,Aquatics,O'Connell Center Pool,Z-AQ-02,0,
+2025-11-13 9:36:00,Smathers Libraries,Library West,Z-SL-01,181,1564
+2025-11-14 9:36:00,Smathers Libraries,Marston Science Library,Z-SL-02,333,2208
+2025-11-15 9:36:00,Smathers Libraries,Health Science Center Library,Z-SL-03,107,761
+2025-11-16 9:36:00,Smathers Libraries,Architecture and Fine Arts Library,Z-SL-04,23,124
+2025-11-17 9:36:00,Smathers Libraries,Education Library,Z-SL-05,42,560
+2025-11-18 9:36:00,Smathers Libraries,Smathers Library,Z-SL-06,61,231

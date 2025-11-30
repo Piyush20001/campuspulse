@@ -13,33 +13,144 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from streamlit_folium import st_folium
 from data.simulator import CrowdDataSimulator
 from data.locations import UF_LOCATIONS, get_locations_by_category
-from data.events_data import EventGenerator
+from data.uf_events_real import UFEventGenerator
 from models.lstm_forecaster import CrowdForecaster
 from models.anomaly_detector import AnomalyDetector
 from utils.map_utils import create_base_map, add_heatmap_layer, add_location_markers, get_crowd_color, get_crowd_label
 from utils.chart_utils import create_sparkline, create_forecast_chart, create_comparison_bar_chart
 from utils.config import UF_CENTER
+from utils.navigation import create_top_navbar
+from components.feedback_form import create_feedback_form
+from auth.session_manager import SessionManager
+
+# Import performance metrics tracker
+try:
+    from monitoring.performance_metrics import get_metrics_tracker
+    METRICS_ENABLED = True
+except ImportError:
+    METRICS_ENABLED = False
+    def get_metrics_tracker():
+        return None
 
 st.set_page_config(page_title="Crowd Heatmap - Campus Pulse", page_icon="🗺️", layout="wide")
 
+# Initialize session manager
+if 'session_manager' not in st.session_state:
+    st.session_state.session_manager = SessionManager()
+
+# Restore session from cookie if available
+st.session_state.session_manager.restore_session_state()
+
+# Set current page
+st.session_state.current_page = 'Crowd Map'
+
+# Initialize performance metrics tracker and track page load
+import time as time_module
+page_start_time = time_module.time()
+
+if METRICS_ENABLED:
+    metrics_tracker = get_metrics_tracker()
+else:
+    metrics_tracker = None
+
+# Top navigation
+create_top_navbar()
+
+# Track page load time
+if METRICS_ENABLED and metrics_tracker:
+    load_time_ms = (time_module.time() - page_start_time) * 1000
+    user_email = st.session_state.user.get('email') if 'user' in st.session_state and st.session_state.user else None
+    metrics_tracker.record_page_load("Crowd Heatmap", load_time_ms, user_email)
+    metrics_tracker.record_response_time("crowd_heatmap", load_time_ms, user_email, "success")
+
+# Modern heatmap page styling
+st.markdown("""
+<style>
+    /* Location cards */
+    .location-card {
+        background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+        border-radius: 16px;
+        padding: 1.5rem;
+        margin: 1rem 0;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+        border: 1px solid rgba(0,33,165,0.1);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .location-card:hover {
+        box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+        transform: translateY(-4px);
+        border-color: rgba(0,33,165,0.2);
+    }
+
+    /* Map container */
+    .map-container {
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+        border: 1px solid rgba(0,33,165,0.1);
+    }
+
+    /* Filter section */
+    .filter-section {
+        background: rgba(255,255,255,0.02);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        border: 1px solid rgba(0,33,165,0.08);
+    }
+
+    /* Charts */
+    .chart-container {
+        background: rgba(255,255,255,0.02);
+        border-radius: 12px;
+        padding: 1rem;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    }
+</style>
+""", unsafe_allow_html=True)
+
 # Initialize session state
-if 'simulator' not in st.session_state:
+if 'simulator' not in st.session_state or st.session_state.simulator is None:
     st.session_state.simulator = CrowdDataSimulator()
 if 'forecaster' not in st.session_state:
-    st.session_state.forecaster = CrowdForecaster()
+    # Load LSTM RNN model for time series forecasting
+    lstm_model_path = os.path.join(os.path.dirname(__file__), '..', 'models', 'lstm_crowd_model.pth')
+    if os.path.exists(lstm_model_path):
+        try:
+            st.session_state.forecaster = CrowdForecaster(model_path=lstm_model_path)
+        except ModuleNotFoundError as e:
+            # PyTorch not installed
+            st.session_state.forecaster = CrowdForecaster()
+            st.warning(f"⚠️ PyTorch not installed. Install with: pip install torch")
+        except Exception as e:
+            # Other loading error - show the actual error for debugging
+            st.session_state.forecaster = CrowdForecaster()
+            st.error(f"⚠️ LSTM model loading error: {str(e)}")
+            st.info("Using fallback persistence forecast. Check if PyTorch is installed.")
+    else:
+        # No trained model yet
+        st.session_state.forecaster = CrowdForecaster()
 if 'anomaly_detector' not in st.session_state:
     st.session_state.anomaly_detector = AnomalyDetector()
 if 'event_generator' not in st.session_state:
-    st.session_state.event_generator = EventGenerator()
-    st.session_state.events = st.session_state.event_generator.generate_random_events(30)
+    st.session_state.event_generator = UFEventGenerator()
+    st.session_state.events = st.session_state.event_generator.generate_semester_events(50)
+if 'last_refresh' not in st.session_state:
+    st.session_state.last_refresh = datetime.now()
 
 # Page header
-st.title("🗺️ Live Crowd Heatmap")
+st.title("Live Crowd Heatmap")
 st.markdown("Real-time crowd density across UF campus with AI-powered forecasts")
 
+# Show which model is being used
+if st.session_state.forecaster.is_trained:
+    st.info(f"🧠 Using LSTM RNN Time Series Forecasting (2-layer neural network)")
+else:
+    st.info("🔮 Using Persistence Forecast (run train_lstm_model.py to train LSTM)")
+
 # Filters
-st.markdown("### 🔍 Filters")
-filter_cols = st.columns(6)
+st.markdown("### Filters")
 
 categories = ["ALL", "GYMS", "LIBRARIES", "DINING", "ACADEMIC", "HOUSING", "STUDY SPOTS", "OUTDOORS"]
 
@@ -57,6 +168,9 @@ for i, category in enumerate(categories):
         ):
             st.session_state.selected_filter = category
             selected_filter = category
+            # Clear cache when filter changes
+            if 'cached_crowd_data' in st.session_state:
+                del st.session_state['cached_crowd_data']
 
 st.markdown("---")
 
@@ -66,46 +180,86 @@ if selected_filter == "ALL":
 else:
     filtered_locations = get_locations_by_category(selected_filter)
 
-# Get current crowd data for filtered locations
-crowd_data = []
-for location in filtered_locations:
-    crowd = st.session_state.simulator.get_current_crowd(location)
-    crowd['lat'] = location['lat']
-    crowd['lon'] = location['lon']
-    crowd_data.append(crowd)
+# Cache key that includes the filter
+cache_key = f'crowd_data_{selected_filter}'
 
-# Generate forecasts
-forecasts = []
-for location in filtered_locations:
-    # Generate historical data
-    hist_data = st.session_state.simulator.generate_historical_data(location, days=1, interval_minutes=10)
+# Get or generate crowd data (only regenerate on explicit refresh or new filter)
+if cache_key not in st.session_state or 'force_refresh' in st.session_state:
+    crowd_data = []
+    for location in filtered_locations:
+        crowd = st.session_state.simulator.get_current_crowd(location)
+        crowd['lat'] = location['lat']
+        crowd['lon'] = location['lon']
+        crowd_data.append(crowd)
+    st.session_state[cache_key] = crowd_data
+    st.session_state['cached_crowd_data'] = crowd_data
+    if 'force_refresh' in st.session_state:
+        del st.session_state['force_refresh']
+else:
+    crowd_data = st.session_state[cache_key]
 
-    # Get forecast
-    recent_levels = hist_data['crowd_level'].values[-12:]  # Last 2 hours
-    predictions = st.session_state.forecaster.predict(recent_levels)
-    label, emoji = st.session_state.forecaster.get_forecast_label(predictions)
+# Generate forecasts using LSTM RNN (cached similarly)
+forecast_cache_key = f'forecasts_{selected_filter}'
+if forecast_cache_key not in st.session_state or 'force_refresh' in st.session_state:
+    forecasts = []
 
-    forecasts.append({
-        'location_id': location['id'],
-        'predictions': predictions,
-        'label': label,
-        'emoji': emoji
-    })
+    # Track total LSTM inference time
+    total_inference_start = time_module.time()
 
-# Check for anomalies
-anomalies = []
-for location in filtered_locations:
-    hist_data = st.session_state.simulator.generate_historical_data(location, days=1, interval_minutes=10)
-    recent_levels = hist_data['crowd_level'].values[-12:]
+    for location in filtered_locations:
+        # Generate historical data for time series input
+        hist_data = st.session_state.simulator.generate_historical_data(location, days=1, interval_minutes=10)
 
-    anomaly_result = st.session_state.anomaly_detector.detect(recent_levels)
+        # Get last 2 hours of data (12 time steps) for LSTM input
+        recent_levels = hist_data['crowd_level'].values[-12:]
 
-    if anomaly_result['is_anomaly']:
-        anomalies.append({
-            'location_name': location['name'],
-            'severity': anomaly_result['severity'],
-            'explanation': st.session_state.anomaly_detector.get_anomaly_explanation(recent_levels, location['name'])
+        # Predict next hour (6 time steps) using LSTM - Track inference time
+        inference_start = time_module.time()
+        predictions = st.session_state.forecaster.predict(recent_levels)
+        inference_time_ms = (time_module.time() - inference_start) * 1000
+
+        # Record model inference performance
+        if METRICS_ENABLED and metrics_tracker:
+            metrics_tracker.record_model_inference("LSTM_Forecaster", inference_time_ms, num_predictions=len(predictions))
+
+        label, emoji = st.session_state.forecaster.get_forecast_label(predictions)
+
+        forecasts.append({
+            'location_id': location['id'],
+            'predictions': predictions,
+            'label': label,
+            'emoji': emoji
         })
+
+    # Record total batch inference time as API latency
+    total_inference_time_ms = (time_module.time() - total_inference_start) * 1000
+    if METRICS_ENABLED and metrics_tracker:
+        metrics_tracker.record_api_latency("lstm_batch_forecast", total_inference_time_ms,
+                                          metadata=f"{len(filtered_locations)} locations")
+
+    st.session_state[forecast_cache_key] = forecasts
+else:
+    forecasts = st.session_state[forecast_cache_key]
+
+# Check for anomalies (cached)
+anomaly_cache_key = f'anomalies_{selected_filter}'
+if anomaly_cache_key not in st.session_state or 'force_refresh' in st.session_state:
+    anomalies = []
+    for location in filtered_locations:
+        hist_data = st.session_state.simulator.generate_historical_data(location, days=1, interval_minutes=10)
+        recent_levels = hist_data['crowd_level'].values[-12:]
+
+        anomaly_result = st.session_state.anomaly_detector.detect(recent_levels)
+
+        if anomaly_result['is_anomaly']:
+            anomalies.append({
+                'location_name': location['name'],
+                'severity': anomaly_result['severity'],
+                'explanation': st.session_state.anomaly_detector.get_anomaly_explanation(recent_levels, location['name'])
+            })
+    st.session_state[anomaly_cache_key] = anomalies
+else:
+    anomalies = st.session_state[anomaly_cache_key]
 
 # Show anomaly alerts if any
 if anomalies:
@@ -127,24 +281,41 @@ map_col, table_col = st.columns([2, 1])
 with map_col:
     st.markdown("### 🌍 Interactive Map")
 
-    # Group events by location
-    events_by_location = {}
-    for event in st.session_state.events:
-        if event['start_time'] > datetime.now():
-            if event['location_id'] not in events_by_location:
-                events_by_location[event['location_id']] = []
-            events_by_location[event['location_id']].append(event)
+    # Group events by location (cached)
+    events_cache_key = f'events_by_location_{selected_filter}'
+    if events_cache_key not in st.session_state:
+        events_by_location = {}
+        for event in st.session_state.events:
+            if event['start_time'] > datetime.now():
+                if event['location_id'] not in events_by_location:
+                    events_by_location[event['location_id']] = []
+                events_by_location[event['location_id']].append(event)
+        st.session_state[events_cache_key] = events_by_location
+    else:
+        events_by_location = st.session_state[events_cache_key]
 
-    # Create map
-    m = create_base_map(UF_CENTER, zoom_start=15)
-    m = add_heatmap_layer(m, crowd_data)
-    m = add_location_markers(m, crowd_data, forecasts, events_by_location)
+    # Create map (only when data changes)
+    map_cache_key = f'map_object_{selected_filter}'
+    if map_cache_key not in st.session_state or 'force_refresh' in st.session_state:
+        m = create_base_map(UF_CENTER, zoom_start=15)
+        m = add_heatmap_layer(m, crowd_data)
+        m = add_location_markers(m, crowd_data, forecasts, events_by_location)
+        st.session_state[map_cache_key] = m
+    else:
+        m = st.session_state[map_cache_key]
 
-    # Display map
-    st_folium(m, width=None, height=500)
+    # Display map with minimal re-rendering
+    # Don't capture returned data to prevent updates
+    st_folium(
+        m,
+        width=None,
+        height=500,
+        key=f"folium_map_{selected_filter}",
+        returned_objects=[]  # Critical: prevents constant re-rendering!
+    )
 
 with table_col:
-    st.markdown("### 📊 Current Levels")
+    st.markdown("### Current Levels")
 
     # Create DataFrame for display
     display_data = []
@@ -174,7 +345,8 @@ st.markdown("### 📈 Detailed Location View")
 
 selected_location_name = st.selectbox(
     "Select a location for detailed analysis:",
-    [loc['name'] for loc in filtered_locations]
+    [loc['name'] for loc in filtered_locations],
+    key="location_detail_select"
 )
 
 # Find selected location
@@ -209,7 +381,7 @@ if selected_location:
         st.write(f"**Category**: {selected_location['category']}")
 
     # Historical and forecast chart
-    st.markdown("#### 📊 Trend & Forecast")
+    st.markdown("#### Trend & Forecast")
 
     # Generate historical data
     hist_data = st.session_state.simulator.generate_historical_data(selected_location, days=1, interval_minutes=10)
@@ -238,17 +410,26 @@ if selected_location:
                 st.write(f"**Time**: {event['start_time'].strftime('%B %d, %Y at %I:%M %p')} - {event['end_time'].strftime('%I:%M %p')}")
                 st.write(f"**Organizer**: {event['organizer']}")
 
-# Footer with refresh
+# Footer with manual refresh only
 st.markdown("---")
 col1, col2, col3 = st.columns([1, 1, 1])
 
 with col2:
-    if st.button("🔄 Refresh Data", use_container_width=True, type="primary"):
+    if st.button("Refresh Data", use_container_width=True, type="primary", key="manual_refresh_btn"):
+        st.session_state.force_refresh = True
         st.session_state.simulator = CrowdDataSimulator()
+        st.session_state.last_refresh = datetime.now()
+        # Clear all caches
+        keys_to_delete = [k for k in list(st.session_state.keys()) if any(x in k for x in ['crowd_data_', 'forecasts_', 'anomalies_', 'map_object_', 'events_by_location_'])]
+        for key in keys_to_delete:
+            del st.session_state[key]
         st.rerun()
+
+# Feedback form
+create_feedback_form()
 
 st.markdown("""
 <div style="text-align: center; color: #666; padding: 1rem 0;">
-    <p style="font-size: 0.9rem;">Last updated: {} | Auto-refresh every 30 seconds</p>
+    <p style="font-size: 0.9rem;">Last updated: {} | Click "Refresh Data" to update</p>
 </div>
-""".format(datetime.now().strftime('%I:%M:%S %p')), unsafe_allow_html=True)
+""".format(st.session_state.last_refresh.strftime('%I:%M:%S %p')), unsafe_allow_html=True)

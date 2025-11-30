@@ -12,33 +12,90 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from data.simulator import CrowdDataSimulator
 from data.locations import UF_LOCATIONS, get_location_by_id
-from data.events_data import EventGenerator
+from data.uf_events_real import UFEventGenerator
 from models.lstm_forecaster import CrowdForecaster
 from models.anomaly_detector import AnomalyDetector
 from utils.map_utils import get_crowd_color, get_crowd_label
 from utils.chart_utils import create_forecast_chart, create_crowd_gauge
+from utils.navigation import create_top_navbar
+from auth.session_manager import SessionManager
 
 st.set_page_config(page_title="Saved Locations - Campus Pulse", page_icon="⭐", layout="wide")
+
+# Initialize session manager
+if 'session_manager' not in st.session_state:
+    st.session_state.session_manager = SessionManager()
+
+# Restore session from cookie if available
+st.session_state.session_manager.restore_session_state()
+
+# Set current page
+st.session_state.current_page = 'Saved'
+
+# Top navigation
+create_top_navbar()
+
+# Modern saved locations page styling
+st.markdown("""
+<style>
+    /* Saved location cards */
+    .saved-card {
+        background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+        border-radius: 16px;
+        padding: 2rem;
+        margin: 1rem 0;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+        border: 1px solid rgba(0,33,165,0.1);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .saved-card:hover {
+        box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+        transform: translateY(-4px);
+        border-color: rgba(0,33,165,0.2);
+    }
+
+    /* Add location section */
+    .add-location-section {
+        background: rgba(0,33,165,0.05);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        border: 2px dashed rgba(0,33,165,0.2);
+    }
+
+    /* Empty state */
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        background: rgba(255,255,255,0.02);
+        border-radius: 16px;
+        border: 1px solid rgba(0,33,165,0.08);
+    }
+</style>
+""", unsafe_allow_html=True)
 
 # Initialize session state
 if 'simulator' not in st.session_state:
     st.session_state.simulator = CrowdDataSimulator()
 if 'forecaster' not in st.session_state:
-    st.session_state.forecaster = CrowdForecaster()
+    # Load the trained LSTM model
+    model_path = os.path.join(os.path.dirname(__file__), '..', 'models', 'lstm_crowd_model.pth')
+    st.session_state.forecaster = CrowdForecaster(model_path=model_path)
 if 'anomaly_detector' not in st.session_state:
     st.session_state.anomaly_detector = AnomalyDetector()
 if 'event_generator' not in st.session_state:
-    st.session_state.event_generator = EventGenerator()
-    st.session_state.events = st.session_state.event_generator.generate_random_events(30)
+    st.session_state.event_generator = UFEventGenerator()
+    st.session_state.events = st.session_state.event_generator.generate_semester_events(50)
 if 'saved_locations' not in st.session_state:
     st.session_state.saved_locations = []
 
 # Page header
-st.title("⭐ Saved Locations")
+st.title("Saved Locations")
 st.markdown("Track crowd levels and events at your favorite campus spots")
 
 # Add location section
-st.markdown("### ➕ Add a Location")
+st.markdown("### Add a Location")
 
 add_col1, add_col2 = st.columns([3, 1])
 
@@ -71,7 +128,7 @@ st.markdown("---")
 if len(st.session_state.saved_locations) == 0:
     st.info("👆 You haven't saved any locations yet. Add one above to get started!")
 else:
-    st.markdown(f"### 📍 Your Saved Locations ({len(st.session_state.saved_locations)})")
+    st.markdown(f"### Your Saved Locations ({len(st.session_state.saved_locations)})")
 
     # Quick summary
     summary_col1, summary_col2, summary_col3 = st.columns(3)
@@ -288,6 +345,6 @@ with action_col3:
 st.markdown("---")
 st.markdown("""
 <div style="text-align: center; color: #666; padding: 1rem 0;">
-    <p>⭐ Saved Locations | Last updated: {}</p>
+    <p>Saved Locations | Last updated: {}</p>
 </div>
 """.format(datetime.now().strftime('%I:%M:%S %p')), unsafe_allow_html=True)

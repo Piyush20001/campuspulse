@@ -1,0 +1,119 @@
+# Prometheus Alert Rules for Campus Pulse
+
+groups:
+  - name: campus_pulse_alerts
+    interval: 30s
+    rules:
+      # High Error Rate Alert
+      - alert: HighErrorRate
+        expr: rate(campus_pulse_errors_total[5m]) > 0.1
+        for: 2m
+        labels:
+          severity: warning
+          component: application
+        annotations:
+          summary: "High error rate detected"
+          description: "Error rate is {{ $value }} errors/sec for {{ $labels.component }}"
+
+      # Model Prediction Latency Alert
+      - alert: HighModelLatency
+        expr: histogram_quantile(0.95, rate(campus_pulse_model_prediction_latency_seconds_bucket[5m])) > 1.0
+        for: 5m
+        labels:
+          severity: warning
+          component: ml-model
+        annotations:
+          summary: "Model prediction latency is high"
+          description: "95th percentile latency is {{ $value }}s for {{ $labels.model_type }}"
+
+      # Critical Crowd Level Alert
+      - alert: CriticalCrowdLevel
+        expr: campus_pulse_avg_crowd_level_percent > 95
+        for: 10m
+        labels:
+          severity: critical
+          component: crowd-monitoring
+        annotations:
+          summary: "Campus-wide crowd levels critically high"
+          description: "Average crowd level is {{ $value }}% across all locations"
+
+      # Location Over Capacity
+      - alert: LocationOverCapacity
+        expr: campus_pulse_location_crowd_level > 100
+        for: 5m
+        labels:
+          severity: critical
+          component: crowd-monitoring
+        annotations:
+          summary: "Location over capacity"
+          description: "{{ $labels.location_name }} is at {{ $value }}% capacity"
+
+      # Database Query Slow
+      - alert: SlowDatabaseQueries
+        expr: histogram_quantile(0.95, rate(campus_pulse_db_query_duration_seconds_bucket[5m])) > 0.5
+        for: 5m
+        labels:
+          severity: warning
+          component: database
+        annotations:
+          summary: "Database queries are slow"
+          description: "95th percentile query time is {{ $value }}s for {{ $labels.query_type }}"
+
+      # Application Down
+      - alert: ApplicationDown
+        expr: up{job="campus-pulse-app"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: infrastructure
+        annotations:
+          summary: "Campus Pulse application is down"
+          description: "Application has been down for more than 1 minute"
+
+      # Low Cache Hit Rate
+      - alert: LowCacheHitRate
+        expr: |
+          (
+            rate(campus_pulse_cache_hits_total[5m]) /
+            (rate(campus_pulse_cache_hits_total[5m]) + rate(campus_pulse_cache_misses_total[5m]))
+          ) < 0.5
+        for: 10m
+        labels:
+          severity: warning
+          component: caching
+        annotations:
+          summary: "Cache hit rate is low"
+          description: "Cache hit rate is {{ $value | humanizePercentage }} for {{ $labels.cache_type }}"
+
+      # Anomaly Spike
+      - alert: AnomalySpikeDetected
+        expr: increase(campus_pulse_anomalies_detected_total[10m]) > 5
+        for: 5m
+        labels:
+          severity: warning
+          component: anomaly-detection
+        annotations:
+          summary: "Multiple anomalies detected"
+          description: "{{ $value }} anomalies detected in last 10 minutes at {{ $labels.location_type }} locations"
+
+      # No Active Users (Potential Issue)
+      - alert: NoActiveUsers
+        expr: campus_pulse_active_users == 0
+        for: 30m
+        labels:
+          severity: info
+          component: user-activity
+        annotations:
+          summary: "No active users detected"
+          description: "No users have been active for 30 minutes - potential application issue"
+
+      # High Model Error Rate
+      - alert: HighModelErrorRate
+        expr: rate(campus_pulse_model_errors_total[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+          component: ml-model
+        annotations:
+          summary: "High model error rate"
+          description: "Model {{ $labels.model_type }} error rate is {{ $value }}/sec"

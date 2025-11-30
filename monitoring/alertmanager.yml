@@ -1,0 +1,64 @@
+# Alertmanager Configuration for Campus Pulse
+
+global:
+  resolve_timeout: 5m
+
+# Default route - where to send alerts
+route:
+  group_by: ['alertname', 'cluster', 'service']
+  group_wait: 10s
+  group_interval: 10s
+  repeat_interval: 12h
+  receiver: 'default-receiver'
+  routes:
+    - match:
+        severity: critical
+      receiver: 'critical-alerts'
+      continue: true
+    - match:
+        severity: warning
+      receiver: 'warning-alerts'
+
+# Alert receivers (notification destinations)
+receivers:
+  - name: 'default-receiver'
+    # Default receiver - can be configured later
+    # For now, alerts will be collected but not sent anywhere
+
+  - name: 'critical-alerts'
+    # Critical alerts receiver
+    # Example: Configure email, Slack, PagerDuty, etc.
+    # webhook_configs:
+    #   - url: 'http://localhost:5001/webhook'
+
+  - name: 'warning-alerts'
+    # Warning alerts receiver
+    # webhook_configs:
+    #   - url: 'http://localhost:5001/webhook'
+
+# Inhibition rules - prevent certain alerts when others are firing
+inhibit_rules:
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['alertname', 'instance']
+
+# Example webhook configuration (uncomment to use):
+# receivers:
+#   - name: 'slack-notifications'
+#     slack_configs:
+#       - api_url: 'YOUR_SLACK_WEBHOOK_URL'
+#         channel: '#alerts'
+#         title: 'Campus Pulse Alert'
+#         text: '{{ range .Alerts }}{{ .Annotations.summary }}\n{{ end }}'
+#
+#   - name: 'email-notifications'
+#     email_configs:
+#       - to: 'alerts@example.com'
+#         from: 'campuspulse@example.com'
+#         smarthost: 'smtp.gmail.com:587'
+#         auth_username: 'your-email@gmail.com'
+#         auth_password: 'your-app-password'
+#         headers:
+#           Subject: 'Campus Pulse Alert'

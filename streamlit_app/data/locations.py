@@ -137,6 +137,231 @@ UF_LOCATIONS = [
         'lon': -82.3486,
         'capacity': 400,
         'description': 'Football stadium area'
+    },
+    {
+        'id': 16,
+        'name': 'Health Science Center Library',
+        'category': 'LIBRARIES',
+        'lat': 29.6405,
+        'lon': -82.3448,
+        'capacity': 160,
+        'description': 'Medical and health sciences library'
+    },
+    {
+        'id': 17,
+        'name': "O'Connell Center",
+        'category': 'GYMS',
+        'lat': 29.6508,
+        'lon': -82.3538,
+        'capacity': 300,
+        'description': 'Multi-purpose athletic facility'
+    },
+    {
+        'id': 18,
+        'name': 'Gator Dining',
+        'category': 'DINING',
+        'lat': 29.6524,
+        'lon': -82.3478,
+        'capacity': 200,
+        'description': 'All-you-can-eat dining hall'
+    },
+    {
+        'id': 19,
+        'name': 'Fresh Food Company',
+        'category': 'DINING',
+        'lat': 29.6438,
+        'lon': -82.3489,
+        'capacity': 180,
+        'description': 'Fresh dining options'
+    },
+    {
+        'id': 20,
+        'name': 'Weil Hall',
+        'category': 'ACADEMIC',
+        'lat': 29.6432,
+        'lon': -82.3452,
+        'capacity': 120,
+        'description': 'Engineering building'
+    },
+    {
+        'id': 21,
+        'name': 'Little Hall',
+        'category': 'ACADEMIC',
+        'lat': 29.6489,
+        'lon': -82.3436,
+        'capacity': 95,
+        'description': 'Historic classroom building'
+    },
+    {
+        'id': 22,
+        'name': 'Broward Hall',
+        'category': 'HOUSING',
+        'lat': 29.6504,
+        'lon': -82.3455,
+        'capacity': 200,
+        'description': 'Honors residence hall'
+    },
+    {
+        'id': 23,
+        'name': 'Jennings Hall',
+        'category': 'HOUSING',
+        'lat': 29.6509,
+        'lon': -82.3461,
+        'capacity': 190,
+        'description': 'Honors residence hall'
+    },
+    {
+        'id': 24,
+        'name': 'Architecture Library',
+        'category': 'LIBRARIES',
+        'lat': 29.6468,
+        'lon': -82.3402,
+        'capacity': 80,
+        'description': 'Architecture and Fine Arts Library'
+    },
+    {
+        'id': 25,
+        'name': 'Starbucks @ Library West',
+        'category': 'DINING',
+        'lat': 29.6510,
+        'lon': -82.3423,
+        'capacity': 50,
+        'description': 'Coffee shop'
+    },
+    {
+        'id': 26,
+        'name': 'Norman Gym',
+        'category': 'GYMS',
+        'lat': 29.6515,
+        'lon': -82.3505,
+        'capacity': 150,
+        'description': 'Fitness and recreation'
+    },
+    {
+        'id': 27,
+        'name': 'Flavet Field',
+        'category': 'OUTDOORS',
+        'lat': 29.6443,
+        'lon': -82.3534,
+        'capacity': 200,
+        'description': 'Recreational field'
+    },
+    {
+        'id': 28,
+        'name': 'Lake Wauberg',
+        'category': 'OUTDOORS',
+        'lat': 29.5987,
+        'lon': -82.2635,
+        'capacity': 150,
+        'description': 'Outdoor recreation area'
+    },
+    {
+        'id': 29,
+        'name': 'Eastside Study Room',
+        'category': 'STUDY SPOTS',
+        'lat': 29.6519,
+        'lon': -82.3470,
+        'capacity': 60,
+        'description': 'Quiet study area'
+    },
+    {
+        'id': 30,
+        'name': 'Weimer Hall',
+        'category': 'ACADEMIC',
+        'lat': 29.6513,
+        'lon': -82.3447,
+        'capacity': 105,
+        'description': 'Journalism building'
+    },
+    {
+        'id': 31,
+        'name': 'Carleton Auditorium',
+        'category': 'ACADEMIC',
+        'lat': 29.6475,
+        'lon': -82.3425,
+        'capacity': 140,
+        'description': 'Large lecture hall'
+    },
+    {
+        'id': 32,
+        'name': 'Keys Complex',
+        'category': 'HOUSING',
+        'lat': 29.6539,
+        'lon': -82.3482,
+        'capacity': 250,
+        'description': 'Residential complex'
+    },
+    {
+        'id': 33,
+        'name': 'Gator Corner Dining',
+        'category': 'DINING',
+        'lat': 29.6471,
+        'lon': -82.3480,
+        'capacity': 120,
+        'description': 'Quick dining options'
+    },
+    {
+        'id': 34,
+        'name': 'Rawlings Hall',
+        'category': 'ACADEMIC',
+        'lat': 29.6484,
+        'lon': -82.3463,
+        'capacity': 90,
+        'description': 'Classroom building'
+    },
+    {
+        'id': 35,
+        'name': 'Murphree Area Study Lounge',
+        'category': 'STUDY SPOTS',
+        'lat': 29.6511,
+        'lon': -82.3450,
+        'capacity': 70,
+        'description': 'Residential study space'
+    },
+    {
+        'id': 36,
+        'name': 'Sorority Row',
+        'category': 'HOUSING',
+        'lat': 29.6527,
+        'lon': -82.3503,
+        'capacity': 220,
+        'description': 'Greek life housing area'
+    },
+    {
+        'id': 37,
+        'name': 'Heavener Hall',
+        'category': 'ACADEMIC',
+        'lat': 29.6424,
+        'lon': -82.3466,
+        'capacity': 150,
+        'description': 'Business school building'
+    },
+    {
+        'id': 38,
+        'name': 'Yoga Lawn',
+        'category': 'OUTDOORS',
+        'lat': 29.6490,
+        'lon': -82.3495,
+        'capacity': 100,
+        'description': 'Outdoor wellness area'
+    },
+    {
+        'id': 39,
+        'name': 'POD Market @ Beaty',
+        'category': 'DINING',
+        'lat': 29.6533,
+        'lon': -82.3495,
+        'capacity': 45,
+        'description': 'Convenience store and cafe'
+    },
+    {
+        'id': 40,
+        'name': 'Smathers Library Study Rooms',
+        'category': 'STUDY SPOTS',
+        'lat': 29.6515,
+        'lon': -82.3418,
+        'capacity': 85,
+        'description': 'Group study rooms'
     }
 ]
 

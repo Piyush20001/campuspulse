@@ -26,11 +26,17 @@ wheels/
 # Streamlit
 .streamlit/
 
+# Databases (exclude user data and feedback)
+campus_pulse_feedback.db
+campus_pulse_performance.db
+campus_pulse_sessions.db
+
 # ML Models
 trained_models/*.pth
 trained_models/*.pt
-*.pkl
-*.pickle
+# Allow trained models to be committed
+# *.pkl
+# *.pickle
 
 # IDE
 .vscode/
